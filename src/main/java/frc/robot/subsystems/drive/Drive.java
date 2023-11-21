@@ -10,8 +10,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.SwerveModule;
+import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.subsystems.drive.SwerveModule.WheelPosition;
 import frc.utility.OrangeMath;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,7 +30,10 @@ public class Drive extends SubsystemBase {
 
   private SwerveModule[] swerveModules = new SwerveModule[4];
 
-  private AHRS gyro;
+  private GyroIO gyroIO;
+  private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+  private Rotation2d gyroYawRotation;
+
   private PIDController rotPID;
 
   private Timer runTime = new Timer();
@@ -61,8 +68,9 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
-  public Drive() {
+  public Drive(GyroIO gyroIO) {
     runTime.start();
+    this.gyroIO = gyroIO;
     if (Constants.driveEnabled) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
           new SwerveModule(DriveConstants.frontRightRotationID, DriveConstants.frontRightDriveID,
@@ -92,19 +100,11 @@ public class Drive extends SubsystemBase {
       }
 
       if (Constants.gyroEnabled) {
-        gyro = new AHRS(SPI.Port.kMXP, (byte) 66);
-
-        // wait for first gyro reading to be received
-        try {
-          Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
-
-        odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getModulePostitions());
+        odometry = new SwerveDriveOdometry(kinematics, gyroYawRotation, getModulePostitions());
         resetFieldCentric(0);
       }
 
-      if (Constants.debug) {
+    if (Constants.debug) {
         tab = Shuffleboard.getTab("Drivebase");
 
         rotErrorTab = tab.add("Rot Error", 0).withPosition(0, 0).withSize(1, 1).getEntry();
@@ -146,14 +146,14 @@ public class Drive extends SubsystemBase {
 
         odometryDegrees =
             tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
-      }
+      }  
     }
   }
 
   // get the yaw angle
   public double getAngle() {
-    if (gyro != null && gyro.isConnected() && !gyro.isCalibrating() && Constants.gyroEnabled) {
-      return OrangeMath.boundDegrees(-gyro.getAngle());
+    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+      return gyroInputs.yawPositionDeg;
     } else {
       return 0;
     }
@@ -161,8 +161,8 @@ public class Drive extends SubsystemBase {
 
   // Get pitch in degrees. Positive angle is the front of the robot raised.
   public double getPitch() {
-    if (gyro != null && gyro.isConnected() && !gyro.isCalibrating() && Constants.gyroEnabled) {
-      return gyro.getPitch() - pitchOffset;
+    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+      return gyroInputs.pitchPositionDeg - pitchOffset;
     } else {
       return 0;
     }
@@ -170,8 +170,8 @@ public class Drive extends SubsystemBase {
 
   // get the change of robot heading in degrees per sec
   public double getAngularVelocity() {
-    if (gyro != null && gyro.isConnected() && !gyro.isCalibrating() && Constants.gyroEnabled) {
-      return -gyro.getRate();
+    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+      return gyroInputs.yawVelocityDegPerSec;
     } else {
       return 0;
     }
@@ -179,6 +179,11 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
+    gyroIO.updateInputs(gyroInputs);
+    Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
+    
+    gyroYawRotation = new Rotation2d(gyroInputs.yawPositionRad);
+
     if (Constants.driveEnabled) {
 
       Translation2d vel = calcVelocity();
@@ -206,7 +211,7 @@ public class Drive extends SubsystemBase {
         botAccelerationAngle.setDouble(acc.getAngle().getDegrees());
         if (Constants.gyroEnabled) {
           yawTab.setDouble(getAngle());
-          rollTab.setDouble(gyro.getRoll());
+          rollTab.setDouble(gyroInputs.rollPositionDeg);
           pitchTab.setDouble(getPitch());
           odometryX.setDouble(getPose2d().getX());
           odometryY.setDouble(getPose2d().getY());
@@ -214,12 +219,6 @@ public class Drive extends SubsystemBase {
           angularVel.setDouble(getAngularVelocity());
         }
       }
-    }
-  }
-
-  public void resetDisplacement() {
-    if (Constants.gyroEnabled) {
-      gyro.resetDisplacement();
     }
   }
 
@@ -241,10 +240,10 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetFieldCentric(double offset) {
-    if (Constants.driveEnabled && Constants.gyroEnabled && gyro != null) {
-      gyro.setAngleAdjustment(0);
-      gyro.setAngleAdjustment(-gyro.getAngle() + offset);
-      pitchOffset = gyro.getPitch();
+    if (Constants.driveEnabled && Constants.gyroEnabled && gyroIO != null) {
+      gyroIO.setAngleAdjustment(0.0);
+      gyroIO.setAngleAdjustment(gyroInputs.yawPositionDeg + offset);
+      pitchOffset = gyroInputs.pitchPositionDeg;
     }
   }
 
@@ -274,7 +273,7 @@ public class Drive extends SubsystemBase {
       } else {
         var swerveModuleStates =
             DriveLogic.calcModuleStates(driveX, driveY, rotate, centerOfRotation,
-                gyro.getRotation2d(), kinematics, Constants.DriveConstants.maxSpeedMetersPerSecond);
+                gyroYawRotation, kinematics, Constants.DriveConstants.maxSpeedMetersPerSecond);
 
         setModuleStates(swerveModuleStates);
       }
@@ -334,13 +333,13 @@ public class Drive extends SubsystemBase {
 
   public void updateOdometry() {
     if (Constants.gyroEnabled) {
-      odometry.update(gyro.getRotation2d(), getModulePostitions());
+      odometry.update(gyroYawRotation, getModulePostitions());
     }
   }
 
   public void resetOdometry(Pose2d pose) {
     if (Constants.gyroEnabled) {
-      odometry.resetPosition(gyro.getRotation2d(), getModulePostitions(), pose);
+      odometry.resetPosition(gyroYawRotation, getModulePostitions(), pose);
     }
   }
 
