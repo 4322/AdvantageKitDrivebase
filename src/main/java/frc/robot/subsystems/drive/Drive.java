@@ -13,7 +13,6 @@ import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModule.WheelPosition;
 import frc.utility.OrangeMath;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Constants;
@@ -263,7 +262,7 @@ public class Drive extends SubsystemBase {
         rotateTab.setDouble(rotate);
       }
 
-      // convert to proper units
+      // convert to proper units (eventually we should move this up to DriveManual)
       rotate = rotate * DriveConstants.maxRotationSpeedRadSecond;
       driveX = driveX * DriveConstants.maxSpeedMetersPerSecond;
       driveY = driveY * DriveConstants.maxSpeedMetersPerSecond;
@@ -274,7 +273,7 @@ public class Drive extends SubsystemBase {
       } else {
         var swerveModuleStates =
             DriveLogic.calcModuleStates(driveX, driveY, rotate, centerOfRotation,
-                gyro.getRotation2d(), kinematics, Constants.DriveConstants.maxSpeedMetersPerSecond);
+                gyro.getRotation2d(), kinematics);
 
         setModuleStates(swerveModuleStates);
       }
@@ -294,25 +293,10 @@ public class Drive extends SubsystemBase {
       // Don't use absolute heading for PID controller to avoid discontinuity at +/- 180 degrees
       double headingChangeDeg = OrangeMath.boundDegrees(targetDeg - getAngle());
       double rotPIDSpeed = rotPID.calculate(0, headingChangeDeg);
-      double maxAutoRotatePower;
-      double minAutoRotatePower;
-      double toleranceDeg;
-
-      // reduce rotation power when driving fast to not lose forward momentum
-      if (latestVelocity >= DriveConstants.Auto.slowAutoRotateFtPerSec) {
-        maxAutoRotatePower = DriveConstants.Auto.slowAutoRotatePower;
-      } else {
-        maxAutoRotatePower = DriveConstants.Auto.maxAutoRotatePower;
-      }
-      // no need to maintain exact heading when driving to reduce wobble
-      if (isRobotMoving()) {
-        minAutoRotatePower = DriveConstants.Auto.minAutoRotateMovingPower;
-        toleranceDeg = Constants.DriveConstants.Auto.rotateMovingToleranceDegrees;
-      } else {
-        // greater percision when lining up for something
-        minAutoRotatePower = DriveConstants.Auto.minAutoRotateStoppedPower;
-        toleranceDeg = Constants.DriveConstants.Auto.rotateStoppedToleranceDegrees;
-      }
+    
+      double maxAutoRotatePower = DriveLogic.detMaxAutoRotate(isRobotOverSlowRotateFtPerSec());
+      double minAutoRotatePower = DriveLogic.detMinAutoRotate(isRobotMoving());
+      double toleranceDeg = DriveLogic.detToleranceDeg(isRobotMoving());
 
       rotPIDSpeed = DriveLogic.boundRotatePID(headingChangeDeg, toleranceDeg, rotPIDSpeed,
           minAutoRotatePower, maxAutoRotatePower);
@@ -374,44 +358,13 @@ public class Drive extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] states) {
     if (Constants.driveEnabled) {
-      SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.maxSpeedMetersPerSecond);
+      DriveLogic.desaturateModuleStates(states);
       int i = 0;
       for (SwerveModuleState s : states) {
         swerveModules[i].setDesiredState(s);
         i++;
       }
     }
-  }
-
-  private Translation2d calcVelocity() {
-    double[] currentAngle = new double[4];
-    for (int i = 0; i < swerveModules.length; i++) {
-      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-    }
-    Translation2d velocityXY = new Translation2d();
-    // sum wheel velocity vectors
-    for (int i = 0; i < swerveModules.length; i++) {
-      double wheelAngleDegrees = currentAngle[i];
-      velocityXY = velocityXY.plus(new Translation2d(swerveModules[i].getVelocity(),
-          Rotation2d.fromDegrees(wheelAngleDegrees)));
-    }
-    return velocityXY;
-  }
-
-  private Translation2d calcAcceleration() {
-    double[] currentAngle = new double[4];
-    for (int i = 0; i < swerveModules.length; i++) {
-      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-    }
-    Translation2d accelerationXY = new Translation2d();
-    // sum wheel acceleration vectors
-    for (int i = 0; i < swerveModules.length; i++) {
-      double wheelAngleDegrees = currentAngle[i];
-      accelerationXY =
-          accelerationXY.plus(new Translation2d(swerveModules[i].snapshotAcceleration(),
-              Rotation2d.fromDegrees(wheelAngleDegrees)));
-    }
-    return accelerationXY;
   }
 
   public SwerveModulePosition[] getModulePostitions() {
@@ -433,5 +386,29 @@ public class Drive extends SubsystemBase {
     } else {
       return null;
     }
+  }
+
+  private Translation2d calcVelocity() {
+    double[] currentAngle = new double[4];
+    double[] currentVelocity = new double[4];
+    for (int i = 0; i < swerveModules.length; i++) {
+      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
+      currentVelocity[i] = swerveModules[i].getVelocity();
+    }
+    return DriveLogic.avgModuleVectors(currentAngle, currentVelocity);
+  }
+
+  private Translation2d calcAcceleration() {
+    double[] currentAngle = new double[4];
+    double[] currentAcceleration = new double[4];
+    for (int i = 0; i < swerveModules.length; i++) {
+      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
+      currentAcceleration[i] = swerveModules[i].snapshotAcceleration();
+    }
+    return DriveLogic.avgModuleVectors(currentAngle, currentAcceleration);
+  }
+
+  private boolean isRobotOverSlowRotateFtPerSec() {
+    return latestVelocity >= DriveConstants.Auto.slowAutoRotateFtPerSec;
   }
 }
