@@ -42,6 +42,7 @@ public final class Constants {
   }
 
   public static final boolean driveTuningMode = false;
+  public static final boolean steeringTuningMode = false;
 
   public enum DriveDegradedMode {
     normal, sideMotorsOnly, centerMotorsOnly

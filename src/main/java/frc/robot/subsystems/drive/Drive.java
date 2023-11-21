@@ -1,20 +1,17 @@
 package frc.robot.subsystems.drive;
 
-import java.util.ArrayList;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.SwerveDrive.SwerveModule;
-import frc.robot.subsystems.SwerveDrive.SwerveModule.WheelPosition;
+import frc.robot.subsystems.drive.SwerveModule;
+import frc.robot.subsystems.drive.SwerveModule.WheelPosition;
 import frc.utility.OrangeMath;
-import frc.utility.SnapshotTranslation2D;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
