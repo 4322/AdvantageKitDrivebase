@@ -14,7 +14,6 @@ public class DriveLogic {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         ChassisSpeeds.fromFieldRelativeSpeeds(driveX, driveY, rotate, robotAngle),
         centerOfRotation);
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeedMetersPerSecond);
     return swerveModuleStates;
   }
 
