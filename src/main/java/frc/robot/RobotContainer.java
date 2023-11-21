@@ -4,18 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.SetMotor;
-import frc.robot.subsystems.Motor;
-import frc.robot.subsystems.MotorIO;
-import frc.robot.subsystems.MotorIOSparkMax;
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -24,11 +12,7 @@ import frc.robot.subsystems.MotorIOSparkMax;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Subsystems
-  private Motor myMotor;
 
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -37,7 +21,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
-        myMotor = new Motor(new MotorIOSparkMax(15));
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -49,9 +32,11 @@ public class RobotContainer {
         break;
     }
 
-    if (myMotor == null) {
-      myMotor = new Motor(new MotorIO() {});
+    /* 
+    if (subsystem == null) {
+      myMotor = new Subsystem(new SubsystemIO() {});
     }
+    */
 
     // Set up auto routines
 
@@ -66,19 +51,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // drive.setDefaultCommand(
-    //     new RunCommand(() -> drive.driveArcade(-controller.getLeftY(), controller.getLeftX()), drive));
-    // controller.a()
-    //     .whileTrue(new StartEndCommand(() -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
-    controller.b().whileTrue(new SetMotor(myMotor));
+
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return new SetMotor(myMotor);
-  }
 }
