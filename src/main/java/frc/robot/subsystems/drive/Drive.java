@@ -32,7 +32,7 @@ public class Drive extends SubsystemBase {
 
   private GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-  private Rotation2d gyroYawRotation;
+  private Rotation2d gyroYawRotation = new Rotation2d();
 
   private PIDController rotPID;
 
@@ -273,7 +273,7 @@ public class Drive extends SubsystemBase {
       } else {
         var swerveModuleStates =
             DriveLogic.calcModuleStates(driveX, driveY, rotate, centerOfRotation,
-                gyro.getRotation2d(), kinematics);
+                gyroYawRotation, kinematics);
 
         setModuleStates(swerveModuleStates);
       }
