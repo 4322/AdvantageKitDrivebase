@@ -18,4 +18,17 @@ public class DriveLogic {
     return swerveModuleStates;
   }
 
+  public static double boundRotatePID(double headingChangeDeg, double toleranceDeg, double rotPIDSpeed, double minRotPower, double maxRotPower) {
+    if (Math.abs(headingChangeDeg) <= toleranceDeg) {
+      rotPIDSpeed = 0; // don't wiggle
+    } else if (Math.abs(rotPIDSpeed) < minRotPower) {
+      rotPIDSpeed = Math.copySign(minRotPower, rotPIDSpeed);
+    } else if (rotPIDSpeed > maxRotPower) {
+      rotPIDSpeed = maxRotPower;
+    } else if (rotPIDSpeed < -maxRotPower) {
+      rotPIDSpeed = -maxRotPower;
+    }
+    return rotPIDSpeed;
+  }
+
 }

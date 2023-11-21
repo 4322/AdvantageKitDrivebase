@@ -317,15 +317,8 @@ public class Drive extends SubsystemBase {
         toleranceDeg = Constants.DriveConstants.Auto.rotateStoppedToleranceDegrees;
       }
 
-      if (Math.abs(headingChangeDeg) <= toleranceDeg) {
-        rotPIDSpeed = 0; // don't wiggle
-      } else if (Math.abs(rotPIDSpeed) < minAutoRotatePower) {
-        rotPIDSpeed = Math.copySign(minAutoRotatePower, rotPIDSpeed);
-      } else if (rotPIDSpeed > maxAutoRotatePower) {
-        rotPIDSpeed = maxAutoRotatePower;
-      } else if (rotPIDSpeed < -maxAutoRotatePower) {
-        rotPIDSpeed = -maxAutoRotatePower;
-      }
+      rotPIDSpeed = DriveLogic.boundRotatePID(headingChangeDeg, toleranceDeg, rotPIDSpeed,
+          minAutoRotatePower, maxAutoRotatePower);
 
       drive(driveX, driveY, rotPIDSpeed);
 
