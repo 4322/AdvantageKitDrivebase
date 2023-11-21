@@ -22,8 +22,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.NavX.AHRS;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Drive extends SubsystemBase {
@@ -32,7 +30,6 @@ public class Drive extends SubsystemBase {
 
   private GyroIO gyroIO;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-  private Rotation2d gyroYawRotation = new Rotation2d();
 
   private PIDController rotPID;
 
@@ -100,7 +97,7 @@ public class Drive extends SubsystemBase {
       }
 
       if (Constants.gyroEnabled) {
-        odometry = new SwerveDriveOdometry(kinematics, gyroYawRotation, getModulePostitions());
+        odometry = new SwerveDriveOdometry(kinematics, gyroInputs.gyroYawRotation, getModulePostitions());
         resetFieldCentric(0);
       }
 
@@ -181,8 +178,6 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     gyroIO.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
-    
-    gyroYawRotation = new Rotation2d(gyroInputs.yawPositionRad);
 
     if (Constants.driveEnabled) {
 
@@ -273,7 +268,7 @@ public class Drive extends SubsystemBase {
       } else {
         var swerveModuleStates =
             DriveLogic.calcModuleStates(driveX, driveY, rotate, centerOfRotation,
-                gyroYawRotation, kinematics);
+                gyroInputs.gyroYawRotation, kinematics);
 
         setModuleStates(swerveModuleStates);
       }
@@ -318,13 +313,13 @@ public class Drive extends SubsystemBase {
 
   public void updateOdometry() {
     if (Constants.gyroEnabled) {
-      odometry.update(gyroYawRotation, getModulePostitions());
+      odometry.update(gyroInputs.gyroYawRotation, getModulePostitions());
     }
   }
 
   public void resetOdometry(Pose2d pose) {
     if (Constants.gyroEnabled) {
-      odometry.resetPosition(gyroYawRotation, getModulePostitions(), pose);
+      odometry.resetPosition(gyroInputs.gyroYawRotation, getModulePostitions(), pose);
     }
   }
 

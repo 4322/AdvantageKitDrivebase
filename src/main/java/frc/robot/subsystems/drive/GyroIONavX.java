@@ -19,6 +19,7 @@ public class GyroIONavX implements GyroIO {
         inputs.yawPositionDeg = -gyro.getAngle();
         inputs.yawPositionRad = Math.toRadians(-gyro.getAngle());
         inputs.yawVelocityDegPerSec = -gyro.getRate();
+        inputs.gyroYawRotation = gyro.getRotation2d();
     }
 
     public void setAngleAdjustment(double adjustment) {
