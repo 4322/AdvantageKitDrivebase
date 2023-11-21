@@ -10,6 +10,13 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
@@ -20,7 +27,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private RobotContainer robotContainer;
+  private static final PowerDistribution PDH = new PowerDistribution();
+  private Command m_autonomousCommand;
+  private ShuffleboardTab tab;
+  private ShuffleboardTab PDHTab;
+  private RobotContainer m_robotContainer;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -78,30 +89,48 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     logger.start();
 
-    // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    tab = Shuffleboard.getTab("Enabled Subsystems");
+    PDHTab = Shuffleboard.getTab("PDH Currents");
+
+    
+    subsystemEnabled("Drivebase", 1, 0, Constants.driveEnabled);
+
+    subsystemEnabled("Joysticks", 0, 1, Constants.joysticksEnabled);
+    subsystemEnabled("Gyro", 1, 1, Constants.gyroEnabled);
+    subsystemEnabled("XBOX Controller", 4, 1, Constants.xboxEnabled);
+
+    m_robotContainer = new RobotContainer();
+  }
+
+    // create new shuffleboard tab to show whether or not subsystem is enabled
+  // also print error to driver station if not
+  private void subsystemEnabled(String title, int posX, int posY, boolean enabled) {
+    tab.add(title, enabled)
+    .withWidget(BuiltInWidgets.kBooleanBox)
+    .withPosition(posX, posY)
+    .withSize(1, 1);
+
+    if (!enabled) {
+      DriverStation.reportError(title + " not enabled", false);
+    }
   }
 
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled commands, running already-scheduled commands, removing
-    // finished or interrupted commands, and running subsystem periodic() methods.
-    // This must be called from the robot's periodic block in order for anything in
-    // the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    m_robotContainer.disableSubsystems();
   }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    m_robotContainer.disabledPeriodic();
   }
 
   /**
@@ -110,7 +139,14 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_robotContainer.enableSubsystems();
 
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
   }
 
   /** This function is called periodically during autonomous. */
@@ -121,7 +157,11 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+    
+    m_robotContainer.enableSubsystems();
   }
 
   /** This function is called periodically during operator control. */
