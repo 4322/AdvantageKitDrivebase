@@ -4,6 +4,18 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.DriveConstants.Auto;
+import frc.robot.subsystems.drive.Drive;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -12,7 +24,31 @@ package frc.robot;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private Timer disableTimer = new Timer();
 
+  // Define controllers
+  public static CommandXboxController xbox = new CommandXboxController(2);
+  public static Joystick driveStick;
+  public static Joystick rotateStick;
+
+  private JoystickButton driveTrigger;
+  private JoystickButton driveButtonSeven;
+  private JoystickButton driveButtonNine;
+  private JoystickButton driveButtonEleven;
+  private JoystickButton driveButtonTwelve;
+  private JoystickButton driveButtonThree;
+  private JoystickButton rotateButtonFour;
+
+  private JoystickButton rotateTrigger;
+
+  private ShuffleboardTab tab;
+
+  private final Drive drive = new Drive();
+
+  private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
+  private final DriveStop driveStop = new DriveStop(drive);
+
+  private int selectedPosition = 0;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -32,6 +68,14 @@ public class RobotContainer {
         break;
     }
 
+    drive.init();
+
+    configureButtonBindings();
+
+    if (Constants.driveEnabled) {
+      drive.setDefaultCommand(driveManualDefault);
+    }
+
     /* 
     if (subsystem == null) {
       myMotor = new Subsystem(new SubsystemIO() {});
@@ -40,8 +84,6 @@ public class RobotContainer {
 
     // Set up auto routines
 
-    // Configure the button bindings
-    configureButtonBindings();
   }
 
   /**
@@ -51,7 +93,45 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    if (Constants.joysticksEnabled) {
+      driveStick = new Joystick(0);
+      rotateStick = new Joystick(1);
 
+      driveButtonSeven = new JoystickButton(driveStick, 7);
+      driveButtonSeven.onTrue(new ResetFieldCentric(drive, 0, true));
+    }
+
+    if (Constants.xboxEnabled) {
+      xbox.povUp().onTrue(new ResetFieldCentric(drive, 0, true));
+    }
   }
+
+  public void disabledPeriodic() {
+    if (disableTimer.hasElapsed(Constants.DriveConstants.disableBreakSec)) {
+      if (Constants.driveEnabled) {
+        drive.setCoastMode(); // robot has stopped, safe to enter coast mode
+      }
+      disableTimer.stop();
+      disableTimer.reset();
+    }
+  }
+
+  public void enableSubsystems() {
+    drive.setBrakeMode();
+    disableTimer.stop();
+    disableTimer.reset();
+  }
+
+  public void disableSubsystems() {
+    driveStop.schedule();  // interrupt all drive commands
+    disableTimer.reset();
+    disableTimer.start();
+  }
+
+  public Command getAutonomousCommand() {}
+
+
+
+
 
 }
