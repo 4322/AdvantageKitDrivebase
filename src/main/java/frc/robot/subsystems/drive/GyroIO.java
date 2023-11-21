@@ -14,7 +14,9 @@ public interface GyroIO {
         public double yawPositionDeg = 0.0;
         public double yawPositionRad = 0.0;
         public double yawVelocityDegPerSec = 0.0;
-        public Rotation2d gyroYawRotation;
+        public Rotation2d gyroYawRotation = new Rotation2d();
+        public double yawAngleDeg = 0.0;
+
     }
 
     public default void updateInputs(GyroIOInputs inputs) {}

@@ -19,7 +19,6 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
@@ -150,7 +149,7 @@ public class Drive extends SubsystemBase {
   // get the yaw angle
   public double getAngle() {
     if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
-      return OrangeMath.boundDegrees(gyroInputs.yawPositionDeg);
+      return OrangeMath.boundDegrees(gyroInputs.yawAngleDeg);
     } else {
       return 0;
     }
@@ -237,7 +236,7 @@ public class Drive extends SubsystemBase {
   public void resetFieldCentric(double offset) {
     if (Constants.driveEnabled && Constants.gyroEnabled && gyroIO != null) {
       gyroIO.setAngleAdjustment(0.0);
-      gyroIO.setAngleAdjustment(gyroInputs.yawPositionDeg + offset);
+      gyroIO.setAngleAdjustment(gyroInputs.yawAngleDeg + offset);
       pitchOffset = gyroInputs.pitchPositionDeg;
     }
   }

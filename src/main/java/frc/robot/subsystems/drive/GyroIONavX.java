@@ -14,10 +14,14 @@ public class GyroIONavX implements GyroIO {
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
         inputs.calibrating = gyro.isCalibrating();
-        inputs.rollPositionDeg = gyro.getRoll();
-        inputs.pitchPositionDeg = gyro.getPitch();
-        inputs.yawPositionDeg = -gyro.getAngle();
-        inputs.yawPositionRad = Math.toRadians(-gyro.getAngle());
+        
+        //log raw values which are bounded from -180 to 180
+        inputs.rollPositionDeg = gyro.getRoll(); // rotation around x axis (WPI axis convenetion)
+        inputs.pitchPositionDeg = gyro.getPitch(); // rotation around y axis (WPI axis convenetion)
+        inputs.yawPositionDeg = gyro.getYaw(); // rotation around z axis (WPI axis convenetion)
+
+        // yaw values used in Drive.java
+        inputs.yawAngleDeg = -gyro.getAngle();
         inputs.yawVelocityDegPerSec = -gyro.getRate();
         inputs.gyroYawRotation = gyro.getRotation2d();
     }
