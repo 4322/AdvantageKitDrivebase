@@ -153,7 +153,7 @@ public class Drive extends SubsystemBase {
   // get the yaw angle
   public double getAngle() {
     if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
-      return gyroInputs.yawPositionDeg;
+      return OrangeMath.boundDegrees(gyroInputs.yawPositionDeg);
     } else {
       return 0;
     }

@@ -16,7 +16,7 @@ public class GyroIONavX implements GyroIO {
         inputs.calibrating = gyro.isCalibrating();
         inputs.rollPositionDeg = gyro.getRoll();
         inputs.pitchPositionDeg = gyro.getPitch();
-        inputs.yawPositionDeg = OrangeMath.boundDegrees(-gyro.getAngle());
+        inputs.yawPositionDeg = -gyro.getAngle();
         inputs.yawPositionRad = Math.toRadians(-gyro.getAngle());
         inputs.yawVelocityDegPerSec = -gyro.getRate();
     }
