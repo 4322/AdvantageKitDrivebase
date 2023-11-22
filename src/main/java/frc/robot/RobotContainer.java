@@ -98,7 +98,10 @@ public class RobotContainer {
       rotateStick = new Joystick(1);
 
       driveButtonSeven = new JoystickButton(driveStick, 7);
+      driveButtonTwelve = new JoystickButton(driveStick, 12);
+
       driveButtonSeven.onTrue(new ResetFieldCentric(drive, 0, true));
+      driveButtonTwelve.onTrue(driveStop);
     }
 
     if (Constants.xboxEnabled) {
