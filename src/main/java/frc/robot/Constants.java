@@ -255,8 +255,18 @@ public final class Constants {
       }
     }
   }
-  
-  
+
+  public enum WheelPosition {
+    // construction of SwerveDriveKinematics is dependent on this enum
+
+    FRONT_RIGHT(0), FRONT_LEFT(1), BACK_LEFT(2), BACK_RIGHT(3);
+
+    public int wheelNumber;
+
+    WheelPosition(int id) {
+      wheelNumber = id;
+    }
+  }
   
   public static final Mode currentMode = Mode.REAL;
 

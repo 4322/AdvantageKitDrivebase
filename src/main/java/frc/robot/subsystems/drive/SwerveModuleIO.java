@@ -9,13 +9,11 @@ public interface SwerveModuleIO {
         public double drive1VelocityRadPerSec = 0.0;
         public double drive1AppliedVolts = 0.0;
         public double[] drive1CurrentAmps = new double[] {};
-        public double[] drive1TempCelcius = new double[] {};
 
         public double drive2PositionRad = 0.0;
         public double drive2VelocityRadPerSec = 0.0;
         public double drive2AppliedVolts = 0.0;
         public double[] drive2CurrentAmps = new double[] {};
-        public double[] drive2TempCelcius = new double[] {};
 
         public double turnAbsolutePositionRad = 0.0;
         public double turnPositionRad = 0.0;
@@ -27,12 +25,14 @@ public interface SwerveModuleIO {
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
+    //drive motor methods
     public default void setDriveVoltage(double volts) {}
+
+    public default void setDriveBrakeMode(boolean enable) {}
     
+    // turn motor methods
     public default void setTurnVoltage(double volts) {}
     
-    public default void setDriveBrakeMode(boolean enable) {}
-
     public default void setTurnBrakeMode(boolean enable) {}
 
 

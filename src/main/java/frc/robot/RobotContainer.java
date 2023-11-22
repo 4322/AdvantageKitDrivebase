@@ -13,8 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.WheelPosition;
 import frc.robot.Constants.DriveConstants.Auto;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIONavX;
+import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
+import frc.robot.subsystems.drive.SwerveModuleIOTalonFX;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -43,7 +47,11 @@ public class RobotContainer {
 
   private ShuffleboardTab tab;
 
-  private final Drive drive = new Drive();
+  private final Drive drive = new Drive(new GyroIONavX(), 
+                              new SwerveModuleIOTalonFX(WheelPosition.FRONT_RIGHT), new SwerveModuleIOSparkMax(WheelPosition.FRONT_RIGHT),
+                              new SwerveModuleIOTalonFX(WheelPosition.FRONT_LEFT), new SwerveModuleIOSparkMax(WheelPosition.FRONT_LEFT),
+                              new SwerveModuleIOTalonFX(WheelPosition.BACK_RIGHT), new SwerveModuleIOSparkMax(WheelPosition.BACK_RIGHT),
+                              new SwerveModuleIOTalonFX(WheelPosition.BACK_LEFT), new SwerveModuleIOSparkMax(WheelPosition.BACK_LEFT));
 
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);

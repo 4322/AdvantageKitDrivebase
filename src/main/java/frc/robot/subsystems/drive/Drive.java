@@ -11,7 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
-import frc.robot.subsystems.drive.SwerveModule.WheelPosition;
+import frc.robot.Constants.WheelPosition;
 import frc.utility.OrangeMath;
 
 import org.littletonrobotics.junction.Logger;
@@ -64,36 +64,28 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
-  public Drive(GyroIO gyroIO) {
+  public Drive(GyroIO gyroIO, 
+              SwerveModuleIO frModuleDrive, SwerveModuleIO frModuleTurn,
+              SwerveModuleIO flModuleDrive, SwerveModuleIO flModuleTurn, 
+              SwerveModuleIO brModuleDrive, SwerveModuleIO brModuleTurn, 
+              SwerveModuleIO blModuleDrive, SwerveModuleIO blModuleTurn) {
     runTime.start();
     this.gyroIO = gyroIO;
     if (Constants.driveEnabled) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-          new SwerveModule(DriveConstants.frontRightRotationID, DriveConstants.frontRightDriveID,
-              DriveConstants.frontRightDriveID2, WheelPosition.FRONT_RIGHT,
-              DriveConstants.frontRightEncoderID);
+          new SwerveModule(frModuleDrive, frModuleTurn);
       swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-          new SwerveModule(DriveConstants.frontLeftRotationID, DriveConstants.frontLeftDriveID,
-              DriveConstants.frontLeftDriveID2, WheelPosition.FRONT_LEFT,
-              DriveConstants.frontLeftEncoderID);
+          new SwerveModule(flModuleDrive, flModuleTurn);
       swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-          new SwerveModule(DriveConstants.rearRightRotationID, DriveConstants.rearRightDriveID,
-              DriveConstants.rearRightDriveID2, WheelPosition.BACK_RIGHT,
-              DriveConstants.rearRightEncoderID);
+          new SwerveModule(brModuleDrive, brModuleTurn);
       swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-          new SwerveModule(DriveConstants.rearLeftRotationID, DriveConstants.rearLeftDriveID,
-              DriveConstants.rearLeftDriveID2, WheelPosition.BACK_LEFT,
-              DriveConstants.rearLeftEncoderID);
+          new SwerveModule(blModuleDrive, blModuleTurn);
     }
   }
 
   public void init() {
     if (Constants.driveEnabled) {
       rotPID = new PIDController(DriveConstants.Auto.autoRotkP, 0, DriveConstants.Auto.autoRotkD);
-
-      for (SwerveModule module : swerveModules) {
-        module.init();
-      }
 
       if (Constants.gyroEnabled) {
         odometry = new SwerveDriveOdometry(kinematics, gyroInputs.gyroYawRotation, getModulePostitions());
