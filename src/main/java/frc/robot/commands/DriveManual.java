@@ -18,17 +18,10 @@ public class DriveManual extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
 
-  private static boolean scoreAutoPoseActive;
-  private static boolean loadAutoPoseActive;
-  private static boolean loadAutoAlignPending;
-  private static boolean armAtLoadSingle;
   private final Drive drive;
   private final AutoPose autoPose;
-  private Double targetHeadingDeg;
   private boolean done;
-  private Timer spinoutActivationTimer = new Timer();
-  private Timer spinoutActivationTimer2 = new Timer();
-  private double initialSpinoutAngle;
+
 
 
   public enum AutoPose {
@@ -46,7 +39,11 @@ public class DriveManual extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    //make command reusable
+    done = false;
+    drive.resetRotatePID();
+  }
 
   
   @Override
