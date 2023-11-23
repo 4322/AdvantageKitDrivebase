@@ -1,13 +1,9 @@
 package frc.robot.subsystems.drive;
 
-import java.security.spec.ECFieldF2m;
-
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.revrobotics.CANSparkMax.ControlType;
-
-import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface SwerveModuleIO {
     @AutoLog
@@ -30,24 +26,14 @@ public interface SwerveModuleIO {
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
-    //drive motor methods
-    public default void setDutyCycleControl(VelocityVoltage request) {}
+    public default void setDrivePIDTargetVel(VelocityVoltage request) {}
 
-    public default void setDriveBrakeMode() {}
+    public default void setTurnPIDReference(double value, ControlType ctrl) {}
 
-    public default void setDriveCoastMode() {}
+    public default void setBrakeMode() {}
 
-    public default void stopDriveMotor() {}
-    
-    // turn motor methods
-    public default void setPIDReference(double value, ControlType ctrl) {}
-    
-    public default void setTurnBrakeMode() {}
+    public default void setCoastMode() {}
 
-    public default void setTurnCoastMode() {}
-
-    public default void stopTurnMotor() {}
-
-
+    public default void stopMotor() {}
 
 }
