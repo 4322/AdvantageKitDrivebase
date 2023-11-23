@@ -40,8 +40,6 @@ public class DriveManual extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //make command reusable
-    done = false;
     drive.resetRotatePID();
   }
 
@@ -124,8 +122,6 @@ public class DriveManual extends CommandBase {
       rotatePower = rotatePower * Manual.manualRotationScaleFromMax;
 
       drive.drive(driveX, driveY, rotatePower);
-        done = true;
-        return;
     }
   }
 
@@ -137,7 +133,7 @@ public class DriveManual extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return done;
+    return false;
   }
 }
 
