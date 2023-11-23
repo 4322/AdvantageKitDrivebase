@@ -1,26 +1,13 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import org.littletonrobotics.junction.Logger;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.WheelPosition;
 import frc.utility.OrangeMath;
-import frc.utility.CanBusUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -31,32 +18,38 @@ import edu.wpi.first.wpilibj.Timer;
 public class SwerveModule {
   private SwerveModuleIO driveIO;
   private SwerveModuleIO turnIO;
-
   private SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
+  private WheelPosition wheelPos;
 
   private double previousRate = 0;
   private double previousTime = 0;
   private double filteredAccel = 0;
 
-  public SwerveModule(SwerveModuleIO driveIO, SwerveModuleIO turnIO) {
+  public SwerveModule(WheelPosition wheelPos, SwerveModuleIO driveIO, SwerveModuleIO turnIO) {
     this.driveIO = driveIO;
     this.turnIO = turnIO;
+    this.wheelPos = wheelPos;
+  }
+
+  public void periodic() {
+    driveIO.updateInputs(inputs);
+    turnIO.updateInputs(inputs);
+    Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
   }
 
   public double getInternalRotationDegrees() {
-    return OrangeMath.boundDegrees(encoder.getPosition());
+    return OrangeMath.boundDegrees(inputs.turnRotations);
   }
 
   public double getDistance() {
-    return OrangeMath.falconRotationsToMeters(driveMotor.getPosition().getValue(),
+    return OrangeMath.falconRotationsToMeters(inputs.drive1Position,
         OrangeMath.getCircumference(OrangeMath.inchesToMeters(DriveConstants.Drive.wheelDiameterInches)),
         DriveConstants.Drive.gearRatio);
   }
 
   public double getVelocity() {
     // feet per second
-    return driveMotor.getVelocity().getValue() / Constants.DriveConstants.Drive.gearRatio 
-        * Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
+    return inputs.drive1VelocityRadPerSec * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
   }
 
   public double snapshotAcceleration() {
@@ -77,11 +70,11 @@ public class SwerveModule {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(getVelocity() * Constants.feetToMeters, 
-      Rotation2d.fromDegrees(encoder.getPosition()));
+      Rotation2d.fromDegrees(inputs.turnRotations));
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getDistance(), Rotation2d.fromDegrees(encoder.getPosition()));
+    return new SwerveModulePosition(getDistance(), Rotation2d.fromDegrees(inputs.turnRotations));
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -89,45 +82,38 @@ public class SwerveModule {
 
       // Optimize the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state =
-          SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(encoder.getPosition()));
+          SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnRotations));
 
-      driveMotor.setControl(new VelocityVoltage(state.speedMetersPerSecond
-        / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
-        * DriveConstants.Drive.gearRatio).withEnableFOC(true));
+          driveIO.setDutyCycleControl(new VelocityVoltage(state.speedMetersPerSecond
+          / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
+          * DriveConstants.Drive.gearRatio).withEnableFOC(true));
               
       if (!Constants.steeringTuningMode) {
-        turningMotor.getPIDController().setReference(
-          MathUtil.inputModulus(state.angle.getDegrees(), 0, 360), 
-          ControlType.kPosition);
+        turnIO.setPIDReference(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360), 
+                                ControlType.kPosition);
       }
     }
   }
 
   public void setCoastmode() {
     if (Constants.driveEnabled) {
-      mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
-      // the following calls reset follower mode or something else that makes the robot uncontrollable
-      //driveMotor.getConfigurator().apply(mOutputConfigs);
-      //driveMotor2.getConfigurator().apply(mOutputConfigs);
-      turningMotor.setIdleMode(IdleMode.kCoast);
+      driveIO.setDriveCoastMode();
+      turnIO.setTurnCoastMode();
     }
   }
 
   public void setBrakeMode() {
     if (Constants.driveEnabled) {
-      mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-      // the following calls reset follower mode or something else that makes the robot uncontrollable
-      //driveMotor.getConfigurator().apply(mOutputConfigs);
-      //driveMotor2.getConfigurator().apply(mOutputConfigs);
-      turningMotor.setIdleMode(IdleMode.kBrake);
+      driveIO.setDriveBrakeMode();
+      turnIO.setTurnBrakeMode();
     }
   }
 
   public void stop() {
     if (Constants.driveEnabled) {
       if (!Constants.steeringTuningMode) {
-        driveMotor.stopMotor();
-        turningMotor.stopMotor();
+        driveIO.stopDriveMotor();
+        turnIO.stopTurnMotor();
       }
     }
   }

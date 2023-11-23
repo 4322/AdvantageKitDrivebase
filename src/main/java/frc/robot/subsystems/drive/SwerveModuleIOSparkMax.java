@@ -3,9 +3,13 @@ package frc.robot.subsystems.drive;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.WheelPosition;
 import frc.utility.CanBusUtil;
@@ -57,6 +61,29 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     
         // need rapid position feedback for steering control
         CanBusUtil.fastPositionSparkMax(turningMotor);
+    }
+
+    public void updateInputs(SwerveModuleIOInputs inputs) {
+        inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
+        inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
+        inputs.turnCurrentAmps = new double[] {turningMotor.getOutputCurrent()};
+        inputs.turnRotations = encoder.getPosition();
+    }
+
+    public void setPIDReference(double value, ControlType ctrl) {
+        turningMotor.getPIDController().setReference(value, ctrl);
+    }
+
+    public void setTurnBrakeMode() {
+        turningMotor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public void setTurnCoastMode() {
+        turningMotor.setIdleMode(IdleMode.kCoast);
+    }
+
+    public void stopTurnMotor() {
+        turningMotor.stopMotor();
     }
 
     

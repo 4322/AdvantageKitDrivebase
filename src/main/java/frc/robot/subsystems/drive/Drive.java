@@ -73,13 +73,13 @@ public class Drive extends SubsystemBase {
     this.gyroIO = gyroIO;
     if (Constants.driveEnabled) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-          new SwerveModule(frModuleDrive, frModuleTurn);
+          new SwerveModule(WheelPosition.FRONT_RIGHT, frModuleDrive, frModuleTurn);
       swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-          new SwerveModule(flModuleDrive, flModuleTurn);
+          new SwerveModule(WheelPosition.FRONT_LEFT, flModuleDrive, flModuleTurn);
       swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-          new SwerveModule(brModuleDrive, brModuleTurn);
+          new SwerveModule(WheelPosition.BACK_RIGHT, brModuleDrive, brModuleTurn);
       swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-          new SwerveModule(blModuleDrive, blModuleTurn);
+          new SwerveModule(WheelPosition.BACK_LEFT, blModuleDrive, blModuleTurn);
     }
   }
 
