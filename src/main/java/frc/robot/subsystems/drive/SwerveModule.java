@@ -16,8 +16,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveModule {
-  private SwerveModuleIO driveIO;
-  private SwerveModuleIO turnIO;
+  private SwerveModuleIO io;
   private SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
   private WheelPosition wheelPos;
 
@@ -25,15 +24,13 @@ public class SwerveModule {
   private double previousTime = 0;
   private double filteredAccel = 0;
 
-  public SwerveModule(WheelPosition wheelPos, SwerveModuleIO driveIO, SwerveModuleIO turnIO) {
-    this.driveIO = driveIO;
-    this.turnIO = turnIO;
+  public SwerveModule(WheelPosition wheelPos, SwerveModuleIO io) {
+    this.io = io;
     this.wheelPos = wheelPos;
   }
 
   public void periodic() {
-    driveIO.updateInputs(inputs);
-    turnIO.updateInputs(inputs);
+    io.updateInputs(inputs);
     Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
   }
 
@@ -84,12 +81,12 @@ public class SwerveModule {
       SwerveModuleState state =
           SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnRotations));
 
-          driveIO.setDutyCycleControl(new VelocityVoltage(state.speedMetersPerSecond
+          io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
           * DriveConstants.Drive.gearRatio).withEnableFOC(true));
               
       if (!Constants.steeringTuningMode) {
-        turnIO.setPIDReference(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360), 
+        io.setTurnPIDReference(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360), 
                                 ControlType.kPosition);
       }
     }
@@ -97,23 +94,20 @@ public class SwerveModule {
 
   public void setCoastmode() {
     if (Constants.driveEnabled) {
-      driveIO.setDriveCoastMode();
-      turnIO.setTurnCoastMode();
+      io.setCoastMode();
     }
   }
 
   public void setBrakeMode() {
     if (Constants.driveEnabled) {
-      driveIO.setDriveBrakeMode();
-      turnIO.setTurnBrakeMode();
+      io.setBrakeMode();
     }
   }
 
   public void stop() {
     if (Constants.driveEnabled) {
       if (!Constants.steeringTuningMode) {
-        driveIO.stopDriveMotor();
-        turnIO.stopTurnMotor();
+        io.stopMotor();
       }
     }
   }

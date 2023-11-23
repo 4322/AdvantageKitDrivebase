@@ -64,22 +64,17 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
-  public Drive(GyroIO gyroIO, 
-              SwerveModuleIO frModuleDrive, SwerveModuleIO frModuleTurn,
-              SwerveModuleIO flModuleDrive, SwerveModuleIO flModuleTurn, 
-              SwerveModuleIO brModuleDrive, SwerveModuleIO brModuleTurn, 
-              SwerveModuleIO blModuleDrive, SwerveModuleIO blModuleTurn) {
+  public Drive() {
     runTime.start();
-    this.gyroIO = gyroIO;
     if (Constants.driveEnabled) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_RIGHT, frModuleDrive, frModuleTurn);
+          new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_RIGHT));
       swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_LEFT, flModuleDrive, flModuleTurn);
+          new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_LEFT));
       swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_RIGHT, brModuleDrive, brModuleTurn);
+          new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.BACK_RIGHT));
       swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_LEFT, blModuleDrive, blModuleTurn);
+          new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIOMotorControl(WheelPosition.BACK_LEFT));
     }
   }
 
@@ -88,6 +83,14 @@ public class Drive extends SubsystemBase {
       rotPID = new PIDController(DriveConstants.Auto.autoRotkP, 0, DriveConstants.Auto.autoRotkD);
 
       if (Constants.gyroEnabled) {
+        gyroIO = new GyroIONavX();
+
+        // wait for first gyro reading to be received
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+        
         odometry = new SwerveDriveOdometry(kinematics, gyroInputs.gyroYawRotation, getModulePostitions());
         resetFieldCentric(0);
       }
