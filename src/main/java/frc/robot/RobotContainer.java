@@ -47,19 +47,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      // Real robot, instantiate hardware IO implementations
-      case REAL:
-        break;
-
-      // Sim robot, instantiate physics sim IO implementations
-      case SIM:
-        break;
-
-      // Replayed robot, disable IO implementations
-      default:
-        break;
-    }
 
     drive.init();
 
@@ -68,12 +55,6 @@ public class RobotContainer {
     if (Constants.driveEnabled) {
       drive.setDefaultCommand(driveManualDefault);
     }
-
-    /* 
-    if (subsystem == null) {
-      myMotor = new Subsystem(new SubsystemIO() {});
-    }
-    */
 
     // Set up auto routines
 

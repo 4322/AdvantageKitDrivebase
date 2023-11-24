@@ -27,7 +27,7 @@ public class Drive extends SubsystemBase {
 
   private SwerveModule[] swerveModules = new SwerveModule[4];
 
-  private GyroIO gyroIO;
+  private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private PIDController rotPID;
@@ -66,31 +66,64 @@ public class Drive extends SubsystemBase {
 
   public Drive() {
     runTime.start();
-    if (Constants.driveEnabled) {
-      swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_RIGHT));
-      swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_LEFT));
-      swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.BACK_RIGHT));
-      swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIOMotorControl(WheelPosition.BACK_LEFT));
+    switch (Constants.currentMode) {
+      // Real robot, instantiate hardware IO implementations
+      case REAL:
+        if (Constants.driveEnabled) {
+          swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
+              new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_RIGHT));
+          swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
+              new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIOMotorControl(WheelPosition.FRONT_LEFT));
+          swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
+              new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIOMotorControl(WheelPosition.BACK_RIGHT));
+          swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
+              new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIOMotorControl(WheelPosition.BACK_LEFT));
+        }
+        if (Constants.gyroEnabled) {
+          gyro = new GyroIONavX();
+        }
+        break;
+
+      // Sim robot, instantiate physics sim IO implementations
+      case SIM:
+        break;
+
+      // Replayed robot, disable IO implementations
+      default:
+        break;
     }
+
+    //initializes subystem if it was not done so already
+
+    //check if the first swerve module was initialized. If it is null, then that means 
+    // all the other modules have not been initialized either
+    if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
+      swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
+          new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
+          new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
+          new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
+          new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIO() {});
+    }
+
+    if (gyro == null) {
+      gyro = new GyroIO() {};
+    }
+    
   }
 
   public void init() {
     if (Constants.driveEnabled) {
       rotPID = new PIDController(DriveConstants.Auto.autoRotkP, 0, DriveConstants.Auto.autoRotkD);
 
-      if (Constants.gyroEnabled) {
-        gyroIO = new GyroIONavX();
-
+      if (Constants.gyroEnabled) {  
         // wait for first gyro reading to be received
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
-        }
-        
+        }  
         odometry = new SwerveDriveOdometry(kinematics, gyroInputs.gyroYawRotation, getModulePostitions());
         resetFieldCentric(0);
       }
@@ -143,7 +176,7 @@ public class Drive extends SubsystemBase {
 
   // get the yaw angle
   public double getAngle() {
-    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+    if (gyro != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
       return OrangeMath.boundDegrees(gyroInputs.yawAngleDeg);
     } else {
       return 0;
@@ -152,7 +185,7 @@ public class Drive extends SubsystemBase {
 
   // Get pitch in degrees. Positive angle is the front of the robot raised.
   public double getPitch() {
-    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+    if (gyro != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
       return gyroInputs.pitchPositionDeg - pitchOffset;
     } else {
       return 0;
@@ -161,7 +194,7 @@ public class Drive extends SubsystemBase {
 
   // get the change of robot heading in degrees per sec
   public double getAngularVelocity() {
-    if (gyroIO != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
+    if (gyro != null && gyroInputs.connected && !gyroInputs.calibrating && Constants.gyroEnabled) {
       return gyroInputs.yawVelocityDegPerSec;
     } else {
       return 0;
@@ -170,7 +203,7 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    gyroIO.updateInputs(gyroInputs);
+    gyro.updateInputs(gyroInputs);
     Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
 
     if (Constants.driveEnabled) {
@@ -229,9 +262,9 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetFieldCentric(double offset) {
-    if (Constants.driveEnabled && Constants.gyroEnabled && gyroIO != null) {
-      gyroIO.setAngleAdjustment(0.0);
-      gyroIO.setAngleAdjustment(gyroInputs.yawAngleDeg + offset);
+    if (Constants.driveEnabled && Constants.gyroEnabled && gyro != null) {
+      gyro.setAngleAdjustment(0.0);
+      gyro.setAngleAdjustment(gyroInputs.yawAngleDeg + offset);
       pitchOffset = gyroInputs.pitchPositionDeg;
     }
   }
