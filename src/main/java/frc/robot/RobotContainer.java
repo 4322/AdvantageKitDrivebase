@@ -43,8 +43,6 @@ public class RobotContainer {
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
-  private int selectedPosition = 0;
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
