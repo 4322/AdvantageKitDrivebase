@@ -20,7 +20,7 @@ public class GyroIONavX implements GyroIO {
         inputs.yawPositionDeg = -gyro.getYaw(); // rotation around z axis (WPI axis convenetion)
 
         // yaw values used in Drive.java
-        inputs.yawAngleDeg = -gyro.getAngle();
+        inputs.yawAngleDeg = -gyro.getAngle(); // continuous value of yaw position
         inputs.yawVelocityDegPerSec = -gyro.getRate();
     }
 
