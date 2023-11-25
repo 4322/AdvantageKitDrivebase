@@ -51,14 +51,18 @@ public class CanBusUtil {
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus6, nextVerySlowStatusPeriodSparkMs());
   }
 
-  public static void fastPositionSparkMax(CANSparkMax spark) {
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2,
-        nextFastStatusPeriodMs());
+  // configure for fast absolute encoder position feedback
+  public static void fastPositionSparkMaxAbs(CANSparkMax spark) {
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextShuffleboardStatusPeriodMs());
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextShuffleboardStatusPeriodMs());
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus5, nextFastStatusPeriodMs());  // abs encoder pos
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus5, nextShuffleboardStatusPeriodMs());  // abs encoder vel
   }
 
   public static void fastVelocitySparkMax(CANSparkMax spark) {
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1,
-        nextFastStatusPeriodMs());
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextShuffleboardStatusPeriodMs());
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextFastStatusPeriodMs());
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, nextShuffleboardStatusPeriodMs());
   }
 
   // Increase frame rates for a SPARK MAX that is being followed after initialization

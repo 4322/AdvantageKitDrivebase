@@ -151,7 +151,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         sparkMax.getPIDController().setPositionPIDWrappingMaxInput(360);
     
         // need rapid position feedback for steering control
-        CanBusUtil.fastPositionSparkMax(turningMotor);
+        CanBusUtil.fastPositionSparkMaxAbs(turningMotor);
       }
 
       //Motor Configuration is complete. Below are the methods used in SwerveModule.java
