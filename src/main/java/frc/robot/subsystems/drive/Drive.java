@@ -90,23 +90,23 @@ public class Drive extends SubsystemBase {
 
       // Replayed robot, disable IO implementations
       default:
-        if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
-          swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-              new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
-          swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-              new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIO() {});
-          swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-              new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIO() {});
-          swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-              new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIO() {});
-        }
-    
-        if (gyro == null) {
-          gyro = new GyroIO() {};
-        }
         break;
     }
     
+    if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
+      swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
+          new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
+          new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
+          new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIO() {});
+      swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
+          new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIO() {});
+    }
+
+    if (gyro == null) {
+      gyro = new GyroIO() {};
+    }
   }
 
   public void init() {
