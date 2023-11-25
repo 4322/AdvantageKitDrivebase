@@ -65,6 +65,7 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
+  private ShuffleboardTab customizationTab;
   private GenericEntry rampRate;
   private double lastRampRate;
 
@@ -171,7 +172,9 @@ public class Drive extends SubsystemBase {
             tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
 
         // Customization
-        rampRate = tab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(5, 1)
+        customizationTab = Shuffleboard.getTab("Drivebase Customization");
+
+        rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(5, 1)
             .getEntry();
         lastRampRate = DriveConstants.Drive.closedLoopRampSec;
       }
