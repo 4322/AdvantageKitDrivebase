@@ -53,7 +53,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
                 break;
             case BACK_LEFT: 
                 driveMotor = new TalonFX(DriveConstants.rearLeftDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.rearRightDriveID2, DriveConstants.Drive.canivoreName);
+                driveMotor2 = new TalonFX(DriveConstants.rearLeftDriveID2, DriveConstants.Drive.canivoreName);
                 turningMotor = new CANSparkMax(DriveConstants.rearLeftRotationID, MotorType.kBrushless);
                 break;
         }
