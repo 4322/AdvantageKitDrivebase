@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -70,7 +71,10 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
+  private ShuffleboardTab customizationTab;
   private GenericEntry rampRate;
+  private GenericEntry psuedoAutoRotateCheckbox;
+
   private double lastRampRate;
 
   public Drive() {
@@ -176,9 +180,15 @@ public class Drive extends SubsystemBase {
             tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
 
         // Customization
-        rampRate = tab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(5, 1)
-            .getEntry();
+        customizationTab = Shuffleboard.getTab("Drivebase Customization");
+
+        rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec)
+            .withPosition(0, 0).getEntry();
         lastRampRate = DriveConstants.Drive.closedLoopRampSec;
+
+        psuedoAutoRotateCheckbox =
+            customizationTab.add("Psuedo Auto Rotate", false)
+                .withWidget("Toggle Button").withPosition(0, 0).getEntry();
       }
     }
   }
@@ -487,6 +497,14 @@ public class Drive extends SubsystemBase {
       return kinematics;
     } else {
       return null;
+    }
+  }
+
+  public boolean getPseudoAutoRotateEnabled() {
+    if (Constants.driveEnabled) {
+      return psuedoAutoRotateCheckbox.getBoolean(false);
+    } else {
+      return false;
     }
   }
 
