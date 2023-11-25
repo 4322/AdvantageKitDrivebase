@@ -64,6 +64,9 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
+  private GenericEntry rampRate;
+  private double lastRampRate;
+
   public Drive() {
     runTime.start();
     switch (Constants.currentMode) {
@@ -165,7 +168,12 @@ public class Drive extends SubsystemBase {
 
         odometryDegrees =
             tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
-      }  
+
+        // Customization
+        rampRate = tab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(5, 1)
+            .getEntry();
+        lastRampRate = DriveConstants.Drive.closedLoopRampSec;
+      }
     }
   }
 
@@ -239,6 +247,14 @@ public class Drive extends SubsystemBase {
           odometryY.setDouble(getPose2d().getY());
           odometryDegrees.setDouble(getPose2d().getRotation().getDegrees());
           angularVel.setDouble(getAngularVelocity());
+        }
+
+        double newRampRate = rampRate.getDouble(lastRampRate);
+        if (lastRampRate != newRampRate) {
+          lastRampRate = newRampRate;
+          for (SwerveModule module : swerveModules) {
+            module.setDriveRampRate(newRampRate);
+          }
         }
       }
     }

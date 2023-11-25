@@ -34,6 +34,8 @@ public interface SwerveModuleIO {
 
     public default void setCoastMode() {}
 
+    public default void setDriveRampRate(double period) {}
+
     public default void stopMotor() {}
 
 }

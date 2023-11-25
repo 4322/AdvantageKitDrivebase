@@ -105,6 +105,10 @@ public class SwerveModule {
     }
   }
 
+  public void setDriveRampRate(double rampRate) {
+    io.setDriveRampRate(rampRate);
+  }
+
   public void stop() {
     if (Constants.driveEnabled) {
       if (!Constants.steeringTuningMode) {
