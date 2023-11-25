@@ -4,14 +4,11 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drive.SwerveModule;
-import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.Constants.WheelPosition;
 import frc.utility.OrangeMath;
 import frc.utility.SnapshotTranslation2D;
@@ -236,14 +233,9 @@ public class Drive extends SubsystemBase {
         Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
       }
 
-      Translation2d vel = calcVelocity();
-      Translation2d acc = calcAcceleration();
-
-      // log velocity and acceleration here
-
-      // update velocity
-      latestVelocity = vel.getNorm() / 4;
-      latestAcceleration = acc.getNorm() / 4;
+      updateVelAcc();
+      Logger.getInstance().recordOutput("Drive/BotVelFtPerSec", latestVelocity);
+      Logger.getInstance().recordOutput("Drive/BotAccFtPerSec2", latestAcceleration);
 
       // acceleration must be calculated once and only once per periodic interval
       for (SwerveModule module : swerveModules) {
@@ -255,10 +247,6 @@ public class Drive extends SubsystemBase {
       }
 
       if (Constants.debug) {
-        botVelocityMag.setDouble(latestVelocity);
-        botAccelerationMag.setDouble(latestAcceleration);
-        botVelocityAngle.setDouble(vel.getAngle().getDegrees());
-        botAccelerationAngle.setDouble(acc.getAngle().getDegrees());
         if (Constants.gyroEnabled) {
           yawTab.setDouble(getAngle());
           rollTab.setDouble(gyroInputs.rollPositionDeg);
@@ -313,34 +301,8 @@ public class Drive extends SubsystemBase {
   // main drive function accounts for spinout when center point is on swerve modules
   public void drive(double driveX, double driveY, double rotate, Translation2d centerOfRotation) {
     if (Constants.driveEnabled && Constants.gyroEnabled) {
-      double clock = runTime.get(); // cache value to reduce CPU usage
-      double[] currentAngle = new double[4];
-      for (int i = 0; i < swerveModules.length; i++) {
-        currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-      }
-
-      Translation2d velocityXY = new Translation2d();
-      Translation2d accelerationXY = new Translation2d();
-      // sum wheel velocity and acceleration vectors
-      for (int i = 0; i < swerveModules.length; i++) {
-        double wheelAngleDegrees = currentAngle[i];
-        velocityXY = velocityXY.plus(new Translation2d(swerveModules[i].getVelocityFeetPerSec(),
-            Rotation2d.fromDegrees(wheelAngleDegrees)));
-        accelerationXY = accelerationXY.plus(new Translation2d(swerveModules[i].snapshotAcceleration(),
-            Rotation2d.fromDegrees(wheelAngleDegrees)));
-      }
-      latestVelocity = velocityXY.getNorm() / 4;
-      latestAcceleration = accelerationXY.getNorm() / 4;
-
-      velocityHistory
-          .removeIf(n -> (n.getTime() < clock - DriveConstants.Tip.velocityHistorySeconds));
-      velocityHistory.add(new SnapshotTranslation2D(velocityXY, clock));
 
       if (Constants.debug) {
-        botVelocityMag.setDouble(latestVelocity);
-        botAccelerationMag.setDouble(latestAcceleration);
-        botVelocityAngle.setDouble(velocityXY.getAngle().getDegrees());
-        botAccelerationAngle.setDouble(accelerationXY.getAngle().getDegrees());
         driveXTab.setDouble(driveX);
         driveYTab.setDouble(driveY);
         rotateTab.setDouble(rotate);
@@ -508,27 +470,39 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  private Translation2d calcVelocity() {
-    double[] currentAngle = new double[4];
-    double[] currentVelocity = new double[4];
-    for (int i = 0; i < swerveModules.length; i++) {
-      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-      currentVelocity[i] = swerveModules[i].getVelocityFeetPerSec();
-    }
-    return DriveLogic.avgModuleVectors(currentAngle, currentVelocity);
-  }
-
-  private Translation2d calcAcceleration() {
-    double[] currentAngle = new double[4];
-    double[] currentAcceleration = new double[4];
-    for (int i = 0; i < swerveModules.length; i++) {
-      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-      currentAcceleration[i] = swerveModules[i].snapshotAcceleration();
-    }
-    return DriveLogic.avgModuleVectors(currentAngle, currentAcceleration);
-  }
-
   private boolean isRobotOverSlowRotateFtPerSec() {
     return latestVelocity >= DriveConstants.Auto.slowAutoRotateFtPerSec;
+  }
+
+  private void updateVelAcc() {
+    double clock = runTime.get(); // cache value to reduce CPU usage
+    double[] currentAngle = new double[4];
+    for (int i = 0; i < swerveModules.length; i++) {
+      currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
+    }
+
+    Translation2d velocityXY = new Translation2d();
+    Translation2d accelerationXY = new Translation2d();
+    // sum wheel velocity and acceleration vectors
+    for (int i = 0; i < swerveModules.length; i++) {
+      double wheelAngleDegrees = currentAngle[i];
+      velocityXY = velocityXY.plus(new Translation2d(swerveModules[i].getVelocityFeetPerSec(),
+          Rotation2d.fromDegrees(wheelAngleDegrees)));
+      accelerationXY = accelerationXY.plus(new Translation2d(swerveModules[i].snapshotAcceleration(),
+          Rotation2d.fromDegrees(wheelAngleDegrees)));
+    }
+    latestVelocity = velocityXY.getNorm() / 4;
+    latestAcceleration = accelerationXY.getNorm() / 4;
+
+    velocityHistory
+        .removeIf(n -> (n.getTime() < clock - DriveConstants.Tip.velocityHistorySeconds));
+    velocityHistory.add(new SnapshotTranslation2D(velocityXY, clock));
+
+    if (Constants.debug) {
+      botVelocityMag.setDouble(latestVelocity);
+      botAccelerationMag.setDouble(latestAcceleration);
+      botVelocityAngle.setDouble(velocityXY.getAngle().getDegrees());
+      botAccelerationAngle.setDouble(accelerationXY.getAngle().getDegrees());
+    }
   }
 }
