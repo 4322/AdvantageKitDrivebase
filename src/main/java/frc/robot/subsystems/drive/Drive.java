@@ -243,10 +243,7 @@ public class Drive extends SubsystemBase {
         gyro.updateInputs(gyroInputs);
         Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
       }
-
       updateVelAcc();
-      Logger.getInstance().recordOutput("Drive/BotVelFtPerSec", latestVelocity);
-      Logger.getInstance().recordOutput("Drive/BotAccFtPerSec2", latestAcceleration);
 
       // acceleration must be calculated once and only once per periodic interval
       for (SwerveModule module : swerveModules) {
@@ -515,6 +512,11 @@ public class Drive extends SubsystemBase {
     latestVelocity = velocityXY.getNorm() / 4;
     latestAcceleration = accelerationXY.getNorm() / 4;
 
+    Logger.getInstance().recordOutput("Drive/BotVelFtPerSec", latestVelocity);
+    Logger.getInstance().recordOutput("Drive/BotVelDegrees", velocityXY.getAngle().getDegrees());
+    Logger.getInstance().recordOutput("Drive/BotAccFtPerSec2", latestAcceleration);
+    Logger.getInstance().recordOutput("Drive/BotAccDegrees", accelerationXY.getAngle().getDegrees());
+ 
     velocityHistory
         .removeIf(n -> (n.getTime() < clock - DriveConstants.Tip.velocityHistorySeconds));
     velocityHistory.add(new SnapshotTranslation2D(velocityXY, clock));
