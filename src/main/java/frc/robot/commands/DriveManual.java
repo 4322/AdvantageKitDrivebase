@@ -2,10 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Telescope;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.LED;
+import frc.robot.subsystems.drive.Drive;
 import frc.utility.OrangeMath;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -33,10 +30,6 @@ public class DriveManual extends CommandBase {
   private Timer spinoutActivationTimer2 = new Timer();
   private LockedWheel lockedWheelState;
   private double initialSpinoutAngle;
-
-  private Arm arm = Arm.getInstance();
-  private Telescope telescope = Telescope.getInstance();
-  private ArmMove armLoadSingleRetract;
 
   public enum AutoPose {
     none, usePreset, usePresetAuto, usePresetManual, usePresetNoArmMove, loadSingleManual
@@ -66,7 +59,6 @@ public class DriveManual extends CommandBase {
   public DriveManual(Drive drivesubsystem, AutoPose autoPose) {
     drive = drivesubsystem;
     this.autoPose = autoPose;
-    armLoadSingleRetract = new ArmMove(arm, telescope, ArmMove.Position.loadSingleRetract, false);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(drive);
@@ -94,18 +86,10 @@ public class DriveManual extends CommandBase {
     switch (autoPose) {
       case none:
         targetHeadingDeg = null;
-        if (!ArmMove.isAtLoadSingleRetract()) {
-          LED.getInstance().setAlignment(LED.Alignment.none);
-        }
         break;
       case loadSingleManual:
-        ArmMove.setArmPreset(ArmMove.Position.loadSingleExtend);
-        initSubstationAlignment();
         break;
       case usePresetAuto:
-        if (ArmMove.getArmPreset() == ArmMove.Position.loadSingleExtend) {
-          LED.getInstance().setAutoAccepted();
-        }
         // fall through
       case usePreset:
         autoRotateSetTarget(true);
@@ -119,52 +103,7 @@ public class DriveManual extends CommandBase {
 
   // autoAlignMode is set to true when we want to invoke autoAlignment
   private void autoRotateSetTarget(boolean autoAlignMode) {
-    switch (ArmMove.getArmPreset()) {
-      case scoreLow:
-        targetHeadingDeg = 180.0;
-        scoreAutoPoseActive = true;
-        LED.getInstance().setAlignment(LED.Alignment.none);
-        break;
-      case scoreMid:
-      case scoreHigh:
-        targetHeadingDeg = 0.0;
-        scoreAutoPoseActive = true;
-        LED.getInstance().setAlignment(LED.Alignment.grid);
-        break;
-      case loadSingleExtend:
-        initSubstationAlignment();
-        if (targetHeadingDeg != null) {
-          loadAutoAlignPending = autoAlignMode;
-        }
-        break;
-      default:
-        // not an auto-rotate preset
-        targetHeadingDeg = null;
-        done = true;
-        LED.getInstance().setAlignment(LED.Alignment.none);
-        break;
-    }
-  }
-  
-  private void initSubstationAlignment() {
-    switch (Robot.getAllianceColor()) {
-      case Blue:
-        targetHeadingDeg = 90.0;
-        loadAutoPoseActive = true;
-        LED.getInstance().setAlignment(LED.Alignment.substation);
-        break;
-      case Red:
-        targetHeadingDeg = -90.0;
-        loadAutoPoseActive = true;
-        LED.getInstance().setAlignment(LED.Alignment.substation);
-        break;
-      default:
-        // unknown direction to single substation
-        targetHeadingDeg = null;
-        done = true;
-        LED.getInstance().setAlignment(LED.Alignment.none);
-        break;
-    }
+    targetHeadingDeg = 0.0;
   }
 
   @Override
@@ -250,14 +189,6 @@ public class DriveManual extends CommandBase {
         // if there is a set drive auto rotate
         if (targetHeadingDeg != null) {
           drive.driveAutoRotate(driveX, driveY, targetHeadingDeg);
-          if (loadAutoPoseActive && !armAtLoadSingle && ((autoPose == AutoPose.usePreset)
-              || (autoPose == AutoPose.usePresetAuto) || (autoPose == AutoPose.usePresetManual))) {
-            if (driveAngle >= targetHeadingDeg - Constants.AutoAlignSubstationConstants.rotateToleranceDegrees && 
-                driveAngle <= targetHeadingDeg + Constants.AutoAlignSubstationConstants.rotateToleranceDegrees) {
-              armLoadSingleRetract.schedule();
-              armAtLoadSingle = true;
-            }
-          }
           return;
         } else if (Constants.driveDegradedMode == Constants.DriveDegradedMode.normal) {
           // set pseudo auto rotate heading
