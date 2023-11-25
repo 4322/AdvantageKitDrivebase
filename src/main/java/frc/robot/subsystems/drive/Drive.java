@@ -188,7 +188,7 @@ public class Drive extends SubsystemBase {
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-                .withWidget(BuiltInWidgets.kToggleButton).withPosition(1, 0).withSize(4, 3).getEntry();
+                .withWidget(BuiltInWidgets.kToggleButton).withPosition(1, 0).withSize(2, 1).getEntry();
 
         driveInputScaling = new SendableChooser<Integer>();
         driveInputScaling.setDefaultOption("Linear", 1);
@@ -196,7 +196,7 @@ public class Drive extends SubsystemBase {
         driveInputScaling.addOption("Cubic", 3);
 
         customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(0, 1).withSize(3, 2);
+            .withPosition(0, 1).withSize(3, 1);
       }
     }
   }
