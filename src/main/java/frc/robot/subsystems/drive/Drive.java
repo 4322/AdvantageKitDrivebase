@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
@@ -119,7 +120,7 @@ public class Drive extends SubsystemBase {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
         }  
-        odometry = new SwerveDriveOdometry(kinematics, gyroInputs.gyroYawRotation, getModulePostitions());
+        odometry = new SwerveDriveOdometry(kinematics, getRotation2d(), getModulePostitions());
         resetFieldCentric(0);
       }
 
@@ -195,6 +196,10 @@ public class Drive extends SubsystemBase {
       return 0;
     }
   }
+
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(gyroInputs.yawAngleDeg);
+}
 
   @Override
   public void periodic() {
@@ -295,7 +300,7 @@ public class Drive extends SubsystemBase {
       } else {
         var swerveModuleStates =
             DriveLogic.calcModuleStates(driveX, driveY, rotate, centerOfRotation,
-                gyroInputs.gyroYawRotation, kinematics);
+                getRotation2d(), kinematics);
 
         setModuleStates(swerveModuleStates);
       }
@@ -340,13 +345,13 @@ public class Drive extends SubsystemBase {
 
   public void updateOdometry() {
     if (Constants.gyroEnabled) {
-      odometry.update(gyroInputs.gyroYawRotation, getModulePostitions());
+      odometry.update(getRotation2d(), getModulePostitions());
     }
   }
 
   public void resetOdometry(Pose2d pose) {
     if (Constants.gyroEnabled) {
-      odometry.resetPosition(gyroInputs.gyroYawRotation, getModulePostitions(), pose);
+      odometry.resetPosition(getRotation2d(), getModulePostitions(), pose);
     }
   }
 
