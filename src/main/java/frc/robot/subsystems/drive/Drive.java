@@ -188,14 +188,14 @@ public class Drive extends SubsystemBase {
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-                .withWidget("Toggle Button").withPosition(1, 0).withSize(1, 1).getEntry();
+                .withWidget(BuiltInWidgets.kToggleButton).withPosition(1, 0).withSize(4, 3).getEntry();
 
         driveInputScaling = new SendableChooser<Integer>();
         driveInputScaling.setDefaultOption("Linear", 1);
         driveInputScaling.addOption("Quadratic", 2);
         driveInputScaling.addOption("Cubic", 3);
 
-        tab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
+        customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
             .withPosition(0, 1).withSize(3, 2);
       }
     }
@@ -244,11 +244,6 @@ public class Drive extends SubsystemBase {
         Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
       }
       updateVelAcc();
-
-      // acceleration must be calculated once and only once per periodic interval
-      for (SwerveModule module : swerveModules) {
-        module.snapshotAcceleration();
-      }
 
       if (Constants.gyroEnabled) {
         updateOdometry();
