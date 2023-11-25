@@ -32,6 +32,14 @@ public class SwerveModule {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
+    Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive1RotationsAbs", 
+        Math.abs(inputs.drive1Rotations));
+    Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive2RotationsAbs", 
+        Math.abs(inputs.drive2Rotations));
+    Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive1RotationsPerSecAbs", 
+        Math.abs(inputs.drive1RotationsPerSec));
+    Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive2RotationsPerSecAbs", 
+        Math.abs(inputs.drive2RotationsPerSec));
   }
 
   public double getInternalRotationDegrees() {
