@@ -158,15 +158,13 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
-        inputs.drive1Position = driveMotor.getPosition().getValue();
-        inputs.drive1VelocityRadPerSec = driveMotor.getVelocity().getValue() / Constants.DriveConstants.Drive.gearRatio 
-        * Math.PI;
+        inputs.drive1Rotations = driveMotor.getPosition().getValue();
+        inputs.drive1RotationsPerSec = driveMotor.getVelocity().getValue();
         inputs.drive1AppliedVolts = driveMotor.getSupplyVoltage().getValue();
         inputs.drive1CurrentAmps = driveMotor.getStatorCurrent().getValue();
 
-        inputs.drive2Position = driveMotor2.getPosition().getValue();
-        inputs.drive2VelocityRadPerSec = driveMotor2.getVelocity().getValue() / Constants.DriveConstants.Drive.gearRatio 
-        * Math.PI;;
+        inputs.drive2Rotations = driveMotor2.getPosition().getValue();
+        inputs.drive2RotationsPerSec = driveMotor2.getVelocity().getValue();
         inputs.drive2AppliedVolts = driveMotor2.getSupplyVoltage().getValue();
         inputs.drive2CurrentAmps = driveMotor2.getStatorCurrent().getValue();
         
@@ -174,7 +172,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
         inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
         inputs.turnCurrentAmps = new double[] {turningMotor.getOutputCurrent()};
-        inputs.turnRotations = encoder.getPosition();
+        inputs.turnDegrees = encoder.getPosition();
     }
 
     // PID methods for turn motor

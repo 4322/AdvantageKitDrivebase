@@ -415,7 +415,7 @@ public class Drive extends SubsystemBase {
     double[] currentVelocity = new double[4];
     for (int i = 0; i < swerveModules.length; i++) {
       currentAngle[i] = swerveModules[i].getInternalRotationDegrees();
-      currentVelocity[i] = swerveModules[i].getVelocity();
+      currentVelocity[i] = swerveModules[i].getVelocityFeetPerSec();
     }
     return DriveLogic.avgModuleVectors(currentAngle, currentVelocity);
   }

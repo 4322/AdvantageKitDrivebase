@@ -35,23 +35,24 @@ public class SwerveModule {
   }
 
   public double getInternalRotationDegrees() {
-    return OrangeMath.boundDegrees(inputs.turnRotations);
+    return OrangeMath.boundDegrees(inputs.turnDegrees);
   }
 
-  public double getDistance() {
-    return OrangeMath.falconRotationsToMeters(inputs.drive1Position,
+  public double getDistanceMeters() {
+    return OrangeMath.falconRotationsToMeters(inputs.drive1Rotations,
         OrangeMath.getCircumference(OrangeMath.inchesToMeters(DriveConstants.Drive.wheelDiameterInches)),
         DriveConstants.Drive.gearRatio);
   }
 
-  public double getVelocity() {
+  public double getVelocityFeetPerSec() {
     // feet per second
-    return inputs.drive1VelocityRadPerSec * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
+    return inputs.drive1RotationsPerSec / Constants.DriveConstants.Drive.gearRatio 
+        * Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
   }
 
   public double snapshotAcceleration() {
 
-    double currentRate = this.getVelocity();
+    double currentRate = this.getVelocityFeetPerSec();
     double currentTime = Timer.getFPGATimestamp();
 
     double acceleration = (currentRate - previousRate) / (currentTime - previousTime);
@@ -66,12 +67,12 @@ public class SwerveModule {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(getVelocity() * Constants.feetToMeters, 
-      Rotation2d.fromDegrees(inputs.turnRotations));
+    return new SwerveModuleState(getVelocityFeetPerSec() * Constants.feetToMeters, 
+      Rotation2d.fromDegrees(inputs.turnDegrees));
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getDistance(), Rotation2d.fromDegrees(inputs.turnRotations));
+    return new SwerveModulePosition(getDistanceMeters(), Rotation2d.fromDegrees(inputs.turnDegrees));
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -79,7 +80,7 @@ public class SwerveModule {
 
       // Optimize the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state =
-          SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnRotations));
+          SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnDegrees));
 
           io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
