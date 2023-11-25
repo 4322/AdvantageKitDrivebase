@@ -88,11 +88,11 @@ public class Drive extends SubsystemBase {
       case SIM:
         break;
 
-      // Replayed robot, disable IO implementations
-      default:
+      // Replayed robot, disable hardware IO implementations
+      case REPLAY:
         break;
     }
-    
+
     if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
           new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
