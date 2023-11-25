@@ -33,6 +33,7 @@ public class RobotContainer {
   public static Joystick driveStick;
   public static Joystick rotateStick;
 
+  private JoystickButton driveButtonThree;
   private JoystickButton driveButtonSeven;
   private JoystickButton driveButtonTwelve;
 
@@ -70,10 +71,12 @@ public class RobotContainer {
     if (Constants.joysticksEnabled) {
       driveStick = new Joystick(0);
       rotateStick = new Joystick(1);
-
+      
+      driveButtonThree = new JoystickButton(driveStick, 3);
       driveButtonSeven = new JoystickButton(driveStick, 7);
       driveButtonTwelve = new JoystickButton(driveStick, 12);
 
+      driveButtonThree.onTrue(new DriveManual(drive, DriveManual.AutoPose.usePresetAuto));
       driveButtonSeven.onTrue(new ResetFieldCentric(drive, 0, true));
       driveButtonTwelve.onTrue(driveStop);
     }
