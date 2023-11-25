@@ -13,6 +13,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -32,6 +34,8 @@ public class Robot extends LoggedRobot {
   private ShuffleboardTab tab;
   private ShuffleboardTab PDHTab;
   private RobotContainer m_robotContainer;
+  private static Alliance allianceColor = Alliance.Invalid;
+  Timer updateAllianceTimer;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -89,6 +93,10 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     logger.start();
 
+    updateAllianceTimer = new Timer();
+    updateAllianceTimer.start();
+    
+
     tab = Shuffleboard.getTab("Enabled Subsystems");
     PDHTab = Shuffleboard.getTab("PDH Currents");
 
@@ -119,6 +127,15 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    if (updateAllianceTimer.get() > 1) {
+      updateAllianceColor();
+      updateAllianceTimer.stop();
+      updateAllianceTimer.reset();
+      updateAllianceTimer.start();
+    }
+
+
   }
 
   /** This function is called once when the robot is disabled. */
@@ -190,4 +207,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic() {
   }
+
+  private void updateAllianceColor() {
+    Alliance temp = DriverStation.getAlliance();
+    if ((temp == Alliance.Red || temp == Alliance.Blue)) {
+      allianceColor = temp;
+    }
+  }
+
+  public static Alliance getAllianceColor() {
+    return allianceColor;
+  }
+  
 }

@@ -26,6 +26,9 @@ public final class Constants {
   public static final boolean gyroEnabled = true;
   public static final boolean joysticksEnabled = true;
   public static final boolean xboxEnabled = true;
+  
+  public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
+  public static final boolean spinoutCornerEnabled = true;
 
   public static final class Demo {
     public enum DriveMode {
