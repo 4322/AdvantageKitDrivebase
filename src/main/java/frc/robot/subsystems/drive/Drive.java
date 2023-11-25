@@ -90,26 +90,21 @@ public class Drive extends SubsystemBase {
 
       // Replayed robot, disable IO implementations
       default:
+        if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
+          swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
+              new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
+          swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
+              new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIO() {});
+          swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
+              new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIO() {});
+          swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
+              new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIO() {});
+        }
+    
+        if (gyro == null) {
+          gyro = new GyroIO() {};
+        }
         break;
-    }
-
-    //initializes subystem if it was not done so already
-
-    //check if the first swerve module was initialized. If it is null, then that means 
-    // all the other modules have not been initialized either
-    if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
-      swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
-      swerveModules[WheelPosition.FRONT_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.FRONT_LEFT, new SwerveModuleIO() {});
-      swerveModules[WheelPosition.BACK_RIGHT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_RIGHT, new SwerveModuleIO() {});
-      swerveModules[WheelPosition.BACK_LEFT.wheelNumber] =
-          new SwerveModule(WheelPosition.BACK_LEFT, new SwerveModuleIO() {});
-    }
-
-    if (gyro == null) {
-      gyro = new GyroIO() {};
     }
     
   }
@@ -203,10 +198,15 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    gyro.updateInputs(gyroInputs);
-    Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
-
     if (Constants.driveEnabled) {
+      // update logs
+      for (SwerveModule module : swerveModules) {
+        module.periodic();
+      }
+      if (Constants.gyroEnabled) {
+        gyro.updateInputs(gyroInputs);
+        Logger.getInstance().processInputs("Drive/Gyro", gyroInputs);
+      }
 
       Translation2d vel = calcVelocity();
       Translation2d acc = calcAcceleration();
