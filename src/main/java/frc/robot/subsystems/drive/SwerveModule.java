@@ -85,8 +85,17 @@ public class SwerveModule {
       // Optimize the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state =
           SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnDegrees));
+          
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcMetersPerSec", 
+          desiredState.speedMetersPerSecond);
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptMetersPerSec", 
+          state.speedMetersPerSecond);
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcDegrees", 
+          desiredState.angle.getDegrees());
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
+          state.angle.getDegrees());
 
-          io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
+      io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
           * DriveConstants.Drive.gearRatio).withEnableFOC(true));
               
