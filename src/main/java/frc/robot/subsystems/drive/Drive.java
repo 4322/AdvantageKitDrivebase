@@ -174,7 +174,7 @@ public class Drive extends SubsystemBase {
         // Customization
         customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
-        rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(5, 1)
+        rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec).withPosition(0, 0)
             .getEntry();
         lastRampRate = DriveConstants.Drive.closedLoopRampSec;
       }
