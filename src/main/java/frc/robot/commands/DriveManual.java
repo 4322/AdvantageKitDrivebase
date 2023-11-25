@@ -155,6 +155,19 @@ public class DriveManual extends CommandBase {
           // quantize input drive magnitude to 0, 0.25, 0.5, 0.75, 1.0 for PID tuning
           driveMag = Math.round(driveMag * 4.0) / 4.0;
         }
+
+        switch (drive.getInputScaling()) {
+          case 1:
+            break;
+          case 2:
+            driveMag = driveMag * driveMag;
+            break;
+          case 3:
+            driveMag = driveMag * driveMag * driveMag;
+            break;
+          default: // not 1-3
+            break;
+        }
       }
       // Convert back to cartesian coordinates
       double driveX = Math.cos(driveRawTheta) * driveMag;

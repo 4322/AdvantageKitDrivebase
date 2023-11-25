@@ -1,9 +1,11 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -68,6 +70,7 @@ public class Drive extends SubsystemBase {
   private ShuffleboardTab customizationTab;
   private GenericEntry rampRate;
   private GenericEntry psuedoAutoRotateCheckbox;
+  private SendableChooser<Integer> driveInputScaling;
 
   private double lastRampRate;
 
@@ -177,12 +180,20 @@ public class Drive extends SubsystemBase {
         customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
         rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec)
-            .withPosition(0, 0).getEntry();
+            .withPosition(0, 0).withSize(1, 1).getEntry();
         lastRampRate = DriveConstants.Drive.closedLoopRampSec;
 
         psuedoAutoRotateCheckbox =
-            customizationTab.add("Psuedo Auto Rotate", false)
-                .withWidget("Toggle Button").withPosition(0, 0).getEntry();
+            customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
+                .withWidget("Toggle Button").withPosition(1, 0).withSize(1, 1).getEntry();
+
+        driveInputScaling = new SendableChooser<Integer>();
+        driveInputScaling.setDefaultOption("Linear", 1);
+        driveInputScaling.addOption("Quadratic", 2);
+        driveInputScaling.addOption("Cubic", 3);
+
+        tab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
+            .withPosition(0, 1).withSize(3, 2);
       }
     }
   }
@@ -442,10 +453,20 @@ public class Drive extends SubsystemBase {
 
   public boolean getPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
-      return psuedoAutoRotateCheckbox.getBoolean(false);
-    } else {
-      return false;
+      if (Constants.debug) {
+        return psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
+      }
     }
+    return Constants.psuedoAutoRotateEnabled;
+  }
+
+  public int getInputScaling() {
+    if (Constants.driveEnabled) {
+      if (Constants.debug) {
+        return driveInputScaling.getSelected();
+      }
+    }
+    return Constants.driveInputScaling;
   }
 
   private Translation2d calcVelocity() {

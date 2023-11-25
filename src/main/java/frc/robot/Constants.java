@@ -29,6 +29,8 @@ public final class Constants {
   
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;
+  public static final boolean psuedoAutoRotateEnabled = false;
+  public static final int driveInputScaling = 1;
 
   public static final class Demo {
     public enum DriveMode {
