@@ -74,9 +74,9 @@ public class Drive extends SubsystemBase {
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
   private GenericEntry maxManualRotationEntry;
-  private GenericEntry maxAutoRotatePowerEntry;
-  private GenericEntry slowAutoRotatePowerEntry;
-  private GenericEntry slowAutoRotateFtPerSecEntry;
+  private GenericEntry slowMovingAutoRotateEntry;
+  private GenericEntry fastMovingAutoRotateEntry;
+  private GenericEntry fastMovingFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
   private SendableChooser<ControllerType> driveControlType;
@@ -84,9 +84,9 @@ public class Drive extends SubsystemBase {
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
-  private double maxAutoRotatePower = Constants.DriveConstants.Auto.maxAutoRotatePower;
-  private double slowAutoRotatePower = Constants.DriveConstants.Auto.slowAutoRotatePower;
-  private double slowAutoRotateFtPerSec = Constants.DriveConstants.Auto.slowAutoRotateFtPerSec;
+  private double maxAutoRotatePower = Constants.DriveConstants.Auto.slowMovingAutoRotate;
+  private double slowAutoRotatePower = Constants.DriveConstants.Auto.fastMovingAutoRotate;
+  private double slowAutoRotateFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
 
   public Drive() {
     runTime.start();
@@ -148,92 +148,92 @@ public class Drive extends SubsystemBase {
       }
 
     if (Constants.debug) {
-        tab = Shuffleboard.getTab("Drivebase");
+      tab = Shuffleboard.getTab("Drivebase");
 
-        rotErrorTab = tab.add("Rot Error", 0).withPosition(0, 0).withSize(1, 1).getEntry();
+      rotErrorTab = tab.add("Rot Error", 0).withPosition(0, 0).withSize(1, 1).getEntry();
 
-        rotSpeedTab = tab.add("Rotation Speed", 0).withPosition(0, 1).withSize(1, 1).getEntry();
+      rotSpeedTab = tab.add("Rotation Speed", 0).withPosition(0, 1).withSize(1, 1).getEntry();
 
-        rotkP = tab.add("Rotation kP", DriveConstants.Auto.autoRotkP).withPosition(1, 0)
-            .withSize(1, 1).getEntry();
+      rotkP = tab.add("Rotation kP", DriveConstants.Auto.autoRotkP).withPosition(1, 0)
+          .withSize(1, 1).getEntry();
 
-        rotkD = tab.add("Rotation kD", DriveConstants.Auto.autoRotkD).withPosition(2, 0)
-            .withSize(1, 1).getEntry();
+      rotkD = tab.add("Rotation kD", DriveConstants.Auto.autoRotkD).withPosition(2, 0)
+          .withSize(1, 1).getEntry();
 
-        yawTab = tab.add("Yaw", 0).withPosition(0, 3).withSize(1, 1).getEntry();
+      yawTab = tab.add("Yaw", 0).withPosition(0, 3).withSize(1, 1).getEntry();
 
-        rollTab = tab.add("Roll", 0).withPosition(1, 1).withSize(1, 1).getEntry();
+      rollTab = tab.add("Roll", 0).withPosition(1, 1).withSize(1, 1).getEntry();
 
-        pitchTab = tab.add("Pitch", 0).withPosition(2, 1).withSize(1, 1).getEntry();
+      pitchTab = tab.add("Pitch", 0).withPosition(2, 1).withSize(1, 1).getEntry();
 
-        botVelocityMag = tab.add("Bot Vel Mag", 0).withPosition(3, 0).withSize(1, 1).getEntry();
+      botVelocityMag = tab.add("Bot Vel Mag", 0).withPosition(3, 0).withSize(1, 1).getEntry();
 
-        botAccelerationMag = tab.add("Bot Acc Mag", 0).withPosition(3, 1).withSize(1, 1).getEntry();
+      botAccelerationMag = tab.add("Bot Acc Mag", 0).withPosition(3, 1).withSize(1, 1).getEntry();
 
-        botVelocityAngle = tab.add("Bot Vel Angle", 0).withPosition(4, 0).withSize(1, 1).getEntry();
+      botVelocityAngle = tab.add("Bot Vel Angle", 0).withPosition(4, 0).withSize(1, 1).getEntry();
 
-        botAccelerationAngle =
-            tab.add("Bot Acc Angle", 0).withPosition(4, 1).withSize(1, 1).getEntry();
+      botAccelerationAngle =
+          tab.add("Bot Acc Angle", 0).withPosition(4, 1).withSize(1, 1).getEntry();
 
-        angularVel = tab.add("Angular Vel", 0).withPosition(5, 0).withSize(1, 1).getEntry();
+      angularVel = tab.add("Angular Vel", 0).withPosition(5, 0).withSize(1, 1).getEntry();
 
-        driveXTab = tab.add("Drive X", 0).withPosition(0, 2).withSize(1, 1).getEntry();
+      driveXTab = tab.add("Drive X", 0).withPosition(0, 2).withSize(1, 1).getEntry();
 
-        driveYTab = tab.add("Drive Y", 0).withPosition(1, 2).withSize(1, 1).getEntry();
+      driveYTab = tab.add("Drive Y", 0).withPosition(1, 2).withSize(1, 1).getEntry();
 
-        rotateTab = tab.add("Rotate", 0).withPosition(1, 3).withSize(1, 1).getEntry();
+      rotateTab = tab.add("Rotate", 0).withPosition(1, 3).withSize(1, 1).getEntry();
 
-        odometryX = tab.add("Odometry X", 0).withPosition(3, 2).withSize(1, 1).getEntry();
+      odometryX = tab.add("Odometry X", 0).withPosition(3, 2).withSize(1, 1).getEntry();
 
-        odometryY = tab.add("Odometry Y", 0).withPosition(4, 2).withSize(1, 1).getEntry();
+      odometryY = tab.add("Odometry Y", 0).withPosition(4, 2).withSize(1, 1).getEntry();
 
-        odometryDegrees =
-            tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
+      odometryDegrees =
+          tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
 
-        // Customization
-        customizationTab = Shuffleboard.getTab("Drivebase Customization");
+      // Customization
+      customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
-        closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
-            .withPosition(0, 0).withSize(2, 1).getEntry();
+      psuedoAutoRotateCheckbox =
+          customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
+          .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
 
-        openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
-            .withPosition(2, 0).withSize(2, 1).getEntry();
+      driveInputScaling = new SendableChooser<Integer>();
+      driveInputScaling.setDefaultOption("Linear", 1);
+      driveInputScaling.addOption("Quadratic", 2);
+      driveInputScaling.addOption("Cubic", 3);
 
-        maxManualRotationEntry = customizationTab.add("Max Manual Rotate", 
-            Constants.DriveConstants.Manual.maxManualRotation)
-            .withPosition(4, 0).withSize(2, 1).getEntry();
+      customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
+          .withPosition(2, 0).withSize(3, 1);
 
-        maxAutoRotatePowerEntry = customizationTab.add("Max Auto Rotate", 
-            Constants.DriveConstants.Auto.maxAutoRotatePower)
-            .withPosition(0, 2).withSize(2, 1).getEntry();
+      driveControlType = new SendableChooser<ControllerType>();
+      driveControlType.setDefaultOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
+      driveControlType.addOption("Xbox Left Drive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
+      driveControlType.addOption("Xbox Right Drive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
 
-        slowAutoRotatePowerEntry = customizationTab.add("Slow Auto Rotate Power", 
-            Constants.DriveConstants.Auto.slowAutoRotatePower)
-            .withPosition(2, 2).withSize(3, 1).getEntry();
+      customizationTab.add("Drive Control", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
+        .withPosition(5, 0).withSize(3, 1);
 
-        slowAutoRotateFtPerSecEntry = customizationTab.add("Slow Auto Rotate Ft Per Sec", 
-            Constants.DriveConstants.Auto.slowAutoRotateFtPerSec)
-            .withPosition(5, 2).withSize(3, 1).getEntry();
+      maxManualRotationEntry = customizationTab.add("Max Manual Rotate Power", 
+          Constants.DriveConstants.Manual.maxManualRotation)
+          .withPosition(0, 1).withSize(2, 1).getEntry();
 
-        psuedoAutoRotateCheckbox =
-            customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-                .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).withSize(2, 1).getEntry();
+      slowMovingAutoRotateEntry = customizationTab.add("Slow Moving Auto Rotate Power", 
+          Constants.DriveConstants.Auto.slowMovingAutoRotate)
+          .withPosition(2, 1).withSize(2, 1).getEntry();
 
-        driveInputScaling = new SendableChooser<Integer>();
-        driveInputScaling.setDefaultOption("Linear", 1);
-        driveInputScaling.addOption("Quadratic", 2);
-        driveInputScaling.addOption("Cubic", 3);
+      fastMovingAutoRotateEntry = customizationTab.add("Fast Moving Auto Rotate Power", 
+          Constants.DriveConstants.Auto.fastMovingAutoRotate)
+          .withPosition(4, 1).withSize(2, 1).getEntry();
 
-        customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(0, 1).withSize(3, 1);
+      fastMovingFtPerSecEntry = customizationTab.add("Fast Moving Ft Per Sec", 
+          Constants.DriveConstants.Auto.fastMovingFtPerSec)
+          .withPosition(6, 1).withSize(2, 1).getEntry();
+          
+      closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
+          .withPosition(0, 2).withSize(1, 1).getEntry();
 
-        driveControlType = new SendableChooser<ControllerType>();
-        driveControlType.setDefaultOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
-        driveControlType.addOption("XboxLeftDrive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
-        driveControlType.addOption("XboxRightDrive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
-    
-        customizationTab.add("Choose Controller", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(0, 3).withSize(6, 1);
+      openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
+          .withPosition(1, 2).withSize(1, 1).getEntry();
       }
     }
   }
@@ -311,9 +311,9 @@ public class Drive extends SubsystemBase {
             module.setOpenRampRate(newRampRate);
           }
         }
-        maxAutoRotatePower = maxAutoRotatePowerEntry.getDouble(maxAutoRotatePower);
-        slowAutoRotatePower = slowAutoRotatePowerEntry.getDouble(slowAutoRotatePower);
-        slowAutoRotateFtPerSec = slowAutoRotateFtPerSecEntry.getDouble(slowAutoRotateFtPerSec);
+        maxAutoRotatePower = slowMovingAutoRotateEntry.getDouble(maxAutoRotatePower);
+        slowAutoRotatePower = fastMovingAutoRotateEntry.getDouble(slowAutoRotatePower);
+        slowAutoRotateFtPerSec = fastMovingFtPerSecEntry.getDouble(slowAutoRotateFtPerSec);
       }
     }
   }
