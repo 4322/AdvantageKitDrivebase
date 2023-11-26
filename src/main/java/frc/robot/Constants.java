@@ -215,8 +215,9 @@ public final class Constants {
 
     public static final class Drive {
 
-      public static final double closedLoopRampSec = 0.25;  // used for auto and manual acceleration/deceleration
-      public static final double openLoopRampSec = 0.25;  // only used when stopping, including letting go of the drive stick
+      // Talon FXs with Phoenix 6 do not currently honor ramp rates!
+      public static final double closedLoopRampSec = 0.08;  // used for auto and manual acceleration/deceleration
+      public static final double openLoopRampSec = 0.08;  // only used when stopping, including letting go of the drive stick
 
       public static final double voltageCompSaturation = 11.5;
       public static final boolean enableVoltageCompensation = true;
