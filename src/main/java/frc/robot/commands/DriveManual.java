@@ -169,6 +169,7 @@ public class DriveManual extends CommandBase {
             break;
         }
 
+        // Normalize vector magnitude so as not to give an invalid input
         if (driveMag > 1) {
           driveMag = 1;
         }
@@ -176,21 +177,6 @@ public class DriveManual extends CommandBase {
       // Convert back to cartesian coordinates
       double driveX = Math.cos(driveRawTheta) * driveMag;
       double driveY = Math.sin(driveRawTheta) * driveMag;
-      // Normalize the combined drive vector
-      if (driveX > 1) {
-        driveY /= driveX;
-        driveX = 1;
-      } else if (driveX < -1) {
-        driveY /= -driveX;
-        driveX = -1;
-      }
-      if (driveY > 1) {
-        driveX /= driveY;
-        driveY = 1; 
-      } else if (driveY < -1) {
-        driveX /= -driveY;
-        driveY = -1;
-      }
 
       // Normalize the rotation inputs over deadband.
       double rotatePower = 0;
