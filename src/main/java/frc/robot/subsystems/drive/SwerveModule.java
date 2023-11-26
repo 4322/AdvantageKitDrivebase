@@ -118,8 +118,12 @@ public class SwerveModule {
     }
   }
 
-  public void setDriveRampRate(double rampRate) {
-    io.setDriveRampRate(rampRate);
+  public void setClosedRampRate(double rampRate) {
+    io.setClosedRampRate(rampRate);
+  }
+
+  public void setOpenRampRate(double rampRate) {
+    io.setOpenRampRate(rampRate);
   }
 
   public void stop() {
