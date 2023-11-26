@@ -154,8 +154,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         CanBusUtil.fastPositionSparkMaxAbs(turningMotor);
       }
 
-      //Motor Configuration is complete. Below are the methods used in SwerveModule.java
+      // Below are the implementations of the methods in SwerveModuleIO.java
 
+      @Override
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
         inputs.drive1Rotations = driveMotor.getPosition().getValue();
@@ -176,23 +177,27 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     }
 
     // PID methods for turn motor
+    @Override
     public void setTurnPIDReference(double value, ControlType ctrl) {
-        turningMotor.getPIDController().setReference(value, ctrl);
+      turningMotor.getPIDController().setReference(value, ctrl);
     }
 
     // PID method for drive motors
+    @Override
     public void setDrivePIDTargetVel(VelocityVoltage request) {
-        driveMotor.setControl(request);
-      }
-
-    public void setBrakeMode() {
-        mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-        // the following calls reset follower mode or something else that makes the robot uncontrollable
-        //driveMotor.getConfigurator().apply(mOutputConfigs);
-        //driveMotor2.getConfigurator().apply(mOutputConfigs);
-        turningMotor.setIdleMode(IdleMode.kBrake);
+      driveMotor.setControl(request);
     }
 
+    @Override
+    public void setBrakeMode() {
+      mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+      // the following calls reset follower mode or something else that makes the robot uncontrollable
+      //driveMotor.getConfigurator().apply(mOutputConfigs);
+      //driveMotor2.getConfigurator().apply(mOutputConfigs);
+      turningMotor.setIdleMode(IdleMode.kBrake);
+    }
+
+    @Override
     public void setCoastMode() {
         mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
         // the following calls reset follower mode or something else that makes the robot uncontrollable
@@ -201,6 +206,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         turningMotor.setIdleMode(IdleMode.kCoast);
     }
 
+    @Override
     public void setClosedRampRate(double period) {
       ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
 
@@ -210,6 +216,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       driveMotor2.getConfigurator().apply(closedLoopConfig);
     }
 
+    @Override
     public void setOpenRampRate(double period) {
       OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
 
@@ -219,6 +226,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       driveMotor2.getConfigurator().apply(openLoopConfig);
     }
 
+    @Override
     public void stopMotor() {
         driveMotor.stopMotor();
         turningMotor.stopMotor();
