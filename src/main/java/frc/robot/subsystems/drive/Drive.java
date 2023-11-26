@@ -71,11 +71,13 @@ public class Drive extends SubsystemBase {
   private GenericEntry angularVel;
 
   private ShuffleboardTab customizationTab;
-  private GenericEntry rampRate;
+  private GenericEntry closedRampRate;
+  private GenericEntry openRampRate;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
 
-  private double lastRampRate;
+  private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
+  private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
   public Drive() {
     runTime.start();
@@ -182,9 +184,11 @@ public class Drive extends SubsystemBase {
         // Customization
         customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
-        rampRate = customizationTab.add("Ramp Rate", DriveConstants.Drive.closedLoopRampSec)
+        closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
             .withPosition(0, 0).withSize(1, 1).getEntry();
-        lastRampRate = DriveConstants.Drive.closedLoopRampSec;
+
+        openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
+            .withPosition(0, 0).withSize(1, 1).getEntry();
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
@@ -260,11 +264,18 @@ public class Drive extends SubsystemBase {
           angularVel.setDouble(getAngularVelocity());
         }
 
-        double newRampRate = rampRate.getDouble(lastRampRate);
-        if (lastRampRate != newRampRate) {
-          lastRampRate = newRampRate;
+        double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
+        if (lastClosedRampRate != newRampRate) {
+          lastClosedRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
-            module.setDriveRampRate(newRampRate);
+            module.setClosedRampRate(newRampRate);
+          }
+        }
+        newRampRate = openRampRate.getDouble(lastOpenRampRate);
+        if (lastOpenRampRate != newRampRate) {
+          lastOpenRampRate = newRampRate;
+          for (SwerveModule module : swerveModules) {
+            module.setOpenRampRate(newRampRate);
           }
         }
       }

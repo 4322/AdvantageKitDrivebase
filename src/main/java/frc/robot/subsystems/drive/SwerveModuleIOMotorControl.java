@@ -201,17 +201,21 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         turningMotor.setIdleMode(IdleMode.kCoast);
     }
 
-    // changes closed and open together
-    public void setDriveRampRate(double period) {
+    public void setClosedRampRate(double period) {
       ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
-      OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
 
       closedLoopConfig.VoltageClosedLoopRampPeriod = period;
-      openLoopConfig.VoltageOpenLoopRampPeriod = period;
 
       driveMotor.getConfigurator().apply(closedLoopConfig);
-      driveMotor.getConfigurator().apply(openLoopConfig);
       driveMotor2.getConfigurator().apply(closedLoopConfig);
+    }
+
+    public void setOpenRampRate(double period) {
+      OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
+
+      openLoopConfig.VoltageOpenLoopRampPeriod = period;
+
+      driveMotor.getConfigurator().apply(openLoopConfig);
       driveMotor2.getConfigurator().apply(openLoopConfig);
     }
 
