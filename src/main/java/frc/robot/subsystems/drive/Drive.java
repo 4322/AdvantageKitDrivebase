@@ -73,6 +73,7 @@ public class Drive extends SubsystemBase {
   private ShuffleboardTab customizationTab;
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
+  private GenericEntry maxManualRotation;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
 
@@ -185,14 +186,18 @@ public class Drive extends SubsystemBase {
         customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
         closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
-            .withPosition(0, 0).withSize(1, 1).getEntry();
+            .withPosition(0, 0).withSize(2, 1).getEntry();
 
         openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
-            .withPosition(0, 0).withSize(1, 1).getEntry();
+            .withPosition(2, 0).withSize(2, 1).getEntry();
+
+        maxManualRotation = customizationTab.add("Max Manual Rotate", 
+            Constants.DriveConstants.Manual.maxManualRotation)
+            .withPosition(4, 0).withSize(2, 1).getEntry();
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-                .withWidget(BuiltInWidgets.kToggleButton).withPosition(1, 0).withSize(2, 1).getEntry();
+                .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).withSize(2, 1).getEntry();
 
         driveInputScaling = new SendableChooser<Integer>();
         driveInputScaling.setDefaultOption("Linear", 1);
@@ -200,7 +205,7 @@ public class Drive extends SubsystemBase {
         driveInputScaling.addOption("Cubic", 3);
 
         customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(0, 1).withSize(3, 1);
+            .withPosition(2, 1).withSize(3, 1);
       }
     }
   }

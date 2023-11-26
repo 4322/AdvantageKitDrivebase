@@ -185,7 +185,7 @@ public class DriveManual extends CommandBase {
       } else if (rotateRaw < -rotateRightDeadband) {
         rotatePower = (rotateRaw + rotateRightDeadband) / (1 - rotateRightDeadband);
       }
-      rotatePower = rotatePower * Manual.manualRotationScaleFromMax;
+      rotatePower = rotatePower * Manual.maxManualRotation;
 
       // if the rotate stick isn't being used
       if (rotatePower == 0) {
