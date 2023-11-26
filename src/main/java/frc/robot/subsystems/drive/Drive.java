@@ -74,6 +74,9 @@ public class Drive extends SubsystemBase {
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
   private GenericEntry maxManualRotation;
+  private GenericEntry maxAutoRotatePowerEntry;
+  private GenericEntry slowAutoRotatePowerEntry;
+  private GenericEntry slowAutoRotateFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
 
@@ -287,6 +290,9 @@ public class Drive extends SubsystemBase {
             module.setOpenRampRate(newRampRate);
           }
         }
+        maxAutoRotatePower = maxAutoRotatePowerEntry.getDouble(maxAutoRotatePower);
+        slowAutoRotatePower = slowAutoRotatePowerEntry.getDouble(slowAutoRotatePower);
+        slowAutoRotateFtPerSec = slowAutoRotateFtPerSecEntry.getDouble(slowAutoRotateFtPerSec);
       }
     }
   }
