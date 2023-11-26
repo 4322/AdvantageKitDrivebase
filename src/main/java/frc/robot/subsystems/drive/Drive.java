@@ -211,7 +211,7 @@ public class Drive extends SubsystemBase {
             Constants.DriveConstants.Auto.slowAutoRotatePower)
             .withPosition(2, 2).withSize(3, 1).getEntry();
 
-        slowAutoRotateFtPerSecEntry = customizationTab.add("Slow Auto Rotate Ft/Sec", 
+        slowAutoRotateFtPerSecEntry = customizationTab.add("Slow Auto Rotate Ft Per Sec", 
             Constants.DriveConstants.Auto.slowAutoRotateFtPerSec)
             .withPosition(5, 2).withSize(3, 1).getEntry();
 
@@ -337,8 +337,7 @@ public class Drive extends SubsystemBase {
 
   public void resetFieldCentric(double offset) {
     if (Constants.driveEnabled && Constants.gyroEnabled && gyro != null) {
-      gyro.setAngleAdjustment(0.0);
-      gyro.setAngleAdjustment(gyroInputs.yawAngleDeg + offset);
+      gyro.setAngleAdjustment(gyroInputs.angleAdjustment + gyroInputs.yawAngleDeg + offset);
       pitchOffset = gyroInputs.pitchPositionDeg;
     }
   }
