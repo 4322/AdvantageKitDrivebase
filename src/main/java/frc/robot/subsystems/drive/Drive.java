@@ -12,13 +12,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.WheelPosition;
+import frc.robot.Constants.DriveConstants.Manual.ControllerType;
 import frc.utility.OrangeMath;
 import frc.utility.SnapshotTranslation2D;
 
 import java.util.ArrayList;
 
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -79,6 +79,7 @@ public class Drive extends SubsystemBase {
   private GenericEntry slowAutoRotateFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
+  private SendableChooser<ControllerType> driveControlType;
 
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
@@ -212,7 +213,17 @@ public class Drive extends SubsystemBase {
         driveInputScaling.addOption("Cubic", 3);
 
         customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(2, 1).withSize(3, 1);
+            .withPosition(0, 1).withSize(3, 1);
+
+        driveControlType = new SendableChooser<ControllerType>();
+        driveControlType.setDefaultOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
+        driveControlType.addOption("XboxLeftDrive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
+        driveControlType.addOption("XboxRightDrive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
+    
+        customizationTab.add("Choose Controller", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
+            .withPosition(0, 1).withSize(3, 1);
+        
+        
       }
     }
   }
@@ -516,6 +527,15 @@ public class Drive extends SubsystemBase {
       }
     }
     return Constants.driveInputScaling;
+  }
+
+  public ControllerType getControlType() {
+    if (Constants.driveEnabled) {
+      if (Constants.debug) {
+        return driveControlType.getSelected();
+      }
+    }
+    return Constants.DriveConstants.Manual.controlType;
   }
 
   private boolean isRobotOverSlowRotateFtPerSec() {

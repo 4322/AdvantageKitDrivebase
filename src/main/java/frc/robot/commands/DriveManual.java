@@ -117,7 +117,7 @@ public class DriveManual extends CommandBase {
     final double rotateRightDeadband;
 
     //switch between joysticks and xbox which can reconfigure drive stick location
-    switch(Manual.controllerType) {
+    switch(drive.getControlType()) {
       case JOYSTICKS:
         driveRawX = -RobotContainer.driveStick.getY();
         driveRawY = -RobotContainer.driveStick.getX();

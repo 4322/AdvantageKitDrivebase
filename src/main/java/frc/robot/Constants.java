@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.lang.ModuleLayer.Controller;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -156,8 +157,8 @@ public final class Constants {
       public static final double spinoutMinAngularVelocity2 = 0.25;
       public static final double spinout2ActivationSec = 0.2;
 
-      public static ControllerType controllerType = ControllerType.XBOXLEFTDRIVE;
-      public enum ControllerType {
+      public static final ControllerType controlType = ControllerType.JOYSTICKS;
+      public static enum ControllerType {
         JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
       }
     }
