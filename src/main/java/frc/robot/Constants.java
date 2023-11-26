@@ -50,7 +50,7 @@ public final class Constants {
   public enum DriveDegradedMode {
     normal, sideMotorsOnly, centerMotorsOnly
   }
-  public static final DriveDegradedMode driveDegradedMode = DriveDegradedMode.normal;
+  public static final DriveDegradedMode driveDegradedMode = DriveDegradedMode.sideMotorsOnly;
 
   public static final int falconEncoderUnits = 2048;
   public static final double inchesToMeters = 0.0254;

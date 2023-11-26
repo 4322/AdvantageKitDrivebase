@@ -193,7 +193,7 @@ public class DriveManual extends CommandBase {
         if (targetHeadingDeg != null) {
           drive.driveAutoRotate(driveX, driveY, targetHeadingDeg);
           return;
-        } else if ((Constants.driveDegradedMode == Constants.DriveDegradedMode.normal) && drive.getPseudoAutoRotateEnabled()) {
+        } else if (drive.isPseudoAutoRotateEnabled()) {
           // set pseudo auto rotate heading
           targetHeadingDeg = driveAngle;
           drive.driveAutoRotate(driveX, driveY, targetHeadingDeg);

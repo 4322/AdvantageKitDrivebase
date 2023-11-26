@@ -465,7 +465,7 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  public boolean getPseudoAutoRotateEnabled() {
+  public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
         return psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
