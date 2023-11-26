@@ -73,7 +73,7 @@ public class Drive extends SubsystemBase {
   private ShuffleboardTab customizationTab;
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
-  private GenericEntry maxManualRotation;
+  private GenericEntry maxManualRotationEntry;
   private GenericEntry maxAutoRotatePowerEntry;
   private GenericEntry slowAutoRotatePowerEntry;
   private GenericEntry slowAutoRotateFtPerSecEntry;
@@ -199,9 +199,21 @@ public class Drive extends SubsystemBase {
         openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
             .withPosition(2, 0).withSize(2, 1).getEntry();
 
-        maxManualRotation = customizationTab.add("Max Manual Rotate", 
+        maxManualRotationEntry = customizationTab.add("Max Manual Rotate", 
             Constants.DriveConstants.Manual.maxManualRotation)
             .withPosition(4, 0).withSize(2, 1).getEntry();
+
+        maxAutoRotatePowerEntry = customizationTab.add("Max Auto Rotate", 
+            Constants.DriveConstants.Auto.maxAutoRotatePower)
+            .withPosition(0, 2).withSize(2, 1).getEntry();
+
+        slowAutoRotatePowerEntry = customizationTab.add("Slow Auto Rotate Power", 
+            Constants.DriveConstants.Auto.slowAutoRotatePower)
+            .withPosition(2, 2).withSize(3, 1).getEntry();
+
+        slowAutoRotateFtPerSecEntry = customizationTab.add("Slow Auto Rotate Ft/Sec", 
+            Constants.DriveConstants.Auto.slowAutoRotateFtPerSec)
+            .withPosition(5, 2).withSize(3, 1).getEntry();
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
@@ -511,10 +523,10 @@ public class Drive extends SubsystemBase {
     return Constants.psuedoAutoRotateEnabled;
   }
 
-  public double getMaxManualRotation() {
+  public double getMaxManualRotationEntry() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return maxManualRotation.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
+        return maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
       }
     }
     return Constants.DriveConstants.Manual.maxManualRotation;
