@@ -7,16 +7,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.WheelPosition;
 import frc.robot.commands.DriveManual;
 import frc.robot.commands.DriveStop;
 import frc.robot.commands.ResetFieldCentric;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIONavX;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,8 +33,6 @@ public class RobotContainer {
   private JoystickButton driveButtonThree;
   private JoystickButton driveButtonSeven;
   private JoystickButton driveButtonTwelve;
-
-  private ShuffleboardTab tab;
 
   private final Drive drive = new Drive(); 
 

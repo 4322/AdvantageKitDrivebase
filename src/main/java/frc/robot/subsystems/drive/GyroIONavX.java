@@ -10,6 +10,7 @@ public class GyroIONavX implements GyroIO {
         gyro = new AHRS(SPI.Port.kMXP, (byte) 66);
     }
 
+    @Override
     public void updateInputs(GyroIOInputs inputs) {
         inputs.connected = gyro.isConnected();
         inputs.calibrating = gyro.isCalibrating();
@@ -24,6 +25,7 @@ public class GyroIONavX implements GyroIO {
         inputs.yawVelocityDegPerSec = -gyro.getRate();
     }
 
+    @Override
     public void setAngleAdjustment(double adjustment) {
         gyro.setAngleAdjustment(adjustment);
     }
