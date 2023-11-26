@@ -73,12 +73,17 @@ public class Drive extends SubsystemBase {
   private ShuffleboardTab customizationTab;
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
+  private GenericEntry maxManualRotation;
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
   private SendableChooser<ControllerType> driveControlType;
 
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
+
+  private double maxAutoRotatePower = Constants.DriveConstants.Auto.maxAutoRotatePower;
+  private double slowAutoRotatePower = Constants.DriveConstants.Auto.slowAutoRotatePower;
+  private double slowAutoRotateFtPerSec = Constants.DriveConstants.Auto.slowAutoRotateFtPerSec;
 
   public Drive() {
     runTime.start();
@@ -186,14 +191,18 @@ public class Drive extends SubsystemBase {
         customizationTab = Shuffleboard.getTab("Drivebase Customization");
 
         closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
-            .withPosition(0, 0).withSize(1, 1).getEntry();
+            .withPosition(0, 0).withSize(2, 1).getEntry();
 
         openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
-            .withPosition(0, 0).withSize(1, 1).getEntry();
+            .withPosition(2, 0).withSize(2, 1).getEntry();
+
+        maxManualRotation = customizationTab.add("Max Manual Rotate", 
+            Constants.DriveConstants.Manual.maxManualRotation)
+            .withPosition(4, 0).withSize(2, 1).getEntry();
 
         psuedoAutoRotateCheckbox =
             customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-                .withWidget(BuiltInWidgets.kToggleButton).withPosition(1, 0).withSize(2, 1).getEntry();
+                .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 1).withSize(2, 1).getEntry();
 
         driveInputScaling = new SendableChooser<Integer>();
         driveInputScaling.setDefaultOption("Linear", 1);
@@ -370,34 +379,34 @@ public class Drive extends SubsystemBase {
       // Don't use absolute heading for PID controller to avoid discontinuity at +/- 180 degrees
       double headingChangeDeg = OrangeMath.boundDegrees(targetDeg - getAngle());
       double rotPIDSpeed = rotPID.calculate(0, headingChangeDeg);
-      double maxAutoRotatePower;
-      double minAutoRotatePower;
+      double adjMaxAutoRotatePower;
+      double adjMinAutoRotatePower;
       double toleranceDeg;
 
       // reduce rotation power when driving fast to not lose forward momentum
-      if (latestVelocity >= DriveConstants.Auto.slowAutoRotateFtPerSec) {
-        maxAutoRotatePower = DriveConstants.Auto.slowAutoRotatePower;
+      if (latestVelocity >= slowAutoRotateFtPerSec) {
+        adjMaxAutoRotatePower = slowAutoRotatePower;
       } else {
-        maxAutoRotatePower = DriveConstants.Auto.maxAutoRotatePower;
+        adjMaxAutoRotatePower = maxAutoRotatePower;
       }
       // no need to maintain exact heading when driving to reduce wobble
       if (isRobotMoving()) {
-        minAutoRotatePower = DriveConstants.Auto.minAutoRotateMovingPower;
+        adjMinAutoRotatePower = DriveConstants.Auto.minAutoRotateMovingPower;
         toleranceDeg = Constants.DriveConstants.Auto.rotateMovingToleranceDegrees;
       } else {
         // greater percision when lining up for something
-        minAutoRotatePower = DriveConstants.Auto.minAutoRotateStoppedPower;
+        adjMinAutoRotatePower = DriveConstants.Auto.minAutoRotateStoppedPower;
         toleranceDeg = Constants.DriveConstants.Auto.rotateStoppedToleranceDegrees;
       }
 
       if (Math.abs(headingChangeDeg) <= toleranceDeg) {
         rotPIDSpeed = 0;  // don't wiggle
-      } else if (Math.abs(rotPIDSpeed) < minAutoRotatePower) {
-        rotPIDSpeed = Math.copySign(minAutoRotatePower, rotPIDSpeed);
-      } else if (rotPIDSpeed > maxAutoRotatePower) {
-        rotPIDSpeed = maxAutoRotatePower;
-      } else if (rotPIDSpeed < -maxAutoRotatePower) {
-        rotPIDSpeed = -maxAutoRotatePower;
+      } else if (Math.abs(rotPIDSpeed) < adjMinAutoRotatePower) {
+        rotPIDSpeed = Math.copySign(adjMinAutoRotatePower, rotPIDSpeed);
+      } else if (rotPIDSpeed > adjMaxAutoRotatePower) {
+        rotPIDSpeed = adjMaxAutoRotatePower;
+      } else if (rotPIDSpeed < -adjMaxAutoRotatePower) {
+        rotPIDSpeed = -adjMaxAutoRotatePower;
       }
 
       drive(driveX, driveY, rotPIDSpeed);
@@ -496,6 +505,15 @@ public class Drive extends SubsystemBase {
     return Constants.psuedoAutoRotateEnabled;
   }
 
+  public double getMaxManualRotation() {
+    if (Constants.driveEnabled) {
+      if (Constants.debug) {
+        return maxManualRotation.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
+      }
+    }
+    return Constants.DriveConstants.Manual.maxManualRotation;
+  }
+
   public int getInputScaling() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
@@ -515,7 +533,7 @@ public class Drive extends SubsystemBase {
   }
 
   private boolean isRobotOverSlowRotateFtPerSec() {
-    return latestVelocity >= DriveConstants.Auto.slowAutoRotateFtPerSec;
+    return latestVelocity >= slowAutoRotateFtPerSec;
   }
 
   private void updateVelAcc() {

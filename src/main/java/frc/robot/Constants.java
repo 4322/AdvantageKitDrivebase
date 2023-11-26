@@ -135,10 +135,6 @@ public final class Constants {
 
     public static final double spinoutCenterPower = 1.0;
     public static final double spinoutCornerPower = 0.75;
-    
-    // 1 degree
-    public static final Pose2d poseError =
-        new Pose2d(new Translation2d(0.1, 0.1), new Rotation2d(0.0174533));
 
     public static final double autoChargePower = 0.5;
 
@@ -153,7 +149,7 @@ public final class Constants {
 
       public static final double xboxDriveDeadband = 0.1;
       public static final double xboxRotateDeadband = 0.2;
-      public static final double manualRotationScaleFromMax = 0.32;
+      public static final double maxManualRotation = 0.32;
       
       public static final double spinoutRotateDeadBand = 0.9;
       public static final double spinoutMinAngularVelocity = 0.5; // looks like radians per second but we don't know
