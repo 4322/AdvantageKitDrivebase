@@ -233,7 +233,7 @@ public class Drive extends SubsystemBase {
         driveControlType.addOption("XboxRightDrive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
     
         customizationTab.add("Choose Controller", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
-            .withPosition(0, 1).withSize(3, 1);
+            .withPosition(0, 3).withSize(6, 1);
       }
     }
   }
@@ -540,12 +540,28 @@ public class Drive extends SubsystemBase {
   }
 
   public ControllerType getControlType() {
+    Constants.DriveConstants.Manual.ControllerType controller = Constants.DriveConstants.Manual.controlType;
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return driveControlType.getSelected();
+        controller = driveControlType.getSelected();
       }
     }
-    return Constants.DriveConstants.Manual.controlType;
+    switch (controller) {
+      case NONE:
+        break;
+      case JOYSTICKS:
+        if (!Constants.joysticksEnabled) {
+          controller = Constants.DriveConstants.Manual.ControllerType.NONE;
+        }
+        break;
+      case XBOXLEFTDRIVE:
+      case XBOXRIGHTDRIVE:
+        if (!Constants.xboxEnabled) {
+          controller = Constants.DriveConstants.Manual.ControllerType.NONE;
+        }
+        break;
+    }
+    return controller;
   }
 
   private boolean isRobotOverSlowRotateFtPerSec() {

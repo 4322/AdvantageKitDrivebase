@@ -156,7 +156,7 @@ public final class Constants {
 
       public static final ControllerType controlType = ControllerType.JOYSTICKS;
       public static enum ControllerType {
-        JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
+        NONE, JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
       }
     }
 

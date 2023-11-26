@@ -26,7 +26,7 @@ public class RobotContainer {
   private Timer disableTimer = new Timer();
 
   // Define controllers
-  public static CommandXboxController xbox = new CommandXboxController(2);
+  public static CommandXboxController xbox;
   public static Joystick driveStick;
   public static Joystick rotateStick;
 
@@ -77,6 +77,7 @@ public class RobotContainer {
     }
 
     if (Constants.xboxEnabled) {
+      xbox = new CommandXboxController(2);
       xbox.povUp().onTrue(new ResetFieldCentric(drive, 0, true));
       xbox.rightBumper().onTrue(new DriveManual(drive, DriveManual.AutoPose.usePresetAuto));
       xbox.povDown().onTrue(driveStop);
