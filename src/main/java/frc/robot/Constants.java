@@ -155,6 +155,11 @@ public final class Constants {
       public static final double spinoutActivationSec = 0.35;
       public static final double spinoutMinAngularVelocity2 = 0.25;
       public static final double spinout2ActivationSec = 0.2;
+
+      public static ControllerType controllerType = ControllerType.XBOXLEFTDRIVE;
+      public enum ControllerType {
+        JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
+      }
     }
 
     public static final class Auto {
