@@ -83,6 +83,8 @@ public class RobotContainer {
 
     if (Constants.xboxEnabled) {
       xbox.povUp().onTrue(new ResetFieldCentric(drive, 0, true));
+      xbox.rightBumper().onTrue(new DriveManual(drive, DriveManual.AutoPose.usePresetAuto));
+      xbox.povDown().onTrue(driveStop);
     }
   }
 

@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.utility.OrangeMath;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveConstants.Manual;
 import frc.robot.RobotContainer;
@@ -108,7 +107,50 @@ public class DriveManual extends CommandBase {
 
   @Override
   public void execute() {
-    if (Constants.joysticksEnabled) {
+
+    final double driveRawX;
+    final double driveRawY;
+    final double rotateRaw;
+
+    final double driveDeadband;
+    final double rotateLeftDeadband;
+    final double rotateRightDeadband;
+
+    //switch between joysticks and xbox which can reconfigure drive stick location
+    switch(Manual.controllerType) {
+      case JOYSTICKS:
+        driveRawX = -RobotContainer.driveStick.getY();
+        driveRawY = -RobotContainer.driveStick.getX();
+        rotateRaw = -RobotContainer.rotateStick.getZ();
+
+        driveDeadband = Manual.joystickDriveDeadband;
+        rotateLeftDeadband = Manual.joystickRotateLeftDeadband;
+        rotateRightDeadband = Manual.joystickRotateRightDeadband;
+        break;
+
+      case XBOXLEFTDRIVE:
+        driveRawX = -RobotContainer.xbox.getLeftY();
+        driveRawY = -RobotContainer.xbox.getLeftX();
+        rotateRaw = -RobotContainer.xbox.getRightX();
+
+        driveDeadband = Manual.xboxDriveDeadband;
+        rotateLeftDeadband = Manual.xboxRotateDeadband;
+        rotateRightDeadband = Manual.xboxRotateDeadband;
+        break;
+      
+      case XBOXRIGHTDRIVE:
+        driveRawX = -RobotContainer.xbox.getRightY();
+        driveRawY = -RobotContainer.xbox.getRightX();
+        rotateRaw = -RobotContainer.xbox.getLeftX();
+
+        driveDeadband = Manual.xboxDriveDeadband;
+        rotateLeftDeadband = Manual.xboxRotateDeadband;
+        rotateRightDeadband = Manual.xboxRotateDeadband;
+        break;
+
+      default:
+        return;
+    }
 
       // Joystick polarity:
       // Positive X is to the right
@@ -130,14 +172,6 @@ public class DriveManual extends CommandBase {
 
       // Cache hardware status for consistency in logic and convert
       // joystick/Xbox coordinates to WPI coordinates.
-      final double driveRawX = -RobotContainer.driveStick.getY();
-      final double driveRawY = -RobotContainer.driveStick.getX();
-      final double rotateRaw = -RobotContainer.rotateStick.getZ();
-
-      // Deadbands are dependent on the type of input device
-      final double driveDeadband = Manual.joystickDriveDeadband;
-      final double rotateLeftDeadband = Manual.joystickRotateLeftDeadband;
-      final double rotateRightDeadband = Manual.joystickRotateRightDeadband;
 
       // Convert raw drive inputs to polar coordinates for more precise deadband
       // correction
@@ -319,7 +353,6 @@ public class DriveManual extends CommandBase {
               DriveConstants.frontRightWheelLocation);
           break;
       }
-    }
   }
 
   // Called once the command ends or is interrupted.
