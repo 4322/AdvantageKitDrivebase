@@ -168,6 +168,10 @@ public class DriveManual extends CommandBase {
           default: // not 1-3
             break;
         }
+
+        if (driveMag > 1) {
+          driveMag = 1;
+        }
       }
       // Convert back to cartesian coordinates
       double driveX = Math.cos(driveRawTheta) * driveMag;
