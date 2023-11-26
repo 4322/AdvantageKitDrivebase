@@ -198,16 +198,16 @@ public class Drive extends SubsystemBase {
           .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
 
       driveInputScaling = new SendableChooser<Integer>();
-      driveInputScaling.setDefaultOption("Linear", 1);
-      driveInputScaling.addOption("Quadratic", 2);
+      driveInputScaling.addOption("Linear", 1);
+      driveInputScaling.setDefaultOption("Quadratic", 2);
       driveInputScaling.addOption("Cubic", 3);
 
       customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
           .withPosition(2, 0).withSize(3, 1);
 
       driveControlType = new SendableChooser<ControllerType>();
-      driveControlType.setDefaultOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
-      driveControlType.addOption("Xbox Left Drive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
+      driveControlType.addOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
+      driveControlType.setDefaultOption("Xbox Left Drive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
       driveControlType.addOption("Xbox Right Drive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
 
       customizationTab.add("Drive Control", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)

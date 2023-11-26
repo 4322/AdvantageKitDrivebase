@@ -28,7 +28,7 @@ public final class Constants {
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;
   public static final boolean psuedoAutoRotateEnabled = false;
-  public static final int driveInputScaling = 1;
+  public static final int driveInputScaling = 2;
 
   public static final class Demo {
     public enum DriveMode {
@@ -146,7 +146,7 @@ public final class Constants {
 
       public static final double xboxDriveDeadband = 0.1;
       public static final double xboxRotateDeadband = 0.2;
-      public static final double maxManualRotation = 0.32;
+      public static final double maxManualRotation = 0.34;
       
       public static final double spinoutRotateDeadBand = 0.9;
       public static final double spinoutMinAngularVelocity = 0.5; // looks like radians per second but we don't know
@@ -154,7 +154,7 @@ public final class Constants {
       public static final double spinoutMinAngularVelocity2 = 0.25;
       public static final double spinout2ActivationSec = 0.2;
 
-      public static final ControllerType controlType = ControllerType.JOYSTICKS;
+      public static final ControllerType controlType = ControllerType.XBOXLEFTDRIVE;
       public static enum ControllerType {
         NONE, JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
       }
