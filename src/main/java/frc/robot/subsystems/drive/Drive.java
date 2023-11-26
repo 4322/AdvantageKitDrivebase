@@ -234,8 +234,6 @@ public class Drive extends SubsystemBase {
     
         customizationTab.add("Choose Controller", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
             .withPosition(0, 1).withSize(3, 1);
-        
-        
       }
     }
   }
