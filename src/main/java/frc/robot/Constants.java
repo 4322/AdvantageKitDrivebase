@@ -147,6 +147,7 @@ public final class Constants {
       public static final double xboxDriveDeadband = 0.1;
       public static final double xboxRotateDeadband = 0.2;
       public static final double maxManualRotation = 0.34;
+      public static final double inhibitPseudoAutoRotateAngularVelocity = 0.05;
       
       public static final double spinoutRotateDeadBand = 0.9;
       public static final double spinoutMinAngularVelocity = 0.5; // looks like radians per second but we don't know
