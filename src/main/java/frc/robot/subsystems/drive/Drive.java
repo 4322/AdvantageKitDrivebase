@@ -557,6 +557,7 @@ public class Drive extends SubsystemBase {
     Logger.getInstance().recordOutput("Drive/BotVelDegrees", velocityXY.getAngle().getDegrees());
     Logger.getInstance().recordOutput("Drive/BotAccFtPerSec2", latestAcceleration);
     Logger.getInstance().recordOutput("Drive/BotAccDegrees", accelerationXY.getAngle().getDegrees());
+    Logger.getInstance().recordOutput("Drive/Odometry", getPose2d());
  
     velocityHistory
         .removeIf(n -> (n.getTime() < clock - DriveConstants.Tip.velocityHistorySeconds));
