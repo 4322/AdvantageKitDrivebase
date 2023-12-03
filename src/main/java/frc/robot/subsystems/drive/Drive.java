@@ -24,6 +24,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
+import frc.robot.ShuffleBoardIO;
+import frc.robot.ShuffleBoardIODataEntry;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -33,6 +35,9 @@ public class Drive extends SubsystemBase {
 
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+
+  private ShuffleBoardIO shuffleBoard;
+  private ShuffleBoardIODataEntry shuffleBoardInputs = new ShuffleBoardIODataEntry();
 
   private PIDController rotPID;
 
@@ -190,50 +195,6 @@ public class Drive extends SubsystemBase {
       odometryDegrees =
           tab.add("Odometry Degrees", 0).withPosition(2, 2).withSize(1, 1).getEntry();
 
-      // Customization
-      customizationTab = Shuffleboard.getTab("Drivebase Customization");
-
-      psuedoAutoRotateCheckbox =
-          customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
-          .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
-
-      driveInputScaling = new SendableChooser<Integer>();
-      driveInputScaling.addOption("Linear", 1);
-      driveInputScaling.setDefaultOption("Quadratic", 2);
-      driveInputScaling.addOption("Cubic", 3);
-
-      customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
-          .withPosition(2, 0).withSize(3, 1);
-
-      driveControlType = new SendableChooser<ControllerType>();
-      driveControlType.addOption("Joysticks", Constants.DriveConstants.Manual.ControllerType.JOYSTICKS);
-      driveControlType.setDefaultOption("Xbox Left Drive", Constants.DriveConstants.Manual.ControllerType.XBOXLEFTDRIVE);
-      driveControlType.addOption("Xbox Right Drive", Constants.DriveConstants.Manual.ControllerType.XBOXRIGHTDRIVE);
-
-      customizationTab.add("Drive Control", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
-        .withPosition(5, 0).withSize(3, 1);
-
-      maxManualRotationEntry = customizationTab.add("Max Manual Rotate Power", 
-          Constants.DriveConstants.Manual.maxManualRotation)
-          .withPosition(0, 1).withSize(2, 1).getEntry();
-
-      slowMovingAutoRotateEntry = customizationTab.add("Slow Moving Auto Rotate Power", 
-          Constants.DriveConstants.Auto.slowMovingAutoRotate)
-          .withPosition(2, 1).withSize(2, 1).getEntry();
-
-      fastMovingAutoRotateEntry = customizationTab.add("Fast Moving Auto Rotate Power", 
-          Constants.DriveConstants.Auto.fastMovingAutoRotate)
-          .withPosition(4, 1).withSize(2, 1).getEntry();
-
-      fastMovingFtPerSecEntry = customizationTab.add("Fast Moving Ft Per Sec", 
-          Constants.DriveConstants.Auto.fastMovingFtPerSec)
-          .withPosition(6, 1).withSize(2, 1).getEntry();
-          
-      closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
-          .withPosition(0, 2).withSize(1, 1).getEntry();
-
-      openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
-          .withPosition(1, 2).withSize(1, 1).getEntry();
       }
     }
   }
@@ -297,14 +258,9 @@ public class Drive extends SubsystemBase {
           angularVel.setDouble(getAngularVelocity());
         }
 
-        double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
-        if (lastClosedRampRate != newRampRate) {
-          lastClosedRampRate = newRampRate;
-          for (SwerveModule module : swerveModules) {
-            module.setClosedRampRate(newRampRate);
-          }
-        }
-        newRampRate = openRampRate.getDouble(lastOpenRampRate);
+        shuffleBoardInputs.changeRampRate();
+
+        double newRampRate = openRampRate.getDouble(lastOpenRampRate);
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
@@ -317,6 +273,7 @@ public class Drive extends SubsystemBase {
       }
     }
   }
+
 
   // rotation isn't considered to be movement
   public boolean isRobotMoving() {
