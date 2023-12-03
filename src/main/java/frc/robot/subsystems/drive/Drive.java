@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.WheelPosition;
 import frc.robot.Constants.DriveConstants.Manual.ControllerType;
+import frc.robot.ShuffleBoardIO.ShuffleBoardIOInputs;
 import frc.utility.OrangeMath;
 import frc.utility.SnapshotTranslation2D;
 
@@ -37,7 +38,7 @@ public class Drive extends SubsystemBase {
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private ShuffleBoardIO shuffleBoard;
-  private ShuffleBoardIODataEntry shuffleBoardInputs = new ShuffleBoardIODataEntry();
+  private ShuffleBoardIOInputs shuffleBoardInputs = new ShuffleBoardIOInputs();
 
   private PIDController rotPID;
 
@@ -234,6 +235,8 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     if (Constants.driveEnabled) {
       // update logs
+      shuffleBoard.updateInputs(shuffleBoardInputs);
+      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", gyroInputs);
       for (SwerveModule module : swerveModules) {
         module.periodic();
       }
@@ -258,9 +261,15 @@ public class Drive extends SubsystemBase {
           angularVel.setDouble(getAngularVelocity());
         }
 
-        shuffleBoardInputs.changeRampRate();
+        double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
+        if (lastClosedRampRate != newRampRate) {
+          lastClosedRampRate = newRampRate;
+          for (SwerveModule module : swerveModules) {
+            module.setClosedRampRate(newRampRate);
+          }
+        }
 
-        double newRampRate = openRampRate.getDouble(lastOpenRampRate);
+         newRampRate = openRampRate.getDouble(lastOpenRampRate);
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
@@ -548,6 +557,7 @@ public class Drive extends SubsystemBase {
     Logger.getInstance().recordOutput("Drive/BotVelDegrees", velocityXY.getAngle().getDegrees());
     Logger.getInstance().recordOutput("Drive/BotAccFtPerSec2", latestAcceleration);
     Logger.getInstance().recordOutput("Drive/BotAccDegrees", accelerationXY.getAngle().getDegrees());
+    Logger.getInstance().recordOutput("Drive/Odometry", getPose2d());
  
     velocityHistory
         .removeIf(n -> (n.getTime() < clock - DriveConstants.Tip.velocityHistorySeconds));
