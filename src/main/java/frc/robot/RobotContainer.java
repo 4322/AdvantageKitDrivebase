@@ -6,13 +6,16 @@ package frc.robot;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveManual;
+import frc.robot.PathPlannerManager;
 import frc.robot.commands.DriveStop;
 import frc.robot.commands.ResetFieldCentric;
 import frc.robot.subsystems.drive.Drive;
@@ -38,6 +41,7 @@ public class RobotContainer {
   private JoystickButton driveButtonTwelve;
 
   private ArrayList<Auto> autoArrayList = new ArrayList<Auto>();
+  private final PathPlannerManager ppManager;
   private SendableChooser<Integer> positionChooser = new SendableChooser<Integer>();
 
   private final Drive drive = new Drive(); 
@@ -45,7 +49,7 @@ public class RobotContainer {
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
-  private int selectedPostion = 0;
+  private int selectedPosition = 0;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -60,6 +64,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
+    ppManager = new PathPlannerManager(drive);
 
     loadAutos();
 
@@ -78,9 +83,12 @@ public class RobotContainer {
 
     // Reset autoArrayList and selectedPosition
     autoArrayList.clear();
+    selectedPosition = 0;
 
-    autoArrayList.add(new Auto("Do Nothing", null, null));
-
+    autoArrayList.add(new Auto(
+      "Do Nothing", 
+      ppManager.loadAuto("Move Forward", false),
+      Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -130,9 +138,26 @@ public class RobotContainer {
     driveStop.schedule();  // interrupt all drive commands
     disableTimer.reset();
     disableTimer.start();
+    loadAutos();
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    if (Constants.Demo.inDemoMode) {
+      return null;
+    }
+    
+    return new SequentialCommandGroup(
+    getAutoInitialize()
+  );
   }
+
+  //AUTO COMMANDS
+
+  // Command that should always start off every auto
+  public Command getAutoInitialize() {
+    return new SequentialCommandGroup(
+      new ResetFieldCentric(drive, 0, true)
+    );
+  }
+  
 }
