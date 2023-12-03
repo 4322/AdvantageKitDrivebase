@@ -1,11 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Relay.InvalidValueException;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveConstants.Manual.ControllerType;
+import frc.robot.subsystems.drive.SwerveModule;
 
 public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private ShuffleboardTab customizationTab;
@@ -18,7 +21,10 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<Integer> driveInputScaling;
   private SendableChooser<ControllerType> driveControlType;
-  
+  private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
+  private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
+  private SwerveModule[] swerveModules = new SwerveModule[4];
+
   public ShuffleBoardIODataEntry() {
     customizationTab = Shuffleboard.getTab("Drivebase Customization");
     psuedoAutoRotateCheckbox = customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
@@ -66,13 +72,38 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   @Override
   public void updateInputs(ShuffleBoardIOInputs inputs) {
     inputs.psuedoAutoRotateCheckboxEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
-    inputs.inputScaling = driveInputScaling.getSelected();
-    inputs.driveControllerType = driveControlType.getSelected();
+    inputs.inputScaling = driveInputScaling.getSelected().toString();
+    inputs.driveControllerType = getString(driveControlType.getSelected());
     inputs.maxManualRotatePower = maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
     inputs.slowMovingAutoRotatePower = slowMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.slowMovingAutoRotate);
     inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
     inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
     inputs.accelerationRampRate = closedRampRate.getDouble(lastClosedRampRate);
     inputs.openRampRate = openRampRate.getDouble(lastOpenRampRate);
+  }
+
+  public void changeRampRate() {
+    double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
+    if (lastClosedRampRate != newRampRate) {
+      lastClosedRampRate = newRampRate;
+      for (SwerveModule module : swerveModules) {
+        module.setClosedRampRate(newRampRate);
+      }
+    }
+  }
+
+  private String getString(ControllerType controllerType){
+     switch (controllerType) {
+      case NONE:
+        return "NONE";
+      case XBOXLEFTDRIVE:
+        return "XBOXLEFTDRIVE";
+      case XBOXRIGHTDRIVE:
+        return "XBOXRIGHTDRIVE";
+      case JOYSTICKS:
+        return "JOYSTICKS";
+      default:
+        return "";
+    }
   }
 }
