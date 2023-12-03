@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
 import frc.robot.ShuffleBoardIO;
 import frc.robot.ShuffleBoardIODataEntry;
+import frc.robot.ShuffleBoardIOInputsAutoLogged;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -38,7 +39,7 @@ public class Drive extends SubsystemBase {
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
   private ShuffleBoardIO shuffleBoard;
-  private ShuffleBoardIOInputs shuffleBoardInputs = new ShuffleBoardIOInputs();
+  private ShuffleBoardIOInputsAutoLogged shuffleBoardInputs = new ShuffleBoardIOInputsAutoLogged();
 
   private PIDController rotPID;
 
@@ -236,7 +237,7 @@ public class Drive extends SubsystemBase {
     if (Constants.driveEnabled) {
       // update logs
       shuffleBoard.updateInputs(shuffleBoardInputs);
-      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", gyroInputs);
+      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", shuffleBoardInputs);
       for (SwerveModule module : swerveModules) {
         module.periodic();
       }
