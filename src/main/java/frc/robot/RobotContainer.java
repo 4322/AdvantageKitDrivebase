@@ -42,8 +42,6 @@ public class RobotContainer {
 
   private final Drive drive = new Drive(); 
 
-  private final PathPlannerManager ppManager;
-
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
@@ -62,7 +60,6 @@ public class RobotContainer {
     }
 
     // Set up auto routines
-    ppManager = new PathPlannerManager(drive);
 
     loadAutos();
 
@@ -81,7 +78,6 @@ public class RobotContainer {
 
     // Reset autoArrayList and selectedPosition
     autoArrayList.clear();
-    selectedPosition = 0;
 
     autoArrayList.add(new Auto("Do Nothing", null, null));
 
