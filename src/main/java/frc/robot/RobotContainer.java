@@ -5,8 +5,10 @@
 package frc.robot;
 
 
+import java.util.ArrayList;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -14,6 +16,7 @@ import frc.robot.commands.DriveManual;
 import frc.robot.commands.DriveStop;
 import frc.robot.commands.ResetFieldCentric;
 import frc.robot.subsystems.drive.Drive;
+import frc.utility.Auto;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -34,11 +37,17 @@ public class RobotContainer {
   private JoystickButton driveButtonSeven;
   private JoystickButton driveButtonTwelve;
 
+  private ArrayList<Auto> autoArrayList = new ArrayList<Auto>();
+  private SendableChooser<Integer> positionChooser = new SendableChooser<Integer>();
+
   private final Drive drive = new Drive(); 
+
+  private final PathPlannerManager ppManager;
 
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
+  private int selectedPostion = 0;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -53,9 +62,30 @@ public class RobotContainer {
     }
 
     // Set up auto routines
+    ppManager = new PathPlannerManager(drive);
 
+    loadAutos();
+
+    positionChooser.addOption("1", 1);
+    positionChooser.addOption("2", 2);
+    positionChooser.addOption("3", 3);
+    positionChooser.addOption("4", 4);
+    positionChooser.addOption("5", 5);
+    positionChooser.addOption("6", 6);
+    positionChooser.addOption("7", 7);
+    positionChooser.addOption("8", 8);
+    positionChooser.addOption("9", 9);
   }
 
+  private void loadAutos() {
+
+    // Reset autoArrayList and selectedPosition
+    autoArrayList.clear();
+    selectedPosition = 0;
+
+    autoArrayList.add(new Auto("Do Nothing", null, null));
+
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
