@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveManual;
+import frc.robot.PathPlannerManager;
 import frc.robot.commands.DriveStop;
 import frc.robot.commands.ResetFieldCentric;
 import frc.robot.subsystems.drive.Drive;
@@ -38,6 +39,7 @@ public class RobotContainer {
   private JoystickButton driveButtonTwelve;
 
   private ArrayList<Auto> autoArrayList = new ArrayList<Auto>();
+  private final PathPlannerManager ppManager;
   private SendableChooser<Integer> positionChooser = new SendableChooser<Integer>();
 
   private final Drive drive = new Drive(); 
@@ -60,6 +62,7 @@ public class RobotContainer {
     }
 
     // Set up auto routines
+    ppManager = new PathPlannerManager(drive);
 
     loadAutos();
 
