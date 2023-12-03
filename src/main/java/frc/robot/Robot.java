@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.rlog.RLOGServer;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
@@ -67,15 +68,17 @@ public class Robot extends LoggedRobot {
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       // Running on a real robot, log to a USB stick
+      // Don't publish to Network Tables to reduce CPU usage
       case REAL:
         logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
-        logger.addDataReceiver(new NT4Publisher());
+        logger.addDataReceiver(new RLOGServer(5800));  // for AdvantageScope
         break;
 
       // Running a physics simulator, log to local folder
       case SIM:
         logger.addDataReceiver(new WPILOGWriter(""));
-        logger.addDataReceiver(new NT4Publisher());
+        logger.addDataReceiver(new RLOGServer(5800));  // for AdvantageScope
+        logger.addDataReceiver(new NT4Publisher());  // Network Tables
         break;
 
       // Replaying a log, set up replay source
