@@ -23,7 +23,6 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private SendableChooser<ControllerType> driveControlType;
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
-  private SwerveModule[] swerveModules = new SwerveModule[4];
 
   public ShuffleBoardIODataEntry() {
     customizationTab = Shuffleboard.getTab("Drivebase Customization");
@@ -71,25 +70,29 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
 
   @Override
   public void updateInputs(ShuffleBoardIOInputs inputs) {
-    inputs.psuedoAutoRotateCheckboxEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
-    inputs.inputScaling = driveInputScaling.getSelected().toString();
-    inputs.driveControllerType = getString(driveControlType.getSelected());
-    inputs.maxManualRotatePower = maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
-    inputs.slowMovingAutoRotatePower = slowMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.slowMovingAutoRotate);
-    inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
-    inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
-    inputs.accelerationRampRate = closedRampRate.getDouble(lastClosedRampRate);
-    inputs.openRampRate = openRampRate.getDouble(lastOpenRampRate);
-  }
-
-  public void changeRampRate() {
-    double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
-    if (lastClosedRampRate != newRampRate) {
-      lastClosedRampRate = newRampRate;
-      for (SwerveModule module : swerveModules) {
-        module.setClosedRampRate(newRampRate);
-      }
+    if (Constants.debug) {
+      inputs.psuedoAutoRotateCheckboxEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
+      inputs.inputScaling = 
+      inputs.driveControllerType = getString(driveControlType.getSelected());
+      inputs.maxManualRotatePower = maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
+      inputs.slowMovingAutoRotatePower = slowMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.slowMovingAutoRotate);
+      inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
+      inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
+      inputs.accelerationRampRate = closedRampRate.getDouble(lastClosedRampRate);
+      inputs.openRampRate = openRampRate.getDouble(lastOpenRampRate);
     }
+    else {
+      inputs.psuedoAutoRotateCheckboxEnabled = Constants.psuedoAutoRotateEnabled;
+      inputs.inputScaling = "";
+      inputs.driveControllerType = "";
+      inputs.maxManualRotatePower = Constants.DriveConstants.Manual.maxManualRotation;
+      inputs.slowMovingAutoRotatePower = Constants.DriveConstants.Auto.slowMovingAutoRotate;
+      inputs.fastMovingAutoRotatePower = Constants.DriveConstants.Auto.fastMovingAutoRotate;
+      inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
+      inputs.accelerationRampRate = lastClosedRampRate;
+      inputs.openRampRate = lastOpenRampRate;
+    }
+    
   }
 
   private String getString(ControllerType controllerType){
