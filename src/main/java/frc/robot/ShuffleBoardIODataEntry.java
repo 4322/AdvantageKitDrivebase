@@ -25,7 +25,10 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
   public ShuffleBoardIODataEntry() {
+    //new shuffleboard tabs
     customizationTab = Shuffleboard.getTab("Drivebase Customization");
+    
+    //widgets for customizationTab
     psuedoAutoRotateCheckbox = customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
     .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
     
@@ -73,7 +76,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
     if (Constants.debug) {
       inputs.psuedoAutoRotateCheckboxEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
       inputs.inputScaling = 
-      inputs.driveControllerType = getString(driveControlType.getSelected());
+      inputs.driveControllerType = driveControlType.getSelected().name();
       inputs.maxManualRotatePower = maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
       inputs.slowMovingAutoRotatePower = slowMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.slowMovingAutoRotate);
       inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
@@ -91,22 +94,6 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = lastClosedRampRate;
       inputs.openRampRate = lastOpenRampRate;
-    }
-    
-  }
-
-  private String getString(ControllerType controllerType){
-     switch (controllerType) {
-      case NONE:
-        return "NONE";
-      case XBOXLEFTDRIVE:
-        return "XBOXLEFTDRIVE";
-      case XBOXRIGHTDRIVE:
-        return "XBOXRIGHTDRIVE";
-      case JOYSTICKS:
-        return "JOYSTICKS";
-      default:
-        return "";
     }
   }
 }

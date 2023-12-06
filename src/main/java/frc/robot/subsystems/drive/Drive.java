@@ -113,6 +113,9 @@ public class Drive extends SubsystemBase {
         if (Constants.gyroEnabled) {
           gyro = new GyroIONavX();
         }
+        if (Constants.shuffleboardEnabled) {
+          shuffleBoard = new ShuffleBoardIODataEntry();
+        }
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -137,6 +140,10 @@ public class Drive extends SubsystemBase {
 
     if (gyro == null) {
       gyro = new GyroIO() {};
+    }
+
+    if (shuffleBoard == null) {
+      shuffleBoard = new ShuffleBoardIO() {};
     }
   }
 

@@ -22,6 +22,7 @@ public final class Constants {
 
   public static final boolean driveEnabled = true;
   public static final boolean gyroEnabled = true;
+  public static final boolean shuffleboardEnabled = true;
   public static final boolean joysticksEnabled = true;
   public static final boolean xboxEnabled = true;
   
