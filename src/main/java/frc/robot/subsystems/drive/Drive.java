@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.WheelPosition;
-import frc.robot.Constants.DriveConstants.Manual.ControllerType;
 import frc.robot.ShuffleBoardIO.ShuffleBoardIOInputs;
 import frc.utility.OrangeMath;
 import frc.utility.SnapshotTranslation2D;
@@ -85,8 +84,8 @@ public class Drive extends SubsystemBase {
   private GenericEntry fastMovingAutoRotateEntry;
   private GenericEntry fastMovingFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
-  private SendableChooser<Integer> driveInputScaling;
-  private SendableChooser<ControllerType> driveControlType;
+  private SendableChooser<String> driveInputScaling;
+  private SendableChooser<String> driveControlType;
 
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
@@ -503,7 +502,7 @@ public class Drive extends SubsystemBase {
     return Constants.DriveConstants.Manual.maxManualRotation;
   }
 
-  public int getInputScaling() {
+  public String getInputScaling() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
         return driveInputScaling.getSelected();
@@ -512,25 +511,25 @@ public class Drive extends SubsystemBase {
     return Constants.driveInputScaling;
   }
 
-  public ControllerType getControlType() {
-    Constants.DriveConstants.Manual.ControllerType controller = Constants.DriveConstants.Manual.controlType;
+  public String getControlType() {
+    String controller = Constants.controllerType;
     if (Constants.driveEnabled) {
       if (Constants.debug) {
         controller = driveControlType.getSelected();
       }
     }
     switch (controller) {
-      case NONE:
+      case "none":
         break;
-      case JOYSTICKS:
+      case "joysticks":
         if (!Constants.joysticksEnabled) {
-          controller = Constants.DriveConstants.Manual.ControllerType.NONE;
+          controller = "none";
         }
         break;
-      case XBOXLEFTDRIVE:
-      case XBOXRIGHTDRIVE:
+      case "xboxLeftDrive":
+      case "xboxRightDrive":
         if (!Constants.xboxEnabled) {
-          controller = Constants.DriveConstants.Manual.ControllerType.NONE;
+          controller = "none";
         }
         break;
     }

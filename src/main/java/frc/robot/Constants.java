@@ -29,7 +29,9 @@ public final class Constants {
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;
   public static final boolean psuedoAutoRotateEnabled = false;
-  public static final int driveInputScaling = 2;
+  public static final String driveInputScaling = "Quadratic"; // "Linear", "Quadratic", "Cubic"
+  public static final String controllerType = "xboxLeftDrive"; // "none", "xboxLeftDrive", "xboxRightDrive", "joysticks"
+  
 
   public static final class Demo {
     public enum DriveMode {
@@ -155,11 +157,6 @@ public final class Constants {
       public static final double spinoutActivationSec = 0.35;
       public static final double spinoutMinAngularVelocity2 = 0.25;
       public static final double spinout2ActivationSec = 0.2;
-
-      public static final ControllerType controlType = ControllerType.XBOXLEFTDRIVE;
-      public static enum ControllerType {
-        NONE, JOYSTICKS, XBOXLEFTDRIVE, XBOXRIGHTDRIVE
-      }
     }
 
     public static final class Auto {

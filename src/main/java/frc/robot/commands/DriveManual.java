@@ -118,7 +118,7 @@ public class DriveManual extends CommandBase {
 
     //switch between joysticks and xbox which can reconfigure drive stick location
     switch(drive.getControlType()) {
-      case JOYSTICKS:
+      case "joysticks":
         driveRawX = -RobotContainer.driveStick.getY();
         driveRawY = -RobotContainer.driveStick.getX();
         rotateRaw = -RobotContainer.rotateStick.getZ();
@@ -128,7 +128,7 @@ public class DriveManual extends CommandBase {
         rotateRightDeadband = Manual.joystickRotateRightDeadband;
         break;
 
-      case XBOXLEFTDRIVE:
+      case "xboxLeftDrive":
         driveRawX = -RobotContainer.xbox.getLeftY();
         driveRawY = -RobotContainer.xbox.getLeftX();
         rotateRaw = -RobotContainer.xbox.getRightX();
@@ -138,7 +138,7 @@ public class DriveManual extends CommandBase {
         rotateRightDeadband = Manual.xboxRotateDeadband;
         break;
       
-      case XBOXRIGHTDRIVE:
+      case "xboxRightDrive":
         driveRawX = -RobotContainer.xbox.getRightY();
         driveRawY = -RobotContainer.xbox.getRightX();
         rotateRaw = -RobotContainer.xbox.getLeftX();
@@ -191,12 +191,12 @@ public class DriveManual extends CommandBase {
         }
 
         switch (drive.getInputScaling()) {
-          case 1:
+          case "Linear":
             break;
-          case 2:
+          case "Quadratic":
             driveMag = driveMag * driveMag;
             break;
-          case 3:
+          case "Cubic":
             driveMag = driveMag * driveMag * driveMag;
             break;
           default: // not 1-3
