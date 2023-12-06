@@ -76,16 +76,7 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
-  private ShuffleboardTab customizationTab;
-  private GenericEntry closedRampRate;
-  private GenericEntry openRampRate;
-  private GenericEntry maxManualRotationEntry;
-  private GenericEntry slowMovingAutoRotateEntry;
-  private GenericEntry fastMovingAutoRotateEntry;
-  private GenericEntry fastMovingFtPerSecEntry;
-  private GenericEntry psuedoAutoRotateCheckbox;
-  private SendableChooser<String> driveInputScaling;
-  private SendableChooser<String> driveControlType;
+ 
 
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
@@ -268,7 +259,7 @@ public class Drive extends SubsystemBase {
           angularVel.setDouble(getAngularVelocity());
         }
 
-        double newRampRate = closedRampRate.getDouble(lastClosedRampRate);
+        double newRampRate = shuffleBoardInputs.accelerationRampRate;
         if (lastClosedRampRate != newRampRate) {
           lastClosedRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
@@ -276,16 +267,16 @@ public class Drive extends SubsystemBase {
           }
         }
 
-         newRampRate = openRampRate.getDouble(lastOpenRampRate);
+         newRampRate = shuffleBoardInputs.openRampRate;
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
             module.setOpenRampRate(newRampRate);
           }
         }
-        maxAutoRotatePower = slowMovingAutoRotateEntry.getDouble(maxAutoRotatePower);
-        slowAutoRotatePower = fastMovingAutoRotateEntry.getDouble(slowAutoRotatePower);
-        slowAutoRotateFtPerSec = fastMovingFtPerSecEntry.getDouble(slowAutoRotateFtPerSec);
+        maxAutoRotatePower = shuffleBoardInputs.slowMovingAutoRotatePower;
+        slowAutoRotatePower = shuffleBoardInputs.fastMovingAutoRotatePower;
+        slowAutoRotateFtPerSec = shuffleBoardInputs.fastMovingFtPerSec;
       }
     }
   }
@@ -487,7 +478,7 @@ public class Drive extends SubsystemBase {
   public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
+        return shuffleBoardInputs.psuedoAutoRotateCheckboxEnabled;
       }
     }
     return Constants.psuedoAutoRotateEnabled;
@@ -496,7 +487,7 @@ public class Drive extends SubsystemBase {
   public double getMaxManualRotationEntry() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
+        return shuffleBoardInputs.maxManualRotatePower;
       }
     }
     return Constants.DriveConstants.Manual.maxManualRotation;
@@ -505,7 +496,7 @@ public class Drive extends SubsystemBase {
   public String getInputScaling() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return driveInputScaling.getSelected();
+        return shuffleBoardInputs.inputScaling;
       }
     }
     return Constants.driveInputScaling;
@@ -515,7 +506,7 @@ public class Drive extends SubsystemBase {
     String controller = Constants.controllerType;
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        controller = driveControlType.getSelected();
+        controller = shuffleBoardInputs.driveControllerType;
       }
     }
     switch (controller) {

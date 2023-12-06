@@ -18,8 +18,6 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private GenericEntry psuedoAutoRotateCheckbox;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
-  private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
-  private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
   public ShuffleBoardIODataEntry() {
     //new shuffleboard tabs
@@ -61,10 +59,10 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
         Constants.DriveConstants.Auto.fastMovingFtPerSec)
         .withPosition(6, 1).withSize(2, 1).getEntry();
         
-    closedRampRate = customizationTab.add("Acc Ramp Rate", lastClosedRampRate)
+    closedRampRate = customizationTab.add("Acc Ramp Rate", DriveConstants.Drive.closedLoopRampSec)
         .withPosition(0, 2).withSize(1, 1).getEntry();
 
-    openRampRate = customizationTab.add("Stop Ramp Rate", lastOpenRampRate)
+    openRampRate = customizationTab.add("Stop Ramp Rate", DriveConstants.Drive.openLoopRampSec)
         .withPosition(1, 2).withSize(1, 1).getEntry();  
   }
 
@@ -78,8 +76,8 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.slowMovingAutoRotatePower = slowMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.slowMovingAutoRotate);
       inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
-      inputs.accelerationRampRate = closedRampRate.getDouble(lastClosedRampRate);
-      inputs.openRampRate = openRampRate.getDouble(lastOpenRampRate);
+      inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
+      inputs.openRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
     }
     else {
       inputs.psuedoAutoRotateCheckboxEnabled = Constants.psuedoAutoRotateEnabled;
@@ -89,8 +87,8 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.slowMovingAutoRotatePower = Constants.DriveConstants.Auto.slowMovingAutoRotate;
       inputs.fastMovingAutoRotatePower = Constants.DriveConstants.Auto.fastMovingAutoRotate;
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
-      inputs.accelerationRampRate = lastClosedRampRate;
-      inputs.openRampRate = lastOpenRampRate;
+      inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
+      inputs.openRampRate = DriveConstants.Drive.openLoopRampSec;
     }
   }
 }
