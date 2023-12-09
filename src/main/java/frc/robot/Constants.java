@@ -238,7 +238,11 @@ public final class Constants {
       public static final double kP = 0.05;
       public static final double kI = 0.0002;
       public static final double kD = 0.0;
-      public static final double kV = 0.11;
+      public static final double kVSlow = 0.11; //TODO
+      public static final double kVMedium = 0.11; //TODO
+      public static final double kVFast = 0.11; //TODO
+      public static final double kVMax = 0.11; //TODO
+      
       public static final String canivoreName = "Drivebase";
       
     }
