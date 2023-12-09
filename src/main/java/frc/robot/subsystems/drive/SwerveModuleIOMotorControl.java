@@ -54,27 +54,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
         encoder.setInverted(true);
         turningMotor.setInverted(true);
-        mOutputConfigs = new MotorOutputConfigs();
+        driveMotor.setInverted(false); // NEED TO CHECK WHEN SETTING UP
         CanBusUtil.staggerSparkMax(turningMotor);
+        CanBusUtil.staggerSparkMax(driveMotor);
 
-        switch (Constants.driveDegradedMode) {
-            case normal:
-              configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, false);
-              driveMotor2.setControl(new Follower(driveMotor.getDeviceID(), false));
-              break;
-            case sideMotorsOnly:
-              configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, true);
-              break;
-            case centerMotorsOnly:
-              TalonFX driveTemp = driveMotor;
-              driveMotor = driveMotor2;
-              driveMotor2 = driveTemp;
-              configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, true);
-              break;
-        }
+        
         // need rapid position/velocity feedback for control logic
         driveMotor.getPosition().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
         Constants.controllerConfigTimeoutMs);
@@ -84,7 +68,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         configRotation(turningMotor);
     }
 
-    private void configDrive(TalonFX talon, WheelPosition pos, boolean coastOnly) {
+    private void configDrive(CANSparkMax sparkMax, WheelPosition pos) {
         Slot0Configs slot0config = new Slot0Configs();
         slot0config.kP = DriveConstants.Drive.kP;
         slot0config.kI = DriveConstants.Drive.kI;
@@ -113,7 +97,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
         boolean isLeftSide = (pos == WheelPosition.FRONT_LEFT) || (pos == WheelPosition.BACK_LEFT);
-        talon.setInverted(isLeftSide);
+        sparkMax.setInverted(isLeftSide);
     
         // applies stator & supply current limit configs to device
         // refer to https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/configuration.html 
@@ -195,7 +179,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       closedLoopConfig.VoltageClosedLoopRampPeriod = period;
 
       driveMotor.getConfigurator().apply(closedLoopConfig);
-      driveMotor2.getConfigurator().apply(closedLoopConfig);
     }
 
     @Override
@@ -205,7 +188,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       openLoopConfig.VoltageOpenLoopRampPeriod = period;
 
       driveMotor.getConfigurator().apply(openLoopConfig);
-      driveMotor2.getConfigurator().apply(openLoopConfig);
     }
 
     @Override
