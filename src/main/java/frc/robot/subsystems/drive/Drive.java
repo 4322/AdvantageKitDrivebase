@@ -133,9 +133,7 @@ public class Drive extends SubsystemBase {
       gyro = new GyroIO() {};
     }
 
-    if (shuffleBoard == null) {
-      shuffleBoard = new ShuffleBoardIO() {};
-    }
+    shuffleBoard = new ShuffleBoardIO() {};
   }
 
   public void init() {
