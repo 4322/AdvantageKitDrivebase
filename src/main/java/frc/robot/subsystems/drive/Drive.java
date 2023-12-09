@@ -268,7 +268,7 @@ public class Drive extends SubsystemBase {
           }
         }
 
-         newRampRate = shuffleBoardInputs.openRampRate;
+         newRampRate = shuffleBoardInputs.stoppedRampRate;
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
@@ -479,7 +479,7 @@ public class Drive extends SubsystemBase {
   public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return shuffleBoardInputs.psuedoAutoRotateCheckboxEnabled;
+        return shuffleBoardInputs.psuedoAutoRotateEnabled;
       }
     }
     return Constants.psuedoAutoRotateEnabled;

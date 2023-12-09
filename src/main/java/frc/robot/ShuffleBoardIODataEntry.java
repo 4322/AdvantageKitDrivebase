@@ -71,7 +71,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   @Override
   public void updateInputs(ShuffleBoardIOInputs inputs) {
     if (Constants.debug) {
-      inputs.psuedoAutoRotateCheckboxEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
+      inputs.psuedoAutoRotateEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
       inputs.inputScaling = driveInputScaling.getSelected();
       inputs.driveControllerType = driveControlType.getSelected();
       inputs.maxManualRotatePower = maxManualRotationEntry.getDouble(Constants.DriveConstants.Manual.maxManualRotation);
@@ -79,10 +79,10 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingAutoRotatePower = fastMovingAutoRotateEntry.getDouble(Constants.DriveConstants.Auto.fastMovingAutoRotate);
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
-      inputs.openRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
+      inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
     }
     else {
-      inputs.psuedoAutoRotateCheckboxEnabled = Constants.psuedoAutoRotateEnabled;
+      inputs.psuedoAutoRotateEnabled = Constants.psuedoAutoRotateEnabled;
       inputs.inputScaling = Constants.driveInputScaling;
       inputs.driveControllerType = Constants.controllerType;
       inputs.maxManualRotatePower = Constants.DriveConstants.Manual.maxManualRotation;
@@ -90,7 +90,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingAutoRotatePower = Constants.DriveConstants.Auto.fastMovingAutoRotate;
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
-      inputs.openRampRate = DriveConstants.Drive.openLoopRampSec;
+      inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
     }
   }
 }
