@@ -59,13 +59,6 @@ public class CanBusUtil {
   }
 
   // configure for fast absolute encoder position feedback
-  public static void fastPositionSparkMax(CANSparkMax spark) {
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextShuffleboardStatusPeriodMs());
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextShuffleboardStatusPeriodMs());
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, nextFastStatusPeriodMs());  // abs encoder pos
-  }
-
-  // configure for fast absolute encoder position feedback
   public static void fastPositionSparkMaxAbs(CANSparkMax spark) {
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextShuffleboardStatusPeriodMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextShuffleboardStatusPeriodMs());
