@@ -159,15 +159,10 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       @Override
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
-        inputs.drive1Rotations = driveMotor.getPosition().getValue();
-        inputs.drive1RotationsPerSec = driveMotor.getVelocity().getValue();
-        inputs.drive1AppliedVolts = driveMotor.getSupplyVoltage().getValue();
-        inputs.drive1CurrentAmps = driveMotor.getStatorCurrent().getValue();
-
-        inputs.drive2Rotations = driveMotor2.getPosition().getValue();
-        inputs.drive2RotationsPerSec = driveMotor2.getVelocity().getValue();
-        inputs.drive2AppliedVolts = driveMotor2.getSupplyVoltage().getValue();
-        inputs.drive2CurrentAmps = driveMotor2.getStatorCurrent().getValue();
+        inputs.driveRotations = driveMotor.getPosition().getValue();
+        inputs.driveRotationsPerSec = driveMotor.getVelocity().getValue();
+        inputs.driveAppliedVolts = driveMotor.getSupplyVoltage().getValue();
+        inputs.driveCurrentAmps = driveMotor.getStatorCurrent().getValue();
         
         //turn inputs
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
