@@ -6,6 +6,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.utility.OrangeMath;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.InputScalingStrings;
 import frc.robot.Constants.DriveConstants.Manual;
 import frc.robot.RobotContainer;
 
@@ -191,12 +192,12 @@ public class DriveManual extends CommandBase {
         }
 
         switch (drive.getInputScaling()) {
-          case "Linear":
+          case InputScalingStrings.linear:
             break;
-          case "Quadratic":
+          case InputScalingStrings.quadratic:
             driveMag = driveMag * driveMag;
             break;
-          case "Cubic":
+          case InputScalingStrings.cubic:
             driveMag = driveMag * driveMag * driveMag;
             break;
           default: // not 1-3

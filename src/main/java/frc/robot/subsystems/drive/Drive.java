@@ -27,6 +27,7 @@ import frc.robot.Constants;
 import frc.robot.ShuffleBoardIO;
 import frc.robot.ShuffleBoardIODataEntry;
 import frc.robot.ShuffleBoardIOInputsAutoLogged;
+import frc.robot.Constants.ControllerTypeStrings;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -510,17 +511,17 @@ public class Drive extends SubsystemBase {
       }
     }
     switch (controller) {
-      case "none":
+      case ControllerTypeStrings.none:
         break;
-      case "joysticks":
+      case ControllerTypeStrings.joysticks:
         if (!Constants.joysticksEnabled) {
-          controller = "none";
+          controller = ControllerTypeStrings.none;
         }
         break;
-      case "xboxLeftDrive":
-      case "xboxRightDrive":
+      case ControllerTypeStrings.xboxLeftDrive:
+      case ControllerTypeStrings.xboxRightDrive:
         if (!Constants.xboxEnabled) {
-          controller = "none";
+          controller = ControllerTypeStrings.none;
         }
         break;
     }
