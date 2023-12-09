@@ -29,9 +29,21 @@ public final class Constants {
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;
   public static final boolean psuedoAutoRotateEnabled = false;
-  public static final String driveInputScaling = "Quadratic"; // "Linear", "Quadratic", "Cubic"
-  public static final String controllerType = "xboxLeftDrive"; // "none", "xboxLeftDrive", "xboxRightDrive", "joysticks"
+  public static final String driveInputScaling = InputScalingStrings.quadratic;
+  public static final String controllerType = ControllerTypeStrings.xboxLeftDrive;
   
+  public static final class InputScalingStrings{
+    public static final String linear = "Linear";
+    public static final String quadratic = "Quadratic";
+    public static final String cubic = "Cubic";
+  }
+
+  public static final class ControllerTypeStrings{
+    public static final String none = "none";
+    public static final String xboxLeftDrive = "xboxLeftDrive";
+    public static final String xboxRightDrive = "xboxRightDrive";
+    public static final String joysticks = "joysticks";
+  }
 
   public static final class Demo {
     public enum DriveMode {

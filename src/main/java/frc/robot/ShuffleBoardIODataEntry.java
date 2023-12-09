@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.Constants.ControllerTypeStrings;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.InputScalingStrings;
 
 public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private ShuffleboardTab customizationTab;
@@ -28,17 +30,17 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
     .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
     
     driveInputScaling = new SendableChooser<String>();
-    driveInputScaling.addOption("Linear", "Linear");
-    driveInputScaling.setDefaultOption("Quadratic", "Quadratic");
-    driveInputScaling.addOption("Cubic", "Cubic");
+    driveInputScaling.addOption("Linear", InputScalingStrings.linear);
+    driveInputScaling.setDefaultOption("Quadratic", InputScalingStrings.quadratic);
+    driveInputScaling.addOption("Cubic", InputScalingStrings.cubic);
 
     customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
         .withPosition(2, 0).withSize(3, 1);
 
     driveControlType = new SendableChooser<String>();
-    driveControlType.addOption("Joysticks", "joysticks");
-    driveControlType.setDefaultOption("Xbox Left Drive", "xboxLeftDrive");
-    driveControlType.addOption("Xbox Right Drive", "xboxRightDrive");
+    driveControlType.addOption("Joysticks", ControllerTypeStrings.joysticks);
+    driveControlType.setDefaultOption("Xbox Left Drive", ControllerTypeStrings.xboxLeftDrive);
+    driveControlType.addOption("Xbox Right Drive", ControllerTypeStrings.xboxRightDrive);
 
     customizationTab.add("Drive Control", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
       .withPosition(5, 0).withSize(3, 1);
