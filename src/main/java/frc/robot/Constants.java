@@ -79,18 +79,13 @@ public final class Constants {
 
   public static final class DriveConstants {
     
-    //1 is the side motor, 2 is the center motor
-    public static final int frontRightDriveID = 9;
-    public static final int frontRightDriveID2 = 4;
+    public static final int frontRightDriveID = 0; //change
     public static final int frontRightRotationID = 18;
-    public static final int rearRightDriveID = 2;
-    public static final int rearRightDriveID2 = 5;
+    public static final int rearRightDriveID = 0; //change
     public static final int rearRightRotationID = 19;
-    public static final int frontLeftDriveID = 8; 
-    public static final int frontLeftDriveID2 = 3;
+    public static final int frontLeftDriveID = 0; //change
     public static final int frontLeftRotationID = 20;
-    public static final int rearLeftDriveID = 7;
-    public static final int rearLeftDriveID2 = 6;
+    public static final int rearLeftDriveID = 0; //change
     public static final int rearLeftRotationID = 21;
     
     

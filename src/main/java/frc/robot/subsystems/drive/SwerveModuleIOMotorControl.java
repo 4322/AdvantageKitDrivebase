@@ -25,10 +25,7 @@ import frc.utility.OrangeMath;
 
 public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     //drive motor
-    private TalonFX driveMotor;
-    private MotorOutputConfigs  mOutputConfigs;
-    private TalonFX driveMotor2;
-    private CurrentLimitsConfigs currentLimitConfigs = new CurrentLimitsConfigs();
+    private CANSparkMax driveMotor;
 
     //turning motor
     private CANSparkMax turningMotor;
@@ -37,23 +34,19 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
             case FRONT_RIGHT:
-                driveMotor = new TalonFX(DriveConstants.frontRightDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.frontRightDriveID2, DriveConstants.Drive.canivoreName);
+                driveMotor = new CANSparkMax(DriveConstants.frontRightDriveID, MotorType.kBrushless);
                 turningMotor = new CANSparkMax(DriveConstants.frontRightRotationID, MotorType.kBrushless);
                 break;
             case FRONT_LEFT:
-                driveMotor = new TalonFX(DriveConstants.frontLeftDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.frontLeftDriveID2, DriveConstants.Drive.canivoreName);
+                driveMotor = new CANSparkMax(DriveConstants.frontLeftDriveID, MotorType.kBrushless);
                 turningMotor = new CANSparkMax(DriveConstants.frontLeftRotationID, MotorType.kBrushless); 
                 break;
             case BACK_RIGHT:
-                driveMotor = new TalonFX(DriveConstants.rearRightDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.rearRightDriveID2, DriveConstants.Drive.canivoreName);
+                driveMotor = new CANSparkMax(DriveConstants.rearRightDriveID, MotorType.kBrushless);
                 turningMotor = new CANSparkMax(DriveConstants.rearRightRotationID, MotorType.kBrushless);
                 break;
             case BACK_LEFT: 
-                driveMotor = new TalonFX(DriveConstants.rearLeftDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.rearLeftDriveID2, DriveConstants.Drive.canivoreName);
+                driveMotor = new CANSparkMax(DriveConstants.rearLeftDriveID, MotorType.kBrushless);
                 turningMotor = new CANSparkMax(DriveConstants.rearLeftRotationID, MotorType.kBrushless);
                 break;
         }
@@ -167,37 +160,31 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         //turn inputs
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
         inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
-        inputs.turnCurrentAmps = new double[] {turningMotor.getOutputCurrent()};
+        inputs.turnCurrentAmps = turningMotor.getOutputCurrent();
         inputs.turnDegrees = encoder.getPosition();
     }
 
     // PID methods for turn motor
     @Override
-    public void setTurnPIDTargetAngle(double angle) {
-      turningMotor.getPIDController().setReference(angle, ControlType.kPosition);
+    public void setTurnPIDTargetAngle(double desiredAngle) {
+      turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
     }
 
     // PID method for drive motors
     @Override
-    public void setDrivePIDTargetVel(VelocityVoltage request) {
+    public void setDrivePIDTargetVel(double desiredVelocity) {
       driveMotor.setControl(request);
     }
 
     @Override
     public void setBrakeMode() {
-      mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-      // the following calls reset follower mode or something else that makes the robot uncontrollable
-      //driveMotor.getConfigurator().apply(mOutputConfigs);
-      //driveMotor2.getConfigurator().apply(mOutputConfigs);
+      driveMotor.setIdleMode(IdleMode.kBrake);
       turningMotor.setIdleMode(IdleMode.kBrake);
     }
 
     @Override
     public void setCoastMode() {
-        mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
-        // the following calls reset follower mode or something else that makes the robot uncontrollable
-        //driveMotor.getConfigurator().apply(mOutputConfigs);
-        //driveMotor2.getConfigurator().apply(mOutputConfigs);
+        driveMotor.setIdleMode(IdleMode.kCoast);
         turningMotor.setIdleMode(IdleMode.kCoast);
     }
 
