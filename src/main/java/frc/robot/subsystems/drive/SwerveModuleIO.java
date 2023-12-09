@@ -2,9 +2,6 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.revrobotics.CANSparkMax.ControlType;
-
 public interface SwerveModuleIO {
     @AutoLog
     public class SwerveModuleIOInputs {
@@ -15,7 +12,7 @@ public interface SwerveModuleIO {
 
         public double turnVelocityDegPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
-        public double[] turnCurrentAmps = new double[] {};
+        public double turnCurrentAmps = 0.0;
         public double turnDegrees = 0.0;
     }
     
