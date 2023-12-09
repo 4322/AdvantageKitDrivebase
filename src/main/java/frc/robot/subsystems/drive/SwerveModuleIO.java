@@ -20,7 +20,7 @@ public interface SwerveModuleIO {
 
         public double turnVelocityDegPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
-        public double[] turnCurrentAmps = new double[] {};
+        public double turnCurrentAmps = 0.0;
         public double turnDegrees = 0.0;
     }
     

@@ -172,7 +172,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         //turn inputs
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
         inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
-        inputs.turnCurrentAmps = new double[] {turningMotor.getOutputCurrent()};
+        inputs.turnCurrentAmps = turningMotor.getOutputCurrent();
         inputs.turnDegrees = encoder.getPosition();
     }
 
