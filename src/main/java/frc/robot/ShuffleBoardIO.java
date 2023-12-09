@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShuffleBoardIO {
   @AutoLog
   public static class ShuffleBoardIOInputs {
-    public boolean psuedoAutoRotateCheckboxEnabled;
+    public boolean psuedoAutoRotateEnabled;
     public String inputScaling;
     public String driveControllerType; 
     public double maxManualRotatePower;
@@ -13,7 +13,7 @@ public interface ShuffleBoardIO {
     public double fastMovingAutoRotatePower;
     public double fastMovingFtPerSec;
     public double accelerationRampRate;
-    public double openRampRate;
+    public double stoppedRampRate;
 
   }
 

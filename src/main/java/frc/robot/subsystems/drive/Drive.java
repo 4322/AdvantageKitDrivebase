@@ -82,10 +82,6 @@ public class Drive extends SubsystemBase {
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
-  private double maxAutoRotatePower = Constants.DriveConstants.Auto.slowMovingAutoRotate;
-  private double slowAutoRotatePower = Constants.DriveConstants.Auto.fastMovingAutoRotate;
-  private double slowAutoRotateFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
-
   public Drive() {
     runTime.start();
     switch (Constants.currentMode) {
@@ -104,9 +100,7 @@ public class Drive extends SubsystemBase {
         if (Constants.gyroEnabled) {
           gyro = new GyroIONavX();
         }
-        if (Constants.shuffleboardEnabled) {
-          shuffleBoard = new ShuffleBoardIODataEntry();
-        }
+        shuffleBoard = new ShuffleBoardIODataEntry();
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -132,8 +126,7 @@ public class Drive extends SubsystemBase {
     if (gyro == null) {
       gyro = new GyroIO() {};
     }
-
-    if (shuffleBoard == null) {
+    if (Constants.shuffleboardEnabled) {
       shuffleBoard = new ShuffleBoardIO() {};
     }
   }
@@ -259,7 +252,6 @@ public class Drive extends SubsystemBase {
           odometryDegrees.setDouble(getPose2d().getRotation().getDegrees());
           angularVel.setDouble(getAngularVelocity());
         }
-
         double newRampRate = shuffleBoardInputs.accelerationRampRate;
         if (lastClosedRampRate != newRampRate) {
           lastClosedRampRate = newRampRate;
@@ -267,17 +259,13 @@ public class Drive extends SubsystemBase {
             module.setClosedRampRate(newRampRate);
           }
         }
-
-         newRampRate = shuffleBoardInputs.openRampRate;
+        newRampRate = shuffleBoardInputs.stoppedRampRate;
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
             module.setOpenRampRate(newRampRate);
           }
         }
-        maxAutoRotatePower = shuffleBoardInputs.slowMovingAutoRotatePower;
-        slowAutoRotatePower = shuffleBoardInputs.fastMovingAutoRotatePower;
-        slowAutoRotateFtPerSec = shuffleBoardInputs.fastMovingFtPerSec;
       }
     }
   }
@@ -364,10 +352,10 @@ public class Drive extends SubsystemBase {
       double toleranceDeg;
 
       // reduce rotation power when driving fast to not lose forward momentum
-      if (latestVelocity >= slowAutoRotateFtPerSec) {
-        adjMaxAutoRotatePower = slowAutoRotatePower;
+      if (latestVelocity >= shuffleBoardInputs.fastMovingFtPerSec) {
+        adjMaxAutoRotatePower = shuffleBoardInputs.fastMovingAutoRotatePower;
       } else {
-        adjMaxAutoRotatePower = maxAutoRotatePower;
+        adjMaxAutoRotatePower = shuffleBoardInputs.slowMovingAutoRotatePower;
       }
       // no need to maintain exact heading when driving to reduce wobble
       if (isRobotMoving()) {
@@ -479,7 +467,7 @@ public class Drive extends SubsystemBase {
   public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return shuffleBoardInputs.psuedoAutoRotateCheckboxEnabled;
+        return shuffleBoardInputs.psuedoAutoRotateEnabled;
       }
     }
     return Constants.psuedoAutoRotateEnabled;
@@ -528,10 +516,6 @@ public class Drive extends SubsystemBase {
         break;
     }
     return controller;
-  }
-
-  private boolean isRobotOverSlowRotateFtPerSec() {
-    return latestVelocity >= slowAutoRotateFtPerSec;
   }
 
   private void updateVelAcc() {
