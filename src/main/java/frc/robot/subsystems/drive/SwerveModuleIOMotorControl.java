@@ -178,8 +178,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID methods for turn motor
     @Override
-    public void setTurnPIDReference(double value, ControlType ctrl) {
-      turningMotor.getPIDController().setReference(value, ctrl);
+    public void setTurnPIDTargetAngle(double angle) {
+      turningMotor.getPIDController().setReference(angle, ControlType.kPosition);
     }
 
     // PID method for drive motors
