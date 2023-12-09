@@ -93,9 +93,9 @@ public class SwerveModule {
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
+      io.setDrivePIDTargetVel(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
-          * DriveConstants.Drive.gearRatio).withEnableFOC(true));
+          * DriveConstants.Drive.gearRatio);
               
       if (!Constants.steeringTuningMode) {
         io.setTurnPIDTargetAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
