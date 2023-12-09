@@ -510,6 +510,8 @@ public class Drive extends SubsystemBase {
         controller = shuffleBoardInputs.driveControllerType;
       }
     }
+
+    //ignore disabled controllers
     switch (controller) {
       case ControllerTypeStrings.none:
         break;

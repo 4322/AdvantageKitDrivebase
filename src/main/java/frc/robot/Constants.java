@@ -39,10 +39,10 @@ public final class Constants {
   }
 
   public static final class ControllerTypeStrings{
-    public static final String none = "none";
-    public static final String xboxLeftDrive = "xboxLeftDrive";
-    public static final String xboxRightDrive = "xboxRightDrive";
-    public static final String joysticks = "joysticks";
+    public static final String none = "None";
+    public static final String xboxLeftDrive = "Xbox Left Drive";
+    public static final String xboxRightDrive = "Xbox Right Drive";
+    public static final String joysticks = "Joysticks";
   }
 
   public static final class Demo {

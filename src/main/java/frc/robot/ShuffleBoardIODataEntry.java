@@ -30,17 +30,17 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
     .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
     
     driveInputScaling = new SendableChooser<String>();
-    driveInputScaling.addOption("Linear", InputScalingStrings.linear);
-    driveInputScaling.setDefaultOption("Quadratic", InputScalingStrings.quadratic);
-    driveInputScaling.addOption("Cubic", InputScalingStrings.cubic);
+    driveInputScaling.addOption(InputScalingStrings.linear, InputScalingStrings.linear);
+    driveInputScaling.setDefaultOption(InputScalingStrings.quadratic, InputScalingStrings.quadratic);
+    driveInputScaling.addOption(InputScalingStrings.cubic, InputScalingStrings.cubic);
 
     customizationTab.add("Input Scaling", driveInputScaling).withWidget(BuiltInWidgets.kSplitButtonChooser)
         .withPosition(2, 0).withSize(3, 1);
 
     driveControlType = new SendableChooser<String>();
-    driveControlType.addOption("Joysticks", ControllerTypeStrings.joysticks);
-    driveControlType.setDefaultOption("Xbox Left Drive", ControllerTypeStrings.xboxLeftDrive);
-    driveControlType.addOption("Xbox Right Drive", ControllerTypeStrings.xboxRightDrive);
+    driveControlType.addOption(ControllerTypeStrings.joysticks, ControllerTypeStrings.joysticks);
+    driveControlType.setDefaultOption(ControllerTypeStrings.xboxLeftDrive, ControllerTypeStrings.xboxLeftDrive);
+    driveControlType.addOption(ControllerTypeStrings.xboxRightDrive, ControllerTypeStrings.xboxRightDrive);
 
     customizationTab.add("Drive Control", driveControlType).withWidget(BuiltInWidgets.kSplitButtonChooser)
       .withPosition(5, 0).withSize(3, 1);

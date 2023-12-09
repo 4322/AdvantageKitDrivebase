@@ -200,8 +200,6 @@ public class DriveManual extends CommandBase {
           case InputScalingStrings.cubic:
             driveMag = driveMag * driveMag * driveMag;
             break;
-          default: // not 1-3
-            break;
         }
 
         // Normalize vector magnitude so as not to give an invalid input
