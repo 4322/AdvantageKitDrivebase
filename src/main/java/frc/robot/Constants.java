@@ -87,12 +87,6 @@ public final class Constants {
     public static final int frontLeftRotationID = 20;
     public static final int rearLeftDriveID = 0; //change
     public static final int rearLeftRotationID = 21;
-    
-    
-    public static final int frontRightEncoderID = 10;
-    public static final int rearRightEncoderID = 12;
-    public static final int frontLeftEncoderID = 11;
-    public static final int rearLeftEncoderID = 13;
 
     public static final int encoderResolution = 2048;
     
