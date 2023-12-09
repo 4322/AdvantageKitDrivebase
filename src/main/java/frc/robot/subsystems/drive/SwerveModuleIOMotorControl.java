@@ -1,14 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -59,55 +50,34 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         CanBusUtil.staggerSparkMax(driveMotor);
 
         
-        // need rapid position/velocity feedback for control logic
-        driveMotor.getPosition().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
-        Constants.controllerConfigTimeoutMs);
-        driveMotor.getVelocity().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
-        Constants.controllerConfigTimeoutMs);
+        configDrive(driveMotor, wheelPos);
 
         configRotation(turningMotor);
     }
 
     private void configDrive(CANSparkMax sparkMax, WheelPosition pos) {
-        Slot0Configs slot0config = new Slot0Configs();
-        slot0config.kP = DriveConstants.Drive.kP;
-        slot0config.kI = DriveConstants.Drive.kI;
-        slot0config.kD = DriveConstants.Drive.kD;
-        slot0config.kV = DriveConstants.Drive.kV;
-        
-        ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
-        OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
+        SparkMaxPIDController config = sparkMax.getPIDController();
+
+        config.setP(DriveConstants.Drive.kP,0);
+        config.setI(DriveConstants.Drive.kI, 0);
+        config.setD(DriveConstants.Drive.kD,0);
+        config.setFF(DriveConstants.Drive.kV, 0);
     
-        if (coastOnly) {
-          // for identifying failed Falcon outout shafts
-          mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
-        } else {
-          // we would like to start in coast mode, but we can't switch from coast to brake, so just use brake always
-          mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-        }
-        mOutputConfigs.DutyCycleNeutralDeadband = DriveConstants.Drive.brakeModeDeadband;
-        closedLoopConfig.VoltageClosedLoopRampPeriod = DriveConstants.Drive.closedLoopRampSec;
-        openLoopConfig.VoltageOpenLoopRampPeriod = DriveConstants.Drive.openLoopRampSec;
-         
-        talon.getConfigurator().apply(slot0config);
-        talon.getConfigurator().apply(closedLoopConfig);
-        talon.getConfigurator().apply(openLoopConfig);
-        talon.getConfigurator().apply(mOutputConfigs);
+        sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
+
+        sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
+        sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
+        
         
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
         boolean isLeftSide = (pos == WheelPosition.FRONT_LEFT) || (pos == WheelPosition.BACK_LEFT);
         sparkMax.setInverted(isLeftSide);
-    
-        // applies stator & supply current limit configs to device
-        // refer to https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/configuration.html 
-        currentLimitConfigs.StatorCurrentLimitEnable = DriveConstants.Drive.statorEnabled;
-        currentLimitConfigs.StatorCurrentLimit = DriveConstants.Drive.statorLimit;
-        currentLimitConfigs.SupplyCurrentLimit = DriveConstants.Drive.supplyLimit;
-        currentLimitConfigs.SupplyCurrentThreshold = DriveConstants.Drive.supplyThreshold;
-        currentLimitConfigs.SupplyTimeThreshold = DriveConstants.Drive.supplyTime;
-        currentLimitConfigs.SupplyCurrentLimitEnable = DriveConstants.Drive.supplyEnabled;
-        talon.getConfigurator().apply(currentLimitConfigs);
+
+        sparkMax.setSmartCurrentLimit(0, 0); // TO-DO
+
+        // need rapid velocity feedback for control logic
+        CanBusUtil.fastVelocitySparkMax(driveMotor);
       }
 
       private void configRotation(CANSparkMax sparkMax) {
