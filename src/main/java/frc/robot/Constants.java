@@ -252,30 +252,30 @@ public final class Constants {
       public static final double kD = 0.0;
       public static final String canivoreName = "Drivebase";
 
-      // kF thresholds and values for Drive PID
-
-      public static final double[] kFPIDValues;
-      static {
-        kFPIDValues = new double[4];
-        kFPIDValues[0] = 0; //TODO
-        kFPIDValues[1] = 0.11; //TODO
-        kFPIDValues[2] = 0; //TODO
-        kFPIDValues[3] = 0; //TODO
+      // Feed Forward parameters for Drive PID
+      public static final class FeedForward {
+        public static final double[] voltsAtMaxSpeed;
+        static {
+          voltsAtMaxSpeed = new double[4];
+          voltsAtMaxSpeed[0] = 11.0;
+          voltsAtMaxSpeed[1] = 11.0;
+          voltsAtMaxSpeed[2] = 11.0;
+          voltsAtMaxSpeed[3] = 11.0;
+        }
+        public static final double[] thresholdRotPerSec;
+        static {
+          // define speed at which each voltage value will be used
+          thresholdRotPerSec = new double[4];
+          // values must be in ascending order
+          thresholdRotPerSec[0] = 0.0; // Must be zero
+          thresholdRotPerSec[1] = 30.0;
+          thresholdRotPerSec[2] = 50.0;
+          thresholdRotPerSec[3] = 80.0;
+        }
+        public static final Supplier<double[]> voltsAtMaxSpeedSupplier = () -> voltsAtMaxSpeed;
+        public static final Supplier<double[]> thresholdRotPerSecSupplier = () -> thresholdRotPerSec;
       }
-
-      public static final double[] kFVelocityThresholds;
-      static {
-        // values must increase in ascending order
-        kFVelocityThresholds = new double[4];
-        kFVelocityThresholds[0] = 0; // DO NOT CHANGE VALUE, IT MUST REMAIN 0
-        kFVelocityThresholds[1] = 0; //TODO
-        kFVelocityThresholds[2] = 0; //TODO
-        kFVelocityThresholds[3] = 0; //TODO
-      }
-
     }
-
-    public static final Supplier<double[]> kfVelThresh = () -> kFVelocityThresholds;
 
     public static final class Trajectory {
 

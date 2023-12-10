@@ -96,7 +96,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         slot0config.kP = DriveConstants.Drive.kP;
         slot0config.kI = DriveConstants.Drive.kI;
         slot0config.kD = DriveConstants.Drive.kD;
-        slot0config.kV = DriveConstants.Drive.kFPIDValues[1];
+        slot0config.kV = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[0];
         
         ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
         OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
