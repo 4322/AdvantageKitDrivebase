@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.utility.OrangeMath;
 
@@ -249,10 +250,32 @@ public final class Constants {
       public static final double kP = 0.05;
       public static final double kI = 0.0002;
       public static final double kD = 0.0;
-      public static final double kV = 0.11;
       public static final String canivoreName = "Drivebase";
-      
+
+      // kF thresholds and values for Drive PID
+
+      public static final double[] kFPIDValues;
+      static {
+        kFPIDValues = new double[4];
+        kFPIDValues[0] = 0; //TODO
+        kFPIDValues[1] = 0.11; //TODO
+        kFPIDValues[2] = 0; //TODO
+        kFPIDValues[3] = 0; //TODO
+      }
+
+      public static final double[] kFVelocityThresholds;
+      static {
+        // values must increase in ascending order
+        kFVelocityThresholds = new double[4];
+        kFVelocityThresholds[0] = 0; // DO NOT CHANGE VALUE, IT MUST REMAIN 0
+        kFVelocityThresholds[1] = 0; //TODO
+        kFVelocityThresholds[2] = 0; //TODO
+        kFVelocityThresholds[3] = 0; //TODO
+      }
+
     }
+
+    public static final Supplier<double[]> kfVelThresh = () -> kFVelocityThresholds;
 
     public static final class Trajectory {
 

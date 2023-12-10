@@ -1,6 +1,8 @@
 package frc.robot;
 
+import java.util.function.Supplier;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -18,6 +20,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private GenericEntry fastMovingAutoRotateEntry;
   private GenericEntry fastMovingFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
+  private GenericEntry kFValueEntry;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
 
@@ -67,7 +70,10 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
           .withPosition(0, 2).withSize(1, 1).getEntry();
 
       openRampRate = customizationTab.add("Stop Ramp Rate", DriveConstants.Drive.openLoopRampSec)
-          .withPosition(1, 2).withSize(1, 1).getEntry();  
+          .withPosition(1, 2).withSize(1, 1).getEntry();
+
+      kFValueEntry = customizationTab.addDoubleArray("kF Values", DriveConstants.Drive.kFPIDValues)
+          .withPosition(2,2).withSize(1,1).getEntry();
     }
   }
     
