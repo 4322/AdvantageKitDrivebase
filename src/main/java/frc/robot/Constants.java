@@ -272,8 +272,6 @@ public final class Constants {
           thresholdRotPerSec[2] = 50.0;
           thresholdRotPerSec[3] = 80.0;
         }
-        public static final Supplier<double[]> voltsAtMaxSpeedSupplier = () -> voltsAtMaxSpeed;
-        public static final Supplier<double[]> thresholdRotPerSecSupplier = () -> thresholdRotPerSec;
       }
     }
 
