@@ -108,7 +108,7 @@ public class SwerveModule {
 
       io.setDrivePIDTargetVel(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
-          * DriveConstants.Drive.gearRatio, shuffleBoardInputs.voltsAtMaxSpeed);
+          * DriveConstants.Drive.gearRatio, shuffleBoardInputs.voltsAtMaxSpeed, shuffleBoardInputs.thresholdRotPerSec);
               
       if (!Constants.steeringTuningMode) {
         io.setTurnPIDTargetAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));

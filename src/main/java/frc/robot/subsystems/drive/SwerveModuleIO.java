@@ -18,7 +18,7 @@ public interface SwerveModuleIO {
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
-    public default void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward) {}
+    public default void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {}
 
     public default void setTurnPIDTargetAngle(double desiredAngle) {} //angle from 0 to 360 degrees
 
