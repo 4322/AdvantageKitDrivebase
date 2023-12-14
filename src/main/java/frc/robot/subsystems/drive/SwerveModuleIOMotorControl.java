@@ -167,20 +167,12 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     @Override
     public void setClosedRampRate(double period) {
-      ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
-
-      closedLoopConfig.VoltageClosedLoopRampPeriod = period;
-
-      driveMotor.getConfigurator().apply(closedLoopConfig);
+      driveMotor.setClosedLoopRampRate(period);
     }
 
     @Override
     public void setOpenRampRate(double period) {
-      OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
-
-      openLoopConfig.VoltageOpenLoopRampPeriod = period;
-
-      driveMotor.getConfigurator().apply(openLoopConfig);
+      driveMotor.setOpenLoopRampRate(period);
     }
 
     @Override
