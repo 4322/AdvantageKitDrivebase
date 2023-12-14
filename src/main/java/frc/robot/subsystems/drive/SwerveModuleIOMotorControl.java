@@ -67,21 +67,16 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
           config.setOutputRange(0, 0, i); //TODO
         }
 
-        
-
-
         sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
         sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
-        
+        sparkMax.setSmartCurrentLimit(0, 0); // TODO
+        sparkMax.enableVoltageCompensation(DriveConstants.Drive.voltageCompSaturation);
         sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
         
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
         boolean isLeftSide = (pos == WheelPosition.FRONT_LEFT) || (pos == WheelPosition.BACK_LEFT);
         sparkMax.setInverted(isLeftSide);
-
-        sparkMax.setSmartCurrentLimit(0, 0); // TODO
-        
 
         // need rapid velocity feedback for control logic
         CanBusUtil.fastVelocitySparkMax(driveMotor);
