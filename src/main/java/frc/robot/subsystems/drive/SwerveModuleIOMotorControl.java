@@ -133,7 +133,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motors
     @Override
-    public void setDrivePIDTargetVel(double desiredVelocity) {
+    public void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward) {
+      for (int i = 0; i <= 3; i++) {
+        driveMotor.getPIDController().setFF(setFeedForward[i]);
+      }
+      //TODO logic that determines which ff should be set depending on speed
       driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 0);
     }
 
