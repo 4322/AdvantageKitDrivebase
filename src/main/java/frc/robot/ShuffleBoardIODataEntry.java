@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SuppliedValueWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.ControllerTypeStrings;
 import frc.robot.Constants.DriveConstants;
@@ -18,6 +19,8 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private GenericEntry fastMovingAutoRotateEntry;
   private GenericEntry fastMovingFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
+  private GenericEntry voltsAtMaxSpeedEntry;
+  private GenericEntry thresholdRPSEntry;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
 
@@ -67,7 +70,15 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
           .withPosition(0, 2).withSize(1, 1).getEntry();
 
       openRampRate = customizationTab.add("Stop Ramp Rate", DriveConstants.Drive.openLoopRampSec)
-          .withPosition(1, 2).withSize(1, 1).getEntry();  
+          .withPosition(1, 2).withSize(1, 1).getEntry();
+
+      voltsAtMaxSpeedEntry = customizationTab.add("Volts at Max Speed", 
+          DriveConstants.Drive.FeedForward.voltsAtMaxSpeed)
+          .withPosition(0,3).withSize(2,2).getEntry();
+
+      thresholdRPSEntry = customizationTab.add("Threshold RPS", 
+          DriveConstants.Drive.FeedForward.thresholdRotPerSec)
+          .withPosition(2,3).withSize(2,2).getEntry();
     }
   }
     
@@ -84,6 +95,8 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
       inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
+      inputs.voltsAtMaxSpeed = voltsAtMaxSpeedEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed);
+      inputs.thresholdRotPerSec = thresholdRPSEntry.getDoubleArray(DriveConstants.Drive.FeedForward.thresholdRotPerSec);
     }
     else { 
       //if shuffleboard not enabled, don't want values to be 0
@@ -96,6 +109,8 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
       inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
+      inputs.voltsAtMaxSpeed = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed;
+      inputs.thresholdRotPerSec = DriveConstants.Drive.FeedForward.thresholdRotPerSec;
     }
   }
 }
