@@ -26,6 +26,7 @@ public final class Constants {
   public static final boolean shuffleboardEnabled = true;
   public static final boolean joysticksEnabled = true;
   public static final boolean xboxEnabled = true;
+  public static final boolean autoChooserEnabled = false;
   
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;

@@ -67,16 +67,6 @@ public class RobotContainer {
     ppManager = new PathPlannerManager(drive);
 
     loadAutos();
-
-    positionChooser.addOption("1", 1);
-    positionChooser.addOption("2", 2);
-    positionChooser.addOption("3", 3);
-    positionChooser.addOption("4", 4);
-    positionChooser.addOption("5", 5);
-    positionChooser.addOption("6", 6);
-    positionChooser.addOption("7", 7);
-    positionChooser.addOption("8", 8);
-    positionChooser.addOption("9", 9);
   }
 
   private void loadAutos() {
