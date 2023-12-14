@@ -1,10 +1,10 @@
-package frc.robot;
+package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ShuffleBoardIO {
+public interface DriveShuffleBoardIO {
   @AutoLog
-  public static class ShuffleBoardIOInputs {
+  public static class DriveShuffleBoardIOInputs {
     public boolean psuedoAutoRotateEnabled;
     public String inputScaling;
     public String driveControllerType; 
@@ -18,5 +18,5 @@ public interface ShuffleBoardIO {
     public double[] thresholdRotPerSec;
   }
 
-  public default void updateInputs(ShuffleBoardIOInputs inputs) {}
+  public default void updateInputs(DriveShuffleBoardIOInputs inputs) {}
 }

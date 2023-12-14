@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.WheelPosition;
-import frc.robot.ShuffleBoardIO.ShuffleBoardIOInputs;
 import frc.utility.OrangeMath;
 import frc.utility.SnapshotTranslation2D;
 
@@ -24,9 +23,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
-import frc.robot.ShuffleBoardIO;
-import frc.robot.ShuffleBoardIODataEntry;
-import frc.robot.ShuffleBoardIOInputsAutoLogged;
 import frc.robot.Constants.ControllerTypeStrings;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.Timer;
@@ -38,8 +34,8 @@ public class Drive extends SubsystemBase {
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
-  private ShuffleBoardIO shuffleBoard;
-  private ShuffleBoardIOInputsAutoLogged shuffleBoardInputs = new ShuffleBoardIOInputsAutoLogged();
+  private DriveShuffleBoardIO driveShuffleBoard;
+  private DriveShuffleBoardIOInputsAutoLogged driveShuffleBoardInputs = new DriveShuffleBoardIOInputsAutoLogged();
 
   private PIDController rotPID;
 
@@ -100,7 +96,7 @@ public class Drive extends SubsystemBase {
         if (Constants.gyroEnabled) {
           gyro = new GyroIONavX();
         }
-        shuffleBoard = new ShuffleBoardIODataEntry();
+        driveShuffleBoard = new DriveShuffleBoardIODataEntry();
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -127,7 +123,7 @@ public class Drive extends SubsystemBase {
       gyro = new GyroIO() {};
     }
     if (Constants.shuffleboardEnabled) {
-      shuffleBoard = new ShuffleBoardIO() {};
+      driveShuffleBoard = new DriveShuffleBoardIO() {};
     }
   }
 
@@ -227,8 +223,8 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     if (Constants.driveEnabled) {
       // update logs
-      shuffleBoard.updateInputs(shuffleBoardInputs);
-      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", shuffleBoardInputs);
+      driveShuffleBoard.updateInputs(driveShuffleBoardInputs);
+      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", driveShuffleBoardInputs);
       for (SwerveModule module : swerveModules) {
         module.periodic();
       }
@@ -252,14 +248,14 @@ public class Drive extends SubsystemBase {
           odometryDegrees.setDouble(getPose2d().getRotation().getDegrees());
           angularVel.setDouble(getAngularVelocity());
         }
-        double newRampRate = shuffleBoardInputs.accelerationRampRate;
+        double newRampRate = driveShuffleBoardInputs.accelerationRampRate;
         if (lastClosedRampRate != newRampRate) {
           lastClosedRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
             module.setClosedRampRate(newRampRate);
           }
         }
-        newRampRate = shuffleBoardInputs.stoppedRampRate;
+        newRampRate = driveShuffleBoardInputs.stoppedRampRate;
         if (lastOpenRampRate != newRampRate) {
           lastOpenRampRate = newRampRate;
           for (SwerveModule module : swerveModules) {
@@ -352,10 +348,10 @@ public class Drive extends SubsystemBase {
       double toleranceDeg;
 
       // reduce rotation power when driving fast to not lose forward momentum
-      if (latestVelocity >= shuffleBoardInputs.fastMovingFtPerSec) {
-        adjMaxAutoRotatePower = shuffleBoardInputs.fastMovingAutoRotatePower;
+      if (latestVelocity >= driveShuffleBoardInputs.fastMovingFtPerSec) {
+        adjMaxAutoRotatePower = driveShuffleBoardInputs.fastMovingAutoRotatePower;
       } else {
-        adjMaxAutoRotatePower = shuffleBoardInputs.slowMovingAutoRotatePower;
+        adjMaxAutoRotatePower = driveShuffleBoardInputs.slowMovingAutoRotatePower;
       }
       // no need to maintain exact heading when driving to reduce wobble
       if (isRobotMoving()) {
@@ -467,7 +463,7 @@ public class Drive extends SubsystemBase {
   public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return shuffleBoardInputs.psuedoAutoRotateEnabled;
+        return driveShuffleBoardInputs.psuedoAutoRotateEnabled;
       }
     }
     return Constants.psuedoAutoRotateEnabled;
@@ -476,7 +472,7 @@ public class Drive extends SubsystemBase {
   public double getMaxManualRotationEntry() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return shuffleBoardInputs.maxManualRotatePower;
+        return driveShuffleBoardInputs.maxManualRotatePower;
       }
     }
     return Constants.DriveConstants.Manual.maxManualRotation;
@@ -485,7 +481,7 @@ public class Drive extends SubsystemBase {
   public String getInputScaling() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return shuffleBoardInputs.inputScaling;
+        return driveShuffleBoardInputs.inputScaling;
       }
     }
     return Constants.driveInputScaling;
@@ -495,7 +491,7 @@ public class Drive extends SubsystemBase {
     String controller = Constants.controllerType;
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        controller = shuffleBoardInputs.driveControllerType;
+        controller = driveShuffleBoardInputs.driveControllerType;
       }
     }
 

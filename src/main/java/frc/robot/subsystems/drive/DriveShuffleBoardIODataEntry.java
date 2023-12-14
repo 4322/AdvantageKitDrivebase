@@ -1,15 +1,20 @@
-package frc.robot;
+package frc.robot.subsystems.drive;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.Constants;
 import frc.robot.Constants.ControllerTypeStrings;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.InputScalingStrings;
+import frc.robot.Constants.DriveConstants.Auto;
+import frc.robot.Constants.DriveConstants.Drive;
+import frc.robot.Constants.DriveConstants.Manual;
+import frc.robot.Constants.DriveConstants.Drive.FeedForward;
 
-public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
+public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
   private ShuffleboardTab customizationTab;
   private GenericEntry closedRampRate;
   private GenericEntry openRampRate;
@@ -23,7 +28,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
 
-  public ShuffleBoardIODataEntry() {
+  public DriveShuffleBoardIODataEntry() {
 
     if(Constants.debug) {
         //new shuffleboard tabs
@@ -83,7 +88,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
     
 
   @Override
-  public void updateInputs(ShuffleBoardIOInputs inputs) {
+  public void updateInputs(DriveShuffleBoardIOInputs inputs) {
     if (Constants.shuffleboardEnabled) {
       inputs.psuedoAutoRotateEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
       inputs.inputScaling = driveInputScaling.getSelected();
