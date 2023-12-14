@@ -137,7 +137,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       for (int i = 0; i <= 3; i++) {
         driveMotor.getPIDController().setFF(setFeedForward[i], i);
       }
-      double wheelRotations = driveMotor.getEncoder().getPosition();
+      double wheelRotations = Math.abs(driveMotor.getEncoder().getVelocity()/60);
 
       if (wheelRotations <= thresholdRotPerSec[0]) {
         driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 0);
