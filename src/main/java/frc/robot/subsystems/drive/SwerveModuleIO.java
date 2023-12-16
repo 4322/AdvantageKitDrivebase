@@ -2,21 +2,13 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.revrobotics.CANSparkMax.ControlType;
-
 public interface SwerveModuleIO {
     @AutoLog
     public class SwerveModuleIOInputs {
-        public double drive1Rotations = 0.0;
-        public double drive1RotationsPerSec = 0.0;
-        public double drive1AppliedVolts = 0.0;
-        public double drive1CurrentAmps = 0.0;
-
-        public double drive2Rotations = 0.0;
-        public double drive2RotationsPerSec = 0.0;
-        public double drive2AppliedVolts = 0.0;
-        public double drive2CurrentAmps = 0.0;
+        public double driveRotations = 0.0;
+        public double driveRotationsPerSec = 0.0;
+        public double driveAppliedVolts = 0.0;
+        public double driveCurrentAmps = 0.0;
 
         public double turnVelocityDegPerSec = 0.0;
         public double turnAppliedVolts = 0.0;
@@ -26,9 +18,9 @@ public interface SwerveModuleIO {
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
-    public default void setDrivePIDTargetVel(VelocityVoltage request) {}
+    public default void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {}
 
-    public default void setTurnPIDReference(double value, ControlType ctrl) {}
+    public default void setTurnPIDTargetAngle(double desiredAngle) {} //angle from 0 to 360 degrees
 
     public default void setBrakeMode() {}
 
