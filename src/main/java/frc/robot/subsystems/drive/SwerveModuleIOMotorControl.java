@@ -1,5 +1,14 @@
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -16,7 +25,10 @@ import frc.utility.OrangeMath;
 
 public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     //drive motor
-    private CANSparkMax driveMotor;
+    private TalonFX driveMotor;
+    private MotorOutputConfigs  mOutputConfigs;
+    private TalonFX driveMotor2;
+    private CurrentLimitsConfigs currentLimitConfigs = new CurrentLimitsConfigs();
 
     //turning motor
     private CANSparkMax turningMotor;
@@ -25,19 +37,23 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
             case FRONT_RIGHT:
-                driveMotor = new CANSparkMax(DriveConstants.frontRightDriveID, MotorType.kBrushless);
+                driveMotor = new TalonFX(DriveConstants.frontRightDriveID, DriveConstants.Drive.canivoreName);
+                driveMotor2 = new TalonFX(DriveConstants.frontRightDriveID2, DriveConstants.Drive.canivoreName);
                 turningMotor = new CANSparkMax(DriveConstants.frontRightRotationID, MotorType.kBrushless);
                 break;
             case FRONT_LEFT:
-                driveMotor = new CANSparkMax(DriveConstants.frontLeftDriveID, MotorType.kBrushless);
+                driveMotor = new TalonFX(DriveConstants.frontLeftDriveID, DriveConstants.Drive.canivoreName);
+                driveMotor2 = new TalonFX(DriveConstants.frontLeftDriveID2, DriveConstants.Drive.canivoreName);
                 turningMotor = new CANSparkMax(DriveConstants.frontLeftRotationID, MotorType.kBrushless); 
                 break;
             case BACK_RIGHT:
-                driveMotor = new CANSparkMax(DriveConstants.rearRightDriveID, MotorType.kBrushless);
+                driveMotor = new TalonFX(DriveConstants.rearRightDriveID, DriveConstants.Drive.canivoreName);
+                driveMotor2 = new TalonFX(DriveConstants.rearRightDriveID2, DriveConstants.Drive.canivoreName);
                 turningMotor = new CANSparkMax(DriveConstants.rearRightRotationID, MotorType.kBrushless);
                 break;
             case BACK_LEFT: 
-                driveMotor = new CANSparkMax(DriveConstants.rearLeftDriveID, MotorType.kBrushless);
+                driveMotor = new TalonFX(DriveConstants.rearLeftDriveID, DriveConstants.Drive.canivoreName);
+                driveMotor2 = new TalonFX(DriveConstants.rearLeftDriveID2, DriveConstants.Drive.canivoreName);
                 turningMotor = new CANSparkMax(DriveConstants.rearLeftRotationID, MotorType.kBrushless);
                 break;
         }
@@ -45,41 +61,76 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
         encoder.setInverted(true);
         turningMotor.setInverted(true);
-        driveMotor.setInverted(false); // NEED TO CHECK WHEN SETTING UP
+        mOutputConfigs = new MotorOutputConfigs();
         CanBusUtil.staggerSparkMax(turningMotor);
-        CanBusUtil.staggerSparkMax(driveMotor);
 
-        
-        configDrive(driveMotor, wheelPos);
+        switch (Constants.driveDegradedMode) {
+            case normal:
+              configDrive(driveMotor, wheelPos, false);
+              configDrive(driveMotor2, wheelPos, false);
+              driveMotor2.setControl(new Follower(driveMotor.getDeviceID(), false));
+              break;
+            case sideMotorsOnly:
+              configDrive(driveMotor, wheelPos, false);
+              configDrive(driveMotor2, wheelPos, true);
+              break;
+            case centerMotorsOnly:
+              TalonFX driveTemp = driveMotor;
+              driveMotor = driveMotor2;
+              driveMotor2 = driveTemp;
+              configDrive(driveMotor, wheelPos, false);
+              configDrive(driveMotor2, wheelPos, true);
+              break;
+        }
+        // need rapid position/velocity feedback for control logic
+        driveMotor.getPosition().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
+        Constants.controllerConfigTimeoutMs);
+        driveMotor.getVelocity().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
+        Constants.controllerConfigTimeoutMs);
 
         configRotation(turningMotor);
     }
 
-    private void configDrive(CANSparkMax sparkMax, WheelPosition pos) {
-        SparkMaxPIDController config = sparkMax.getPIDController();
-
-        // PID config for 4 slotIDs
-        for (int i = 0; i <= 3; i++) {
-          config.setP(DriveConstants.Drive.kP, i);
-          config.setI(DriveConstants.Drive.kI, i);
-          config.setD(DriveConstants.Drive.kD, i);
-          config.setFF(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[i], i);
-          config.setOutputRange(-DriveConstants.Drive.maxPower, DriveConstants.Drive.maxPower, i); //TODO
+    private void configDrive(TalonFX talon, WheelPosition pos, boolean coastOnly) {
+        Slot0Configs slot0config = new Slot0Configs();
+        slot0config.kP = DriveConstants.Drive.kP;
+        slot0config.kI = DriveConstants.Drive.kI;
+        slot0config.kD = DriveConstants.Drive.kD;
+        slot0config.kV = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[0];
+        
+        ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
+        OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
+    
+        if (coastOnly) {
+          // for identifying failed Falcon outout shafts
+          mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+        } else {
+          // we would like to start in coast mode, but we can't switch from coast to brake, so just use brake always
+          mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
         }
-
-        sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
-        sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
-        sparkMax.setSmartCurrentLimit(DriveConstants.Drive.stallLimit, DriveConstants.Drive.freeLimit); //TODO
-        sparkMax.enableVoltageCompensation(DriveConstants.Drive.voltageCompSaturation);
-        sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
+        mOutputConfigs.DutyCycleNeutralDeadband = DriveConstants.Drive.brakeModeDeadband;
+        closedLoopConfig.VoltageClosedLoopRampPeriod = DriveConstants.Drive.closedLoopRampSec;
+        openLoopConfig.VoltageOpenLoopRampPeriod = DriveConstants.Drive.openLoopRampSec;
+         
+        talon.getConfigurator().apply(slot0config);
+        talon.getConfigurator().apply(closedLoopConfig);
+        talon.getConfigurator().apply(openLoopConfig);
+        talon.getConfigurator().apply(mOutputConfigs);
         
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
         boolean isLeftSide = (pos == WheelPosition.FRONT_LEFT) || (pos == WheelPosition.BACK_LEFT);
-        sparkMax.setInverted(isLeftSide);
-
-        // need rapid velocity feedback for control logic
-        CanBusUtil.fastVelocitySparkMax(driveMotor);
+        talon.setInverted(isLeftSide);
+    
+        // applies stator & supply current limit configs to device
+        // refer to https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/configuration.html 
+        currentLimitConfigs.StatorCurrentLimitEnable = DriveConstants.Drive.statorEnabled;
+        currentLimitConfigs.StatorCurrentLimit = DriveConstants.Drive.statorLimit;
+        currentLimitConfigs.SupplyCurrentLimit = DriveConstants.Drive.supplyLimit;
+        currentLimitConfigs.SupplyCurrentThreshold = DriveConstants.Drive.supplyThreshold;
+        currentLimitConfigs.SupplyTimeThreshold = DriveConstants.Drive.supplyTime;
+        currentLimitConfigs.SupplyCurrentLimitEnable = DriveConstants.Drive.supplyEnabled;
+        talon.getConfigurator().apply(currentLimitConfigs);
       }
 
       private void configRotation(CANSparkMax sparkMax) {
@@ -108,10 +159,15 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       @Override
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
-        inputs.driveRotations = driveMotor.getEncoder().getPosition();
-        inputs.driveRotationsPerSec = driveMotor.getEncoder().getVelocity()/60;
-        inputs.driveAppliedVolts = driveMotor.getAppliedOutput() * driveMotor.getBusVoltage();
-        inputs.driveCurrentAmps = driveMotor.getOutputCurrent();
+        inputs.drive1Rotations = driveMotor.getPosition().getValue();
+        inputs.drive1RotationsPerSec = driveMotor.getVelocity().getValue();
+        inputs.drive1AppliedVolts = driveMotor.getSupplyVoltage().getValue();
+        inputs.drive1CurrentAmps = driveMotor.getStatorCurrent().getValue();
+
+        inputs.drive2Rotations = driveMotor2.getPosition().getValue();
+        inputs.drive2RotationsPerSec = driveMotor2.getVelocity().getValue();
+        inputs.drive2AppliedVolts = driveMotor2.getSupplyVoltage().getValue();
+        inputs.drive2CurrentAmps = driveMotor2.getStatorCurrent().getValue();
         
         //turn inputs
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
@@ -122,52 +178,52 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID methods for turn motor
     @Override
-    public void setTurnPIDTargetAngle(double desiredAngle) {
-      turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
+    public void setTurnPIDReference(double value, ControlType ctrl) {
+      turningMotor.getPIDController().setReference(value, ctrl);
     }
 
     // PID method for drive motors
     @Override
-    public void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {
-      for (int i = 0; i <= 3; i++) {
-        driveMotor.getPIDController().setFF(setFeedForward[i], i);
-      }
-      double wheelRotations = Math.abs(driveMotor.getEncoder().getVelocity()/60);
-
-      if (wheelRotations <= thresholdRotPerSec[0]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 0);
-      }
-      else if (wheelRotations <= thresholdRotPerSec[1]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 1); 
-      }
-      else if (wheelRotations <= thresholdRotPerSec[2]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 2);
-      }
-      else if (wheelRotations <= thresholdRotPerSec[3]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 3);
-      }
+    public void setDrivePIDTargetVel(VelocityVoltage request) {
+      driveMotor.setControl(request);
     }
 
     @Override
     public void setBrakeMode() {
-      driveMotor.setIdleMode(IdleMode.kBrake);
+      mOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+      // the following calls reset follower mode or something else that makes the robot uncontrollable
+      //driveMotor.getConfigurator().apply(mOutputConfigs);
+      //driveMotor2.getConfigurator().apply(mOutputConfigs);
       turningMotor.setIdleMode(IdleMode.kBrake);
     }
 
     @Override
     public void setCoastMode() {
-        driveMotor.setIdleMode(IdleMode.kCoast);
+        mOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+        // the following calls reset follower mode or something else that makes the robot uncontrollable
+        //driveMotor.getConfigurator().apply(mOutputConfigs);
+        //driveMotor2.getConfigurator().apply(mOutputConfigs);
         turningMotor.setIdleMode(IdleMode.kCoast);
     }
 
     @Override
     public void setClosedRampRate(double period) {
-      driveMotor.setClosedLoopRampRate(period);
+      ClosedLoopRampsConfigs closedLoopConfig = new ClosedLoopRampsConfigs();
+
+      closedLoopConfig.VoltageClosedLoopRampPeriod = period;
+
+      driveMotor.getConfigurator().apply(closedLoopConfig);
+      driveMotor2.getConfigurator().apply(closedLoopConfig);
     }
 
     @Override
     public void setOpenRampRate(double period) {
-      driveMotor.setOpenLoopRampRate(period);
+      OpenLoopRampsConfigs openLoopConfig = new OpenLoopRampsConfigs();
+
+      openLoopConfig.VoltageOpenLoopRampPeriod = period;
+
+      driveMotor.getConfigurator().apply(openLoopConfig);
+      driveMotor2.getConfigurator().apply(openLoopConfig);
     }
 
     @Override
