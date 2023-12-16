@@ -8,20 +8,15 @@ import com.revrobotics.CANSparkMax.ControlType;
 public interface SwerveModuleIO {
     @AutoLog
     public class SwerveModuleIOInputs {
-        public double drive1Rotations = 0.0;
-        public double drive1RotationsPerSec = 0.0;
-        public double drive1AppliedVolts = 0.0;
-        public double drive1CurrentAmps = 0.0;
+        public double driveRotations = 0.0;
+        public double driveRotationsPerSec = 0.0;
+        public double driveAppliedVolts = 0.0;
+        public double driveCurrentAmps = 0.0;
 
-        public double drive2Rotations = 0.0;
-        public double drive2RotationsPerSec = 0.0;
-        public double drive2AppliedVolts = 0.0;
-        public double drive2CurrentAmps = 0.0;
-
-        public double turnVelocityDegPerSec = 0.0;
-        public double turnAppliedVolts = 0.0;
-        public double turnCurrentAmps = 0.0;
-        public double turnDegrees = 0.0;
+        public double rotateRotations = 0.0;
+        public double rotateRotationsPerSec = 0.0;
+        public double rotateAppliedVolts = 0.0;
+        public double rotateCurrentAmps = 0.0;
     }
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}

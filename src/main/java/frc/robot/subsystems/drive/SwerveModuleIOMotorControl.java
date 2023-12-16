@@ -27,59 +27,48 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     //drive motor
     private TalonFX driveMotor;
     private MotorOutputConfigs  mOutputConfigs;
-    private TalonFX driveMotor2;
-    private CurrentLimitsConfigs currentLimitConfigs = new CurrentLimitsConfigs();
 
-    //turning motor
-    private CANSparkMax turningMotor;
-    private SparkMaxAbsoluteEncoder encoder;
+    //rotate motor
+    private TalonFX rotateMotor;
+    private CurrentLimitsConfigs currentLimitConfigs = new CurrentLimitsConfigs();
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
             case FRONT_RIGHT:
                 driveMotor = new TalonFX(DriveConstants.frontRightDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.frontRightDriveID2, DriveConstants.Drive.canivoreName);
-                turningMotor = new CANSparkMax(DriveConstants.frontRightRotationID, MotorType.kBrushless);
+                rotateMotor = new TalonFX(DriveConstants.frontRightDriveID2, DriveConstants.Drive.canivoreName);
                 break;
             case FRONT_LEFT:
                 driveMotor = new TalonFX(DriveConstants.frontLeftDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.frontLeftDriveID2, DriveConstants.Drive.canivoreName);
-                turningMotor = new CANSparkMax(DriveConstants.frontLeftRotationID, MotorType.kBrushless); 
+                rotateMotor = new TalonFX(DriveConstants.frontLeftDriveID2, DriveConstants.Drive.canivoreName);
                 break;
             case BACK_RIGHT:
                 driveMotor = new TalonFX(DriveConstants.rearRightDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.rearRightDriveID2, DriveConstants.Drive.canivoreName);
-                turningMotor = new CANSparkMax(DriveConstants.rearRightRotationID, MotorType.kBrushless);
+                rotateMotor = new TalonFX(DriveConstants.rearRightDriveID2, DriveConstants.Drive.canivoreName);
                 break;
             case BACK_LEFT: 
                 driveMotor = new TalonFX(DriveConstants.rearLeftDriveID, DriveConstants.Drive.canivoreName);
-                driveMotor2 = new TalonFX(DriveConstants.rearLeftDriveID2, DriveConstants.Drive.canivoreName);
-                turningMotor = new CANSparkMax(DriveConstants.rearLeftRotationID, MotorType.kBrushless);
+                rotateMotor = new TalonFX(DriveConstants.rearLeftDriveID2, DriveConstants.Drive.canivoreName);
                 break;
         }
 
-        encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-        encoder.setInverted(true);
-        turningMotor.setInverted(true);
         mOutputConfigs = new MotorOutputConfigs();
-        CanBusUtil.staggerSparkMax(turningMotor);
 
         switch (Constants.driveDegradedMode) {
             case normal:
               configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, false);
-              driveMotor2.setControl(new Follower(driveMotor.getDeviceID(), false));
+              configDrive(rotateMotor, wheelPos, false);
               break;
             case sideMotorsOnly:
               configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, true);
+              configDrive(rotateMotor, wheelPos, true);
               break;
             case centerMotorsOnly:
               TalonFX driveTemp = driveMotor;
-              driveMotor = driveMotor2;
-              driveMotor2 = driveTemp;
+              driveMotor = rotateMotor;
+              rotateMotor = driveTemp;
               configDrive(driveMotor, wheelPos, false);
-              configDrive(driveMotor2, wheelPos, true);
+              configDrive(rotateMotor, wheelPos, true);
               break;
         }
         // need rapid position/velocity feedback for control logic
@@ -87,8 +76,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         Constants.controllerConfigTimeoutMs);
         driveMotor.getVelocity().setUpdateFrequency(OrangeMath.msAndHzConverter(CanBusUtil.nextFastStatusPeriodMs()), 
         Constants.controllerConfigTimeoutMs);
-
-        configRotation(turningMotor);
     }
 
     private void configDrive(TalonFX talon, WheelPosition pos, boolean coastOnly) {
@@ -134,24 +121,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       }
 
       private void configRotation(CANSparkMax sparkMax) {
-        SparkMaxPIDController config = sparkMax.getPIDController();
-        config.setP(DriveConstants.Rotation.kP,0);
-        config.setD(DriveConstants.Rotation.kD,0);
-        sparkMax.setClosedLoopRampRate(DriveConstants.Rotation.configCLosedLoopRamp);
-        config.setSmartMotionAllowedClosedLoopError(DriveConstants.Rotation.allowableClosedloopError,0);
-        config.setOutputRange(-DriveConstants.Rotation.maxPower, DriveConstants.Rotation.maxPower);
-        sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
-    
-        sparkMax.enableVoltageCompensation(DriveConstants.Rotation.configVoltageCompSaturation); 
-        sparkMax.setSmartCurrentLimit(DriveConstants.Rotation.stallLimit, DriveConstants.Rotation.freeLimit); 
-        encoder.setPositionConversionFactor(360);  // convert encoder position duty cycle to degrees
-        sparkMax.getPIDController().setFeedbackDevice(encoder);
-        sparkMax.getPIDController().setPositionPIDWrappingEnabled(true);
-        sparkMax.getPIDController().setPositionPIDWrappingMinInput(0);
-        sparkMax.getPIDController().setPositionPIDWrappingMaxInput(360);
-    
-        // need rapid position feedback for steering control
-        CanBusUtil.fastPositionSparkMaxAbs(turningMotor);
+        
       }
 
       // Below are the implementations of the methods in SwerveModuleIO.java
@@ -159,27 +129,21 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       @Override
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
-        inputs.drive1Rotations = driveMotor.getPosition().getValue();
-        inputs.drive1RotationsPerSec = driveMotor.getVelocity().getValue();
-        inputs.drive1AppliedVolts = driveMotor.getSupplyVoltage().getValue();
-        inputs.drive1CurrentAmps = driveMotor.getStatorCurrent().getValue();
+        inputs.driveRotations = driveMotor.getPosition().getValue();
+        inputs.driveRotationsPerSec = driveMotor.getVelocity().getValue();
+        inputs.driveAppliedVolts = driveMotor.getSupplyVoltage().getValue();
+        inputs.driveCurrentAmps = driveMotor.getStatorCurrent().getValue();
 
-        inputs.drive2Rotations = driveMotor2.getPosition().getValue();
-        inputs.drive2RotationsPerSec = driveMotor2.getVelocity().getValue();
-        inputs.drive2AppliedVolts = driveMotor2.getSupplyVoltage().getValue();
-        inputs.drive2CurrentAmps = driveMotor2.getStatorCurrent().getValue();
-        
-        //turn inputs
-        inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(encoder.getVelocity());
-        inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
-        inputs.turnCurrentAmps = turningMotor.getOutputCurrent();
-        inputs.turnDegrees = encoder.getPosition();
+        inputs.rotateRotations = rotateMotor.getPosition().getValue();
+        inputs.rotateRotationsPerSec = rotateMotor.getVelocity().getValue();
+        inputs.rotateAppliedVolts = rotateMotor.getSupplyVoltage().getValue();
+        inputs.rotateCurrentAmps = rotateMotor.getStatorCurrent().getValue();
     }
 
     // PID methods for turn motor
     @Override
     public void setTurnPIDReference(double value, ControlType ctrl) {
-      turningMotor.getPIDController().setReference(value, ctrl);
+      
     }
 
     // PID method for drive motors
@@ -194,7 +158,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       // the following calls reset follower mode or something else that makes the robot uncontrollable
       //driveMotor.getConfigurator().apply(mOutputConfigs);
       //driveMotor2.getConfigurator().apply(mOutputConfigs);
-      turningMotor.setIdleMode(IdleMode.kBrake);
     }
 
     @Override
@@ -203,7 +166,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         // the following calls reset follower mode or something else that makes the robot uncontrollable
         //driveMotor.getConfigurator().apply(mOutputConfigs);
         //driveMotor2.getConfigurator().apply(mOutputConfigs);
-        turningMotor.setIdleMode(IdleMode.kCoast);
     }
 
     @Override
@@ -213,7 +175,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       closedLoopConfig.VoltageClosedLoopRampPeriod = period;
 
       driveMotor.getConfigurator().apply(closedLoopConfig);
-      driveMotor2.getConfigurator().apply(closedLoopConfig);
+      rotateMotor.getConfigurator().apply(closedLoopConfig);
     }
 
     @Override
@@ -223,13 +185,13 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       openLoopConfig.VoltageOpenLoopRampPeriod = period;
 
       driveMotor.getConfigurator().apply(openLoopConfig);
-      driveMotor2.getConfigurator().apply(openLoopConfig);
+      rotateMotor.getConfigurator().apply(openLoopConfig);
     }
 
     @Override
     public void stopMotor() {
         driveMotor.stopMotor();
-        turningMotor.stopMotor();
+        rotateMotor.stopMotor();
     }
     
 }

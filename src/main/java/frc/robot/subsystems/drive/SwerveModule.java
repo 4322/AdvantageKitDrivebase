@@ -33,9 +33,9 @@ public class SwerveModule {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
     Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive1RotationsPerSecAbs", 
-        Math.abs(inputs.drive1RotationsPerSec));
+        Math.abs(inputs.driveRotationsPerSec));
     Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive2RotationsPerSecAbs", 
-        Math.abs(inputs.drive2RotationsPerSec));
+        Math.abs(inputs.rotateRotationsPerSec));
   }
 
   public double getInternalRotationDegrees() {
@@ -43,14 +43,14 @@ public class SwerveModule {
   }
 
   public double getDistanceMeters() {
-    return OrangeMath.falconRotationsToMeters(inputs.drive1Rotations,
+    return OrangeMath.falconRotationsToMeters(inputs.driveRotations,
         OrangeMath.getCircumference(OrangeMath.inchesToMeters(DriveConstants.Drive.wheelDiameterInches)),
         DriveConstants.Drive.gearRatio);
   }
 
   public double getVelocityFeetPerSec() {
     // feet per second
-    return inputs.drive1RotationsPerSec / Constants.DriveConstants.Drive.gearRatio 
+    return inputs.driveRotationsPerSec / Constants.DriveConstants.Drive.gearRatio 
         * Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
   }
 
