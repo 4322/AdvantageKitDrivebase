@@ -7,6 +7,9 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -49,6 +52,9 @@ public class RobotContainer {
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
+  private AutoChooserShuffleBoardIO autoChooserShuffleBoardIO;
+  private AutoChooserShuffleBoardIOInputsAutoLogged autoChooserShuffleBoardInputs = new AutoChooserShuffleBoardIOInputsAutoLogged();
+
   private int selectedPosition = 0;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -66,19 +72,12 @@ public class RobotContainer {
     // Set up auto routines
     ppManager = new PathPlannerManager(drive);
 
-    loadAutos();
-  }
-
-  private void loadAutos() {
-
-    // Reset autoArrayList and selectedPosition
-    autoArrayList.clear();
-    selectedPosition = 0;
-
-    autoArrayList.add(new Auto(
-      "Do Nothing", 
-      ppManager.loadAuto("Move Forward", false),
-      Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+    if (Constants.autoChooserEnabled) {
+      autoChooserShuffleBoardIO = new AutoChooserShuffleBoardIODataEntry();
+    }
+    if (autoChooserShuffleBoardIO == null) {
+      autoChooserShuffleBoardIO = new AutoChooserShuffleBoardIO() {};
+    }
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -109,6 +108,11 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
+    if (Constants.autoChooserEnabled) {
+      // update logs
+      autoChooserShuffleBoardIO.updateInputs(autoChooserShuffleBoardInputs);
+      Logger.getInstance().processInputs("AutoChooserShuffleBoard/AutoChooserShuffleBoardInputs", autoChooserShuffleBoardInputs);
+    } 
     if (disableTimer.hasElapsed(Constants.DriveConstants.disableBreakSec)) {
       if (Constants.driveEnabled) {
         drive.setCoastMode(); // robot has stopped, safe to enter coast mode
@@ -116,6 +120,7 @@ public class RobotContainer {
       disableTimer.stop();
       disableTimer.reset();
     }
+    autoChooserShuffleBoardIO.updateChoosers();
   }
 
   public void enableSubsystems() {
@@ -128,17 +133,17 @@ public class RobotContainer {
     driveStop.schedule();  // interrupt all drive commands
     disableTimer.reset();
     disableTimer.start();
-    loadAutos();
   }
 
   public Command getAutonomousCommand() {
     if (Constants.Demo.inDemoMode) {
       return null;
     }
-    
+
     return new SequentialCommandGroup(
-    getAutoInitialize()
-  );
+      getAutoInitialize(),
+      autoChooserShuffleBoardInputs.auto
+    );
   }
 
   //AUTO COMMANDS

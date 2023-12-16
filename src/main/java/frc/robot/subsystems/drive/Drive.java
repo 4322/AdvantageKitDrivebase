@@ -1,11 +1,9 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -224,7 +222,7 @@ public class Drive extends SubsystemBase {
     if (Constants.driveEnabled) {
       // update logs
       driveShuffleBoard.updateInputs(driveShuffleBoardInputs);
-      Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", driveShuffleBoardInputs);
+      Logger.getInstance().processInputs("DriveShuffleBoard/DriveShuffleBoardInputs", driveShuffleBoardInputs);
       for (SwerveModule module : swerveModules) {
         module.periodic();
       }

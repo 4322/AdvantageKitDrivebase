@@ -6,15 +6,19 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 import frc.utility.Auto;
+import frc.utility.OrangeSendableChooser;
 
 public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoardIO{
   private ShuffleboardTab customizationTab;
   private SendableChooser<Integer> positionChooser;
   private ArrayList<Auto> autoArrayList;
+  private OrangeSendableChooser<Command> autoChooser = new OrangeSendableChooser<Command>();
   private final PathPlannerManager ppManager;
   private final Drive drive = new Drive();
+  private int selectedPosition;
   
 
   public AutoChooserShuffleBoardIODataEntry() {
@@ -40,14 +44,36 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
       customizationTab.add("Position Chooser", positionChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
         .withPosition(0, 0).withSize(0, 0);
 
-      
-      
-      autoArrayList = new ArrayList<Auto>();
-      autoArrayList.add(new Auto(
-      "Do Nothing", 
-      ppManager.loadAuto("Move Forward", false),
-      Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-      
+      customizationTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
+        .withPosition(0, 0).withSize(0, 0);
+        
+      loadAutos();
+    }
+  }
+
+  public void loadAutos() {
+    // Reset autoArrayList and selectedPosition
+    autoArrayList.clear();
+    selectedPosition = 0;
+
+    autoArrayList = new ArrayList<Auto>();
+    autoArrayList.add(new Auto(
+    "Do Nothing", 
+    ppManager.loadAuto("Move Forward", false),
+    Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
+  }
+
+  public void updateChoosers() {
+    if (positionChooser.getSelected() != null) {
+      if (positionChooser.getSelected() != selectedPosition) {
+        selectedPosition = positionChooser.getSelected();
+        autoChooser.removeAllOptions();
+        for (Auto auto : autoArrayList) {
+          if (auto.positions.contains(selectedPosition)) {
+            autoChooser.addOption(auto.name, auto.command);
+          }
+        }
+      }
     }
   }
 
@@ -55,11 +81,7 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
   public void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {
     if (Constants.autoChooserEnabled) {
       inputs.position = positionChooser.getSelected();
-
+      inputs.auto = autoChooser.getSelected();
     }
-  }
-
-  public void loadAutos() {
-
   }
 }
