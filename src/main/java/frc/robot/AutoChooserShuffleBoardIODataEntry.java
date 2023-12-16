@@ -58,7 +58,7 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
 
     autoArrayList = new ArrayList<Auto>();
     autoArrayList.add(new Auto(
-    "Do Nothing", 
+    "Move Forward", 
     ppManager.loadAuto("Move Forward", false),
     Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
   }
