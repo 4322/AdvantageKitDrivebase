@@ -64,12 +64,12 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
           config.setI(DriveConstants.Drive.kI, i);
           config.setD(DriveConstants.Drive.kD, i);
           config.setFF(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[i], i);
-          config.setOutputRange(0, 0, i); //TODO
+          config.setOutputRange(-DriveConstants.Drive.maxPower, DriveConstants.Drive.maxPower, i); //TODO
         }
 
         sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
         sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
-        sparkMax.setSmartCurrentLimit(0, 0); // TODO
+        sparkMax.setSmartCurrentLimit(DriveConstants.Drive.stallLimit, DriveConstants.Drive.freeLimit); //TODO
         sparkMax.enableVoltageCompensation(DriveConstants.Drive.voltageCompSaturation);
         sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
         

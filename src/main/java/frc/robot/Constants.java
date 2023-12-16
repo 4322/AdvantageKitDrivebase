@@ -221,12 +221,15 @@ public final class Constants {
       public static final double openLoopRampSec = 0.08;  // only used when stopping, including letting go of the drive stick
 
       public static final double voltageCompSaturation = 11.5;
-      public static final boolean enableVoltageCompensation = true;
 
       public static final double brakeModeDeadband = 0.01;
 
-      public static final boolean statorEnabled = true;
       public static final double statorLimit = 60;
+
+      public static final double maxPower = 0.5; //TODO
+
+      public static final int freeLimit = 60; //TODO
+      public static final int stallLimit = 5; //TODO
 
       // when supply threshold is exceeded for the time, drop the current to the limit
       public static final boolean supplyEnabled = true;
@@ -235,11 +238,10 @@ public final class Constants {
       public static final double supplyTime = 2.0;
 
       public static final double wheelDiameterInches = 3.9;
-      public static final double gearRatio = 38250.0/7290.0; //kept drive gear ratio in fractional form to not lose precision
+      public static final double gearRatio = 7.80; //drive gear ratio
       public static final double kP = 0.05;
       public static final double kI = 0.0002;
       public static final double kD = 0.0;
-      public static final String canivoreName = "Drivebase";
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
