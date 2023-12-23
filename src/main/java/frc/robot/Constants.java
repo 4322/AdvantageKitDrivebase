@@ -251,15 +251,15 @@ public final class Constants {
           voltsAtMaxSpeed[2] = 11.0;
           voltsAtMaxSpeed[3] = 11.0;
         }
-        public static final double[] thresholdRotPerSec;
+        public static final double[] feedForwardRPSThreshold;
         static {
           // define speed at which each voltage value will be used
-          thresholdRotPerSec = new double[4];
+          feedForwardRPSThreshold = new double[4];
           // values must be in ascending order
-          thresholdRotPerSec[0] = 0.0; // Must be zero
-          thresholdRotPerSec[1] = 30.0;
-          thresholdRotPerSec[2] = 50.0;
-          thresholdRotPerSec[3] = 80.0;
+          feedForwardRPSThreshold[0] = 0.0; // Must be zero
+          feedForwardRPSThreshold[1] = 30.0;
+          feedForwardRPSThreshold[2] = 50.0;
+          feedForwardRPSThreshold[3] = 80.0;
         }
       }
     }

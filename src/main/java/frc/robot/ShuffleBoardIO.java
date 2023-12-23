@@ -15,7 +15,7 @@ public interface ShuffleBoardIO {
     public double accelerationRampRate;
     public double stoppedRampRate;
     public double[] voltsAtMaxSpeed;
-    public double[] thresholdRotPerSec;
+    public double[] feedForwardRPSThresholdEntry;
   }
 
   public default void updateInputs(ShuffleBoardIOInputs inputs) {}
