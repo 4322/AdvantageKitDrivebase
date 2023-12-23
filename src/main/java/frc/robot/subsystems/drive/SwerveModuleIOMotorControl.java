@@ -133,13 +133,17 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity()/60);
       int slotNumber = 0;
       
-      // go from 3 to 0 to account for values greater than max velocity threshold
-      for (int i = 3; i >= 0; i--) { 
-        if (wheelRotationsPerSec >= thresholdRotPerSec[i]) {
+      for (int i = 0; i <= 3; i++) { 
+        if (wheelRotationsPerSec <= thresholdRotPerSec[i]) {
           slotNumber = i;
           break;
         }
       }
+      // account for case where wheelRotationsPerSec exceeds max velocity threshold
+      if (wheelRotationsPerSec > thresholdRotPerSec[3]) {
+        slotNumber = 3;
+      }
+
       driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
 
       //error handling
@@ -147,10 +151,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       if (error.value != 0) {
         DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error on PID slot " + slotNumber, false);
       }
-
-
-      
-
     }
     
     // only updates the feedForward values when a value is changed in shuffleboard
