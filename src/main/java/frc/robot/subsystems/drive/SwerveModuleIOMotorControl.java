@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -8,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.WheelPosition;
@@ -127,23 +129,38 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motors
     @Override
-    public void setDriveVelocity(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {
-      for (int i = 0; i <= 3; i++) {
-        driveMotor.getPIDController().setFF(setFeedForward[i], i);
-      }
+    public void setDriveVelocity(double desiredVelocity, double[] thresholdRotPerSec) {
       double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity()/60);
+      int slotNumber = 0;
+      
+      // go from 3 to 0 to account for values greater than max velocity threshold
+      for (int i = 3; i >= 0; i--) { 
+        if (wheelRotationsPerSec >= thresholdRotPerSec[i]) {
+          slotNumber = i;
+          break;
+        }
+      }
+      driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
 
-      if (wheelRotationsPerSec <= thresholdRotPerSec[0]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 0);
+      //error handling
+      REVLibError error = driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
+      if (error.value != 0) {
+        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error on PID slot " + slotNumber, false);
       }
-      else if (wheelRotationsPerSec <= thresholdRotPerSec[1]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 1); 
-      }
-      else if (wheelRotationsPerSec <= thresholdRotPerSec[2]) {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 2);
-      }
-      else {
-        driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 3);
+
+
+      
+
+    }
+    
+    // only updates the feedForward values when a value is changed in shuffleboard
+    @Override
+    public void updateFeedForward(double[] prevFeedForward, double[] currentFeedForward) {
+      for (int i = 0; i <= 3; i++) {
+        if (prevFeedForward[i] != currentFeedForward[i]) {
+          driveMotor.getPIDController().setFF(currentFeedForward[i], i);
+          prevFeedForward[i] = currentFeedForward[i];
+        }
       }
     }
 
