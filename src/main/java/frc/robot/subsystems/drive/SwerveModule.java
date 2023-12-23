@@ -106,7 +106,7 @@ public class SwerveModule {
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDrivePIDTargetVel(state.speedMetersPerSecond
+      io.setDriveVelocity(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
           * DriveConstants.Drive.gearRatio, shuffleBoardInputs.voltsAtMaxSpeed, shuffleBoardInputs.thresholdRotPerSec);
               

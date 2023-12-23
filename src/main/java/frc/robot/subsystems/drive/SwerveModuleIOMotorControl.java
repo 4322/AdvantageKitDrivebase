@@ -64,7 +64,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
           config.setI(DriveConstants.Drive.kI, i);
           config.setD(DriveConstants.Drive.kD, i);
           config.setFF(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[i], i);
-          config.setOutputRange(-DriveConstants.Drive.maxPower, DriveConstants.Drive.maxPower, i); //TODO
         }
 
         sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
@@ -128,22 +127,22 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motors
     @Override
-    public void setDrivePIDTargetVel(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {
+    public void setDriveVelocity(double desiredVelocity, double[] setFeedForward, double[] thresholdRotPerSec) {
       for (int i = 0; i <= 3; i++) {
         driveMotor.getPIDController().setFF(setFeedForward[i], i);
       }
-      double wheelRotations = Math.abs(driveMotor.getEncoder().getVelocity()/60);
+      double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity()/60);
 
-      if (wheelRotations <= thresholdRotPerSec[0]) {
+      if (wheelRotationsPerSec <= thresholdRotPerSec[0]) {
         driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 0);
       }
-      else if (wheelRotations <= thresholdRotPerSec[1]) {
+      else if (wheelRotationsPerSec <= thresholdRotPerSec[1]) {
         driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 1); 
       }
-      else if (wheelRotations <= thresholdRotPerSec[2]) {
+      else if (wheelRotationsPerSec <= thresholdRotPerSec[2]) {
         driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 2);
       }
-      else if (wheelRotations <= thresholdRotPerSec[3]) {
+      else {
         driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, 3);
       }
     }
