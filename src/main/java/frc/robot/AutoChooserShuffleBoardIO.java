@@ -9,7 +9,6 @@ import frc.utility.Auto;
 public interface AutoChooserShuffleBoardIO {
   @AutoLog
   public static class AutoChooserShuffleBoardIOInputs {
-    public ArrayList<Auto> autoArrayList;
     public int position;
     public Command auto;
   }
