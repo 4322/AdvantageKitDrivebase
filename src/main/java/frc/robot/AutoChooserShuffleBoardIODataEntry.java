@@ -42,10 +42,10 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
       positionChooser.addOption("9", 9);
 
       customizationTab.add("Position Chooser", positionChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
-        .withPosition(0, 0).withSize(0, 0);
+        .withPosition(0, 0).withSize(9, 2);
 
       customizationTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
-        .withPosition(0, 0).withSize(0, 0);
+        .withPosition(0, 2).withSize(9, 2);
         
       loadAutos();
     }
