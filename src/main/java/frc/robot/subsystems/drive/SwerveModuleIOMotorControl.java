@@ -130,20 +130,14 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     // PID method for drive motors
     @Override
     public void setDriveVelocity(double desiredVelocity, double[] thresholdRotPerSec) {
-      double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity()/60);
+      double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity() / 60);
       int slotNumber = 0;
-      
-      for (int i = 0; i <= 3; i++) { 
-        if (wheelRotationsPerSec <= thresholdRotPerSec[i]) {
-          slotNumber = i;
+
+      for (slotNumber = 3; slotNumber >= 0; slotNumber--) { 
+        if (wheelRotationsPerSec >= thresholdRotPerSec[slotNumber]) {
           break;
         }
       }
-      // account for case where wheelRotationsPerSec exceeds max velocity threshold
-      if (wheelRotationsPerSec > thresholdRotPerSec[3]) {
-        slotNumber = 3;
-      }
-
       driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
 
       //error handling
