@@ -3,8 +3,6 @@ package frc.robot.subsystems.drive;
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.Constants;
-import frc.robot.ShuffleBoardIO;
-import frc.robot.ShuffleBoardIOInputsAutoLogged;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.WheelPosition;
 import frc.utility.OrangeMath;
@@ -20,11 +18,6 @@ public class SwerveModule {
   private SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
   private WheelPosition wheelPos;
 
-  private ShuffleBoardIO shuffleBoard;
-  private ShuffleBoardIOInputsAutoLogged shuffleBoardInputs = new ShuffleBoardIOInputsAutoLogged();
-
-  private double[] previousFF;
-
   private double previousRate = 0;
   private double previousTime = 0;
   private double filteredAccel = 0;
@@ -32,10 +25,6 @@ public class SwerveModule {
   public SwerveModule(WheelPosition wheelPos, SwerveModuleIO io) {
     this.io = io;
     this.wheelPos = wheelPos;
-
-    if (Constants.shuffleboardEnabled) {
-      shuffleBoard = new ShuffleBoardIO() {};
-    }
   }
 
   public void periodic() {
@@ -43,12 +32,6 @@ public class SwerveModule {
     Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
     Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive1RotationsPerSecAbs", 
         Math.abs(inputs.driveRotationsPerSec));
-    
-    previousFF = shuffleBoardInputs.voltsAtMaxSpeed;
-    shuffleBoard.updateInputs(shuffleBoardInputs);
-    io.updateFeedForward(previousFF, shuffleBoardInputs.voltsAtMaxSpeed);
-    // do we still need to log even though it's done in drive periodic?
-    // Logger.getInstance().processInputs("ShuffleBoard/ShuffleBoardInputs", shuffleBoardInputs);
   }
 
   public double getInternalRotationDegrees() {
@@ -110,7 +93,7 @@ public class SwerveModule {
 
       io.setDriveVelocity(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
-          * DriveConstants.Drive.gearRatio, shuffleBoardInputs.feedForwardRPSThresholdEntry);
+          * DriveConstants.Drive.gearRatio * 60);
               
       if (!Constants.steeringTuningMode) {
         io.setTurnPIDTargetAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
@@ -144,5 +127,13 @@ public class SwerveModule {
         io.stopMotor();
       }
     }
+  }
+
+  public void updateFeedForward(double[] FFvalue) {
+    io.updateFeedForward(FFvalue);
+  }
+
+  public void updateFFVelocityThreshold(double[] FFvelocityThreshold) {
+    io.setFeedForwardVelocityThreshold(FFvelocityThreshold);
   }
 }

@@ -77,8 +77,6 @@ public class Drive extends SubsystemBase {
   private GenericEntry odometryDegrees;
   private GenericEntry angularVel;
 
- 
-
   private double lastClosedRampRate = DriveConstants.Drive.closedLoopRampSec;
   private double lastOpenRampRate = DriveConstants.Drive.openLoopRampSec;
 
@@ -240,6 +238,11 @@ public class Drive extends SubsystemBase {
 
       if (Constants.gyroEnabled) {
         updateOdometry();
+      }
+      
+      for (SwerveModule module: swerveModules) {
+        module.updateFFVelocityThreshold(shuffleBoardInputs.feedForwardRPSThresholdEntry);
+        module.updateFeedForward(shuffleBoardInputs.voltsAtMaxSpeed);
       }
 
       if (Constants.debug) {

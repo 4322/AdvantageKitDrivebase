@@ -24,6 +24,12 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private CANSparkMax turningMotor;
     private SparkMaxAbsoluteEncoder encoder;
 
+    // value will not be changed and can have same array reference
+    private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
+    
+    // value will be changed and MUST have copy of array
+    private double[] prevFeedForward = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed.clone();
+
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
             case FRONT_RIGHT:
@@ -129,31 +135,41 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motors
     @Override
-    public void setDriveVelocity(double desiredVelocity, double[] thresholdRotPerSec) {
-      double wheelRotationsPerSec = Math.abs(driveMotor.getEncoder().getVelocity() / 60);
-      int slotNumber = 0;
-
-      for (slotNumber = 3; slotNumber >= 0; slotNumber--) { 
-        if (wheelRotationsPerSec >= thresholdRotPerSec[slotNumber]) {
+    public void setDriveVelocity(double desiredVelocity) {
+      // convert RPM to RPS
+      double requestedWheelRPS = Math.abs(desiredVelocity/60);
+      int slotNumber;
+      
+      // If wheelRPS less than element 1 of FF velocity threshold, slotNum defaults to 0
+      // due to for loop iterating slotNumber at the end.
+      // Greater than or equals to not used in order to protect against erroneous shuffleboard input
+      // where element 0 of FF velocity threshold is changed from 0.
+      for (slotNumber = 3; slotNumber > 0; slotNumber--) { 
+        if (requestedWheelRPS >= feedForwardRPSThreshold[slotNumber]) {
           break;
         }
       }
-      driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
 
-      //error handling
+      // send requested velocity to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
-      if (error.value != 0) {
-        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error on PID slot " + slotNumber, false);
+      if (error != REVLibError.kOk) {
+        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " on PID slot " + slotNumber, false);
       }
+    }
+
+    // updates FeedForward velocity thresholds regardless of whether it's changed in shuffleboard
+    @Override
+    public void setFeedForwardVelocityThreshold(double[] FFthreshold) {
+      feedForwardRPSThreshold = FFthreshold;
     }
     
     // only updates the feedForward values when a value is changed in shuffleboard
     @Override
-    public void updateFeedForward(double[] prevFeedForward, double[] currentFeedForward) {
+    public void updateFeedForward(double[] newFeedForward) {
       for (int i = 0; i <= 3; i++) {
-        if (prevFeedForward[i] != currentFeedForward[i]) {
-          driveMotor.getPIDController().setFF(currentFeedForward[i], i);
-          prevFeedForward[i] = currentFeedForward[i];
+        if (prevFeedForward[i] != newFeedForward[i]) {
+          prevFeedForward[i] = newFeedForward[i];
+          driveMotor.getPIDController().setFF(newFeedForward[i], i);
         }
       }
     }
