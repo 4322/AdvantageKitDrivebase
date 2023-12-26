@@ -22,9 +22,9 @@ public interface SwerveModuleIO {
 
     public default void updateFeedForward(double[] newFeedForward) {}
 
-    public default void setFeedForwardVelocityThreshold(double[] FFthreshold) {}
+    public default void setFeedForwardVelocityThreshold(double[] newFeedForwardRPSThreshold) {}
 
-    public default void setTurnPIDTargetAngle(double desiredAngle) {} //angle from 0 to 360 degrees
+    public default void setTurnAngle(double desiredAngle) {} // angle from 0 to 360 degrees
 
     public default void setBrakeMode() {}
 

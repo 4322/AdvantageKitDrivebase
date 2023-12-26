@@ -17,17 +17,12 @@ import frc.utility.CanBusUtil;
 import frc.utility.OrangeMath;
 
 public class SwerveModuleIOMotorControl implements SwerveModuleIO {
-    //drive motor
     private CANSparkMax driveMotor;
 
-    //turning motor
     private CANSparkMax turningMotor;
     private SparkMaxAbsoluteEncoder encoder;
-
-    // value will not be changed and can have same array reference
-    private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
     
-    // value will be changed and MUST have copy of array
+    private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
     private double[] prevFeedForward = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed.clone();
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
@@ -53,10 +48,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
         encoder.setInverted(true);
         turningMotor.setInverted(true);
-        driveMotor.setInverted(false); // NEED TO CHECK WHEN SETTING UP
+        driveMotor.setInverted(false); // TODO: NEED TO CHECK WHEN SETTING UP
         CanBusUtil.staggerSparkMax(turningMotor);
         CanBusUtil.staggerSparkMax(driveMotor);
-
         
         configDrive(driveMotor, wheelPos);
 
@@ -76,7 +70,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
         sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
         sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
-        sparkMax.setSmartCurrentLimit(DriveConstants.Drive.stallLimit, DriveConstants.Drive.freeLimit); //TODO
+        sparkMax.setSmartCurrentLimit(DriveConstants.Drive.stallLimit, DriveConstants.Drive.freeLimit); // TODO
         sparkMax.enableVoltageCompensation(DriveConstants.Drive.voltageCompSaturation);
         sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
         
@@ -111,7 +105,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       }
 
       // Below are the implementations of the methods in SwerveModuleIO.java
-
       @Override
       public void updateInputs(SwerveModuleIOInputs inputs) {
         //drive inputs
@@ -129,11 +122,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID methods for turn motor
     @Override
-    public void setTurnPIDTargetAngle(double desiredAngle) {
+    public void setTurnAngle(double desiredAngle) {
       turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
     }
 
-    // PID method for drive motors
+    // PID method for drive motor
     @Override
     public void setDriveVelocity(double desiredVelocity) {
       // convert RPM to RPS
@@ -159,8 +152,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // updates FeedForward velocity thresholds regardless of whether it's changed in shuffleboard
     @Override
-    public void setFeedForwardVelocityThreshold(double[] FFthreshold) {
-      feedForwardRPSThreshold = FFthreshold;
+    public void setFeedForwardVelocityThreshold(double[] newFeedForwardRPSThreshold) {
+      feedForwardRPSThreshold = newFeedForwardRPSThreshold;
     }
     
     // only updates the feedForward values when a value is changed in shuffleboard

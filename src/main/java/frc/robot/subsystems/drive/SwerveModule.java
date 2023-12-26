@@ -96,7 +96,7 @@ public class SwerveModule {
           * DriveConstants.Drive.gearRatio * 60);
               
       if (!Constants.steeringTuningMode) {
-        io.setTurnPIDTargetAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
+        io.setTurnAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
       }
     }
   }
