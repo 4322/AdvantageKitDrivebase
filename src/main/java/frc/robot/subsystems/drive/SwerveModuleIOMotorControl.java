@@ -153,7 +153,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     // updates FeedForward velocity thresholds regardless of whether it's changed in shuffleboard
     @Override
     public void setFeedForwardVelocityThreshold(double[] newFeedForwardRPSThreshold) {
-      feedForwardRPSThreshold = newFeedForwardRPSThreshold;
+      for (int i = 0; i <= 3; i++) {
+        feedForwardRPSThreshold[i] = newFeedForwardRPSThreshold[i];
+      } 
     }
     
     // only updates the feedForward values when a value is changed in shuffleboard
