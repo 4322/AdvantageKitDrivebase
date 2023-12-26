@@ -240,11 +240,6 @@ public class Drive extends SubsystemBase {
         updateOdometry();
       }
       
-      for (SwerveModule module: swerveModules) {
-        module.updateFFVelocityThreshold(shuffleBoardInputs.feedForwardRPSThresholdEntry);
-        module.updateFeedForward(shuffleBoardInputs.voltsAtMaxSpeed);
-      }
-
       if (Constants.debug) {
         if (Constants.gyroEnabled) {
           yawTab.setDouble(getAngle());
@@ -268,6 +263,10 @@ public class Drive extends SubsystemBase {
           for (SwerveModule module : swerveModules) {
             module.setOpenRampRate(newRampRate);
           }
+        }
+        for (SwerveModule module: swerveModules) {
+          module.updateFFVelocityThreshold(shuffleBoardInputs.feedForwardRPSThresholdEntry);
+          module.updateFeedForward(shuffleBoardInputs.voltsAtMaxSpeed);
         }
       }
     }
