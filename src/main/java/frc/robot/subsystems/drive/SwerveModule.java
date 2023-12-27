@@ -91,7 +91,7 @@ public class SwerveModule {
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDriveVelocity(state.speedMetersPerSecond
+      io.setDriveSpeed(state.speedMetersPerSecond
           / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
           * DriveConstants.Drive.gearRatio * 60);
               
@@ -134,6 +134,6 @@ public class SwerveModule {
   }
 
   public void updateFFVelocityThreshold(double[] FFvelocityThreshold) {
-    io.setFeedForwardVelocityThreshold(FFvelocityThreshold);
+    io.setFeedForwardSpeedThreshold(FFvelocityThreshold);
   }
 }

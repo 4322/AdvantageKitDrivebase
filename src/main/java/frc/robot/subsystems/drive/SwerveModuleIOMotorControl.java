@@ -128,37 +128,38 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motor
     @Override
-    public void setDriveVelocity(double desiredVelocity) {
+    public void setDriveSpeed(double desiredMotorRPM) {
       // convert RPM to RPS
-      double requestedWheelRPS = Math.abs(desiredVelocity/60);
+      double desiredMotorRPS = Math.abs(desiredMotorRPM / 60);
       int slotNumber;
       
-      // If wheelRPS less than element 1 of FF velocity threshold, slotNum defaults to 0
+      // If motor RPS less than element 1 of FF speed threshold, slotNum defaults to 0
       // due to for loop iterating slotNumber at the end.
       // Greater than or equals to not used in order to protect against erroneous shuffleboard input
       // where element 0 of FF velocity threshold is changed from 0.
       for (slotNumber = 3; slotNumber > 0; slotNumber--) { 
-        if (requestedWheelRPS >= feedForwardRPSThreshold[slotNumber]) {
+        if (desiredMotorRPS >= feedForwardRPSThreshold[slotNumber]) {
           break;
         }
       }
 
-      // send requested velocity to SparkMAX
-      REVLibError error = driveMotor.getPIDController().setReference(desiredVelocity, ControlType.kVelocity, slotNumber);
+      // send requested speed to SparkMAX
+      REVLibError error = driveMotor.getPIDController().setReference(desiredMotorRPM, ControlType.kVelocity, slotNumber);
       if (error != REVLibError.kOk) {
         DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " on PID slot " + slotNumber, false);
       }
     }
 
-    // updates FeedForward velocity thresholds regardless of whether it's changed in shuffleboard
+    // updates FeedForward speed thresholds regardless of whether it's changed in shuffleboard
     @Override
-    public void setFeedForwardVelocityThreshold(double[] newFeedForwardRPSThreshold) {
+    public void setFeedForwardSpeedThreshold(double[] newFeedForwardRPSThreshold) {
       for (int i = 0; i <= 3; i++) {
         feedForwardRPSThreshold[i] = newFeedForwardRPSThreshold[i];
-      } 
+      }
     }
     
     // only updates the feedForward values when a value is changed in shuffleboard
+    // to avoid continuously reconfiguring controller
     @Override
     public void updateFeedForward(double[] newFeedForward) {
       for (int i = 0; i <= 3; i++) {
