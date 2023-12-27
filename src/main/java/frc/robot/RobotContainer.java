@@ -43,19 +43,14 @@ public class RobotContainer {
   private JoystickButton driveButtonSeven;
   private JoystickButton driveButtonTwelve;
 
-  private ArrayList<Auto> autoArrayList = new ArrayList<Auto>();
-  private final PathPlannerManager ppManager;
-  private SendableChooser<Integer> positionChooser = new SendableChooser<Integer>();
-
   private final Drive drive = new Drive(); 
 
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
-  private AutoChooserShuffleBoardIO autoChooserShuffleBoardIO;
-  private AutoChooserShuffleBoardIOInputsAutoLogged autoChooserShuffleBoardInputs = new AutoChooserShuffleBoardIOInputsAutoLogged();
+  private AutoChooserShuffleBoardIO autoChooserIO;
+  private AutoChooserShuffleBoardIOInputsAutoLogged autoChooserInputs = new AutoChooserShuffleBoardIOInputsAutoLogged();
 
-  private int selectedPosition = 0;
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -69,14 +64,11 @@ public class RobotContainer {
       drive.setDefaultCommand(driveManualDefault);
     }
 
-    // Set up auto routines
-    ppManager = new PathPlannerManager(drive);
-
     if (Constants.autoChooserEnabled) {
-      autoChooserShuffleBoardIO = new AutoChooserShuffleBoardIODataEntry();
+      autoChooserIO = new AutoChooserShuffleBoardIODataEntry(drive);
     }
-    if (autoChooserShuffleBoardIO == null) {
-      autoChooserShuffleBoardIO = new AutoChooserShuffleBoardIO() {};
+    if (autoChooserIO == null) {
+      autoChooserIO = new AutoChooserShuffleBoardIO() {};
     }
   }
   /**
@@ -110,8 +102,8 @@ public class RobotContainer {
   public void disabledPeriodic() {
     if (Constants.autoChooserEnabled) {
       // update logs
-      autoChooserShuffleBoardIO.updateInputs(autoChooserShuffleBoardInputs);
-      Logger.getInstance().processInputs("AutoChooserShuffleBoard/AutoChooserShuffleBoardInputs", autoChooserShuffleBoardInputs);
+      autoChooserIO.updateInputs(autoChooserInputs);
+      Logger.getInstance().processInputs("AutoChooser", autoChooserInputs);
     } 
     if (disableTimer.hasElapsed(Constants.DriveConstants.disableBreakSec)) {
       if (Constants.driveEnabled) {
@@ -120,7 +112,6 @@ public class RobotContainer {
       disableTimer.stop();
       disableTimer.reset();
     }
-    autoChooserShuffleBoardIO.updateChoosers();
   }
 
   public void enableSubsystems() {
@@ -142,7 +133,7 @@ public class RobotContainer {
 
     return new SequentialCommandGroup(
       getAutoInitialize(),
-      autoChooserShuffleBoardInputs.auto
+      autoChooserInputs.autoCommand
     );
   }
 
