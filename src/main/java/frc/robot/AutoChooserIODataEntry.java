@@ -44,8 +44,11 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
 
     customizationTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
       .withPosition(0, 2).withSize(9, 2);
+
+    loadAutos();
   }
 
+  @Override
   public void loadAutos() {
     // Reset autoArrayList and selectedPosition
     autoArrayList.clear();
@@ -72,7 +75,7 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
       }
     }
   
-    inputs.startingGridPosition = positionChooser.getSelected();
+    inputs.startingGridPosition = currentPosition;
     inputs.autoCommand = autoChooser.getSelected();
   }
 }

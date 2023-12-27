@@ -49,6 +49,20 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    switch (Constants.currentMode) {
+      // Real robot, instantiate hardware IO implementations
+      case REAL:
+        autoChooserIO = new AutoChooserIODataEntry(drive);
+        break;
+
+      // Sim robot, instantiate physics sim IO implementations
+      case SIM:
+        break;
+
+      // Replayed robot, disable hardware IO implementations
+      case REPLAY:
+        break;
+    }
 
     drive.init();
 
@@ -58,8 +72,10 @@ public class RobotContainer {
       drive.setDefaultCommand(driveManualDefault);
     }
 
-    autoChooserIO = new AutoChooserIODataEntry(drive);
-    autoChooserIO.loadAutos();
+    autoChooserIO = new AutoChooserIO() {};
+  
+
+    
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -113,6 +129,9 @@ public class RobotContainer {
     driveStop.schedule();  // interrupt all drive commands
     disableTimer.reset();
     disableTimer.start();
+    
+    // autos need to be reloaded after each auto test because the commands can't be reused
+    autoChooserIO.loadAutos(); 
   }
 
   public Command getAutonomousCommand() {

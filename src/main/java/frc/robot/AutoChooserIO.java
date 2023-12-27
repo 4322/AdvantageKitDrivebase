@@ -11,8 +11,6 @@ public interface AutoChooserIO {
   }
 
   public default void updateInputs(AutoChooserIOInputs inputs) {}
-  
-  public default void updateChoosers() {}
 
   public default void loadAutos() {}
 }
