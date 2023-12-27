@@ -9,8 +9,8 @@ import frc.utility.Auto;
 public interface AutoChooserShuffleBoardIO {
   @AutoLog
   public static class AutoChooserShuffleBoardIOInputs {
-    public int position;
-    public Command auto;
+    public int startingGridPosition;
+    public Command autoCommand;
   }
 
   public default void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {}
