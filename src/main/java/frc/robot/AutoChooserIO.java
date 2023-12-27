@@ -6,14 +6,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.utility.Auto;
 
-public interface AutoChooserShuffleBoardIO {
+public interface AutoChooserIO {
   @AutoLog
-  public static class AutoChooserShuffleBoardIOInputs {
+  public static class AutoChooserIOInputs {
     public int startingGridPosition;
     public Command autoCommand;
   }
 
-  public default void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {}
+  public default void updateInputs(AutoChooserIOInputs inputs) {}
   
   public default void updateChoosers() {}
 }

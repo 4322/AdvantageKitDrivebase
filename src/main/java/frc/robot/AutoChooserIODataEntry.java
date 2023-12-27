@@ -11,7 +11,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.utility.Auto;
 import frc.utility.OrangeSendableChooser;
 
-public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoardIO{
+public class AutoChooserIODataEntry implements AutoChooserIO{
   private ShuffleboardTab customizationTab;
   private SendableChooser<Integer> positionChooser;
   private ArrayList<Auto> autoArrayList;
@@ -20,7 +20,7 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
   private int selectedPosition;
   
 
-  public AutoChooserShuffleBoardIODataEntry(Drive drive) {
+  public AutoChooserIODataEntry(Drive drive) {
     // Set up auto routines
     ppManager = new PathPlannerManager(drive);
     
@@ -62,7 +62,7 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
   }
 
   @Override
-  public void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {
+  public void updateInputs(AutoChooserIOInputs inputs) {
     Integer currentPosition = positionChooser.getSelected();
     if (currentPosition != null) {
       if (currentPosition != selectedPosition) {

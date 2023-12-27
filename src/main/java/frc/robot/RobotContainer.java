@@ -48,8 +48,8 @@ public class RobotContainer {
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
-  private AutoChooserShuffleBoardIO autoChooserIO;
-  private AutoChooserShuffleBoardIOInputsAutoLogged autoChooserInputs = new AutoChooserShuffleBoardIOInputsAutoLogged();
+  private AutoChooserIO autoChooserIO;
+  private AutoChooserIOInputsAutoLogged autoChooserInputs = new AutoChooserIOInputsAutoLogged();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -65,10 +65,10 @@ public class RobotContainer {
     }
 
     if (Constants.autoChooserEnabled) {
-      autoChooserIO = new AutoChooserShuffleBoardIODataEntry(drive);
+      autoChooserIO = new AutoChooserIODataEntry(drive);
     }
     if (autoChooserIO == null) {
-      autoChooserIO = new AutoChooserShuffleBoardIO() {};
+      autoChooserIO = new AutoChooserIO() {};
     }
   }
   /**
