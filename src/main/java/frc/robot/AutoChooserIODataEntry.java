@@ -24,30 +24,26 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
     // Set up auto routines
     ppManager = new PathPlannerManager(drive);
     
-    if (Constants.autoChooserEnabled) {
-      // new ShuffleBoard Tab
-      customizationTab = Shuffleboard.getTab("Autos");
+    // new ShuffleBoard Tab
+    customizationTab = Shuffleboard.getTab("Autos");
 
-      // Widgets for Autos
-      positionChooser = new SendableChooser<Integer>();
-      positionChooser.addOption("1", 1);
-      positionChooser.addOption("2", 2);
-      positionChooser.addOption("3", 3);
-      positionChooser.addOption("4", 4);
-      positionChooser.addOption("5", 5);
-      positionChooser.addOption("6", 6);
-      positionChooser.addOption("7", 7);
-      positionChooser.addOption("8", 8);
-      positionChooser.addOption("9", 9);
+    // Widgets for Autos
+    positionChooser = new SendableChooser<Integer>();
+    positionChooser.addOption("1", 1);
+    positionChooser.addOption("2", 2);
+    positionChooser.addOption("3", 3);
+    positionChooser.addOption("4", 4);
+    positionChooser.addOption("5", 5);
+    positionChooser.addOption("6", 6);
+    positionChooser.addOption("7", 7);
+    positionChooser.addOption("8", 8);
+    positionChooser.addOption("9", 9);
 
-      customizationTab.add("Position Chooser", positionChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
-        .withPosition(0, 0).withSize(9, 2);
+    customizationTab.add("Position Chooser", positionChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
+      .withPosition(0, 0).withSize(9, 2);
 
-      customizationTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
-        .withPosition(0, 2).withSize(9, 2);
-        
-      loadAutos();
-    }
+    customizationTab.add("Auto Chooser", autoChooser).withWidget(BuiltInWidgets.kSplitButtonChooser)
+      .withPosition(0, 2).withSize(9, 2);
   }
 
   public void loadAutos() {
@@ -75,10 +71,8 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
         }
       }
     }
-
-    if (Constants.autoChooserEnabled) {
-      inputs.startingGridPosition = positionChooser.getSelected();
-      inputs.autoCommand = autoChooser.getSelected();
-    }
+  
+    inputs.startingGridPosition = positionChooser.getSelected();
+    inputs.autoCommand = autoChooser.getSelected();
   }
 }

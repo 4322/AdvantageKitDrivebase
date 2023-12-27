@@ -64,12 +64,8 @@ public class RobotContainer {
       drive.setDefaultCommand(driveManualDefault);
     }
 
-    if (Constants.autoChooserEnabled) {
-      autoChooserIO = new AutoChooserIODataEntry(drive);
-    }
-    if (autoChooserIO == null) {
-      autoChooserIO = new AutoChooserIO() {};
-    }
+    autoChooserIO = new AutoChooserIODataEntry(drive);
+    autoChooserIO.loadAutos();
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -100,11 +96,10 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    if (Constants.autoChooserEnabled) {
-      // update logs
-      autoChooserIO.updateInputs(autoChooserInputs);
-      Logger.getInstance().processInputs("AutoChooser", autoChooserInputs);
-    } 
+    // update logs
+    autoChooserIO.updateInputs(autoChooserInputs);
+    Logger.getInstance().processInputs("AutoChooser", autoChooserInputs);
+
     if (disableTimer.hasElapsed(Constants.DriveConstants.disableBreakSec)) {
       if (Constants.driveEnabled) {
         drive.setCoastMode(); // robot has stopped, safe to enter coast mode
@@ -145,5 +140,4 @@ public class RobotContainer {
       new ResetFieldCentric(drive, 0, true)
     );
   }
-  
 }
