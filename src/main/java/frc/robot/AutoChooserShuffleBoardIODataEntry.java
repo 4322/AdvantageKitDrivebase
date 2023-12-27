@@ -17,11 +17,10 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
   private ArrayList<Auto> autoArrayList;
   private OrangeSendableChooser<Command> autoChooser = new OrangeSendableChooser<Command>();
   private final PathPlannerManager ppManager;
-  private final Drive drive = new Drive();
   private int selectedPosition;
   
 
-  public AutoChooserShuffleBoardIODataEntry() {
+  public AutoChooserShuffleBoardIODataEntry(Drive drive) {
     // Set up auto routines
     ppManager = new PathPlannerManager(drive);
     
@@ -62,10 +61,12 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
     Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)));
   }
 
-  public void updateChoosers() {
-    if (positionChooser.getSelected() != null) {
-      if (positionChooser.getSelected() != selectedPosition) {
-        selectedPosition = positionChooser.getSelected();
+  @Override
+  public void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {
+    Integer currentPosition = positionChooser.getSelected();
+    if (currentPosition != null) {
+      if (currentPosition != selectedPosition) {
+        selectedPosition = currentPosition;
         autoChooser.removeAllOptions();
         for (Auto auto : autoArrayList) {
           if (auto.positions.contains(selectedPosition)) {
@@ -74,13 +75,10 @@ public class AutoChooserShuffleBoardIODataEntry implements AutoChooserShuffleBoa
         }
       }
     }
-  }
 
-  @Override
-  public void updateInputs(AutoChooserShuffleBoardIOInputs inputs) {
     if (Constants.autoChooserEnabled) {
-      inputs.position = positionChooser.getSelected();
-      inputs.auto = autoChooser.getSelected();
+      inputs.startingGridPosition = positionChooser.getSelected();
+      inputs.autoCommand = autoChooser.getSelected();
     }
   }
 }
