@@ -226,8 +226,8 @@ public final class Constants {
 
       public static final double statorLimit = 60;
 
-      public static final int freeLimit = 40;
-      public static final int stallLimit = 5;
+      public static final int currentLimit = 40;
+      public static final int secondaryCurrentLimit = 100;
 
       // when supply threshold is exceeded for the time, drop the current to the limit
       public static final boolean supplyEnabled = true;
@@ -236,9 +236,10 @@ public final class Constants {
       public static final double supplyTime = 2.0;
 
       public static final double wheelDiameterInches = 3.9;
-      public static final double gearRatio = 7.80; //drive gear ratio
+      public static final double gearRatio = 7.80; // drive gear ratio
       public static final double kP = 0.05;
       public static final double kI = 0.0002;
+      public static final double kIZone = 0.0; // TODO
       public static final double kD = 0.0;
 
       // Feed Forward parameters for Drive PID
