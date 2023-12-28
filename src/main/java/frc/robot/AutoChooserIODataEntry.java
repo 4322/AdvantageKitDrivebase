@@ -19,7 +19,6 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
   private final PathPlannerManager ppManager;
   private int selectedPosition;
   
-
   public AutoChooserIODataEntry(Drive drive) {
     // Set up auto routines
     ppManager = new PathPlannerManager(drive);

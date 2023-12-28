@@ -73,9 +73,6 @@ public class RobotContainer {
     }
 
     autoChooserIO = new AutoChooserIO() {};
-  
-
-    
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
