@@ -19,7 +19,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
   private GenericEntry fastMovingAutoRotateEntry;
   private GenericEntry fastMovingFtPerSecEntry;
   private GenericEntry psuedoAutoRotateCheckbox;
-  private GenericEntry voltsAtMaxSpeedEntry;
+  private GenericEntry voltsAtSpeedThresholdsEntry;
   private GenericEntry feedForwardRPSThresholdEntry;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
@@ -72,7 +72,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       openRampRate = customizationTab.add("Stop Ramp Rate", DriveConstants.Drive.openLoopRampSec)
           .withPosition(1, 2).withSize(1, 1).getEntry();
 
-      voltsAtMaxSpeedEntry = customizationTab.add("Volts at Max Speed", 
+      voltsAtSpeedThresholdsEntry = customizationTab.add("Volts at Speed Thresholds", 
           DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds)
           .withPosition(0,3).withSize(2,2).getEntry();
 
@@ -95,7 +95,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
       inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
-      inputs.voltsAtMaxSpeed = voltsAtMaxSpeedEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds);
+      inputs.voltsAtSpeedThresholds = voltsAtSpeedThresholdsEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds);
       inputs.feedForwardRPSThresholdEntry = feedForwardRPSThresholdEntry.getDoubleArray(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold);
     }
     else { 
@@ -109,7 +109,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
       inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
-      inputs.voltsAtMaxSpeed = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds;
+      inputs.voltsAtSpeedThresholds = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds;
       inputs.feedForwardRPSThresholdEntry = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
     }
   }
