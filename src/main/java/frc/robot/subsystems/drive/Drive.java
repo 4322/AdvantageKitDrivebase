@@ -118,7 +118,7 @@ public class Drive extends SubsystemBase {
     if (gyro == null) {
       gyro = new GyroIO() {};
     }
-    if (Constants.shuffleboardEnabled) {
+    if (driveShuffleBoard == null) {
       driveShuffleBoard = new DriveShuffleBoardIO() {};
     }
   }

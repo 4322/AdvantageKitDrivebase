@@ -12,7 +12,6 @@ import frc.robot.Constants.InputScalingStrings;
 import frc.robot.Constants.DriveConstants.Auto;
 import frc.robot.Constants.DriveConstants.Drive;
 import frc.robot.Constants.DriveConstants.Manual;
-import frc.robot.Constants.DriveConstants.Drive.FeedForward;
 
 public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
   private ShuffleboardTab customizationTab;
@@ -30,11 +29,11 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
 
   public DriveShuffleBoardIODataEntry() {
 
-    if(Constants.debug) {
-        //new shuffleboard tabs
+    if (Constants.debug) {
+      // new shuffleboard tabs
       customizationTab = Shuffleboard.getTab("Drivebase Customization");
       
-      //widgets for customizationTab
+      // widgets for customizationTab
       psuedoAutoRotateCheckbox = customizationTab.add("Psuedo Auto Rotate", Constants.psuedoAutoRotateEnabled)
       .withWidget(BuiltInWidgets.kToggleButton).withPosition(0, 0).withSize(2, 1).getEntry();
       
@@ -89,7 +88,7 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
 
   @Override
   public void updateInputs(DriveShuffleBoardIOInputs inputs) {
-    if (Constants.shuffleboardEnabled) {
+    if (Constants.debug) {
       inputs.psuedoAutoRotateEnabled = psuedoAutoRotateCheckbox.getBoolean(Constants.psuedoAutoRotateEnabled);
       inputs.inputScaling = driveInputScaling.getSelected();
       inputs.driveControllerType = driveControlType.getSelected();
@@ -103,7 +102,7 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       inputs.feedForwardRPSThresholdEntry = feedForwardRPSThresholdEntry.getDoubleArray(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold);
     }
     else { 
-      //if shuffleboard not enabled, don't want values to be 0
+      // if debug not enabled, don't want values to be 0
       inputs.psuedoAutoRotateEnabled = Constants.psuedoAutoRotateEnabled;
       inputs.inputScaling = Constants.driveInputScaling;
       inputs.driveControllerType = Constants.controllerType;
