@@ -80,25 +80,14 @@ public final class Constants {
 
   public static final class DriveConstants {
     
-    //1 is the side motor, 2 is the center motor
-    public static final int frontRightDriveID = 9;
-    public static final int frontRightDriveID2 = 4;
+    public static final int frontRightDriveID = 0; //change
     public static final int frontRightRotationID = 18;
-    public static final int rearRightDriveID = 2;
-    public static final int rearRightDriveID2 = 5;
+    public static final int rearRightDriveID = 0; //change
     public static final int rearRightRotationID = 19;
-    public static final int frontLeftDriveID = 8; 
-    public static final int frontLeftDriveID2 = 3;
+    public static final int frontLeftDriveID = 0; //change
     public static final int frontLeftRotationID = 20;
-    public static final int rearLeftDriveID = 7;
-    public static final int rearLeftDriveID2 = 6;
+    public static final int rearLeftDriveID = 0; //change
     public static final int rearLeftRotationID = 21;
-    
-    
-    public static final int frontRightEncoderID = 10;
-    public static final int rearRightEncoderID = 12;
-    public static final int frontLeftEncoderID = 11;
-    public static final int rearLeftEncoderID = 13;
 
     public static final int encoderResolution = 2048;
     
@@ -232,12 +221,13 @@ public final class Constants {
       public static final double openLoopRampSec = 0.08;  // only used when stopping, including letting go of the drive stick
 
       public static final double voltageCompSaturation = 11.5;
-      public static final boolean enableVoltageCompensation = true;
 
       public static final double brakeModeDeadband = 0.01;
 
-      public static final boolean statorEnabled = true;
       public static final double statorLimit = 60;
+
+      public static final int currentLimit = 40;
+      public static final int secondaryCurrentLimit = 100;
 
       // when supply threshold is exceeded for the time, drop the current to the limit
       public static final boolean supplyEnabled = true;
@@ -246,31 +236,32 @@ public final class Constants {
       public static final double supplyTime = 2.0;
 
       public static final double wheelDiameterInches = 3.9;
-      public static final double gearRatio = 38250.0/7290.0; //kept drive gear ratio in fractional form to not lose precision
+      public static final double gearRatio = 7.80; // drive gear ratio
       public static final double kP = 0.05;
       public static final double kI = 0.0002;
+      public static final double kIZone = 0.0; // TODO
       public static final double kD = 0.0;
-      public static final String canivoreName = "Drivebase";
+      public static final double kF = 11.0; // TODO
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
-        public static final double[] voltsAtMaxSpeed;
+        public static final double[] voltsAtSpeedThresholds;
         static {
-          voltsAtMaxSpeed = new double[4];
-          voltsAtMaxSpeed[0] = 11.0;
-          voltsAtMaxSpeed[1] = 11.0;
-          voltsAtMaxSpeed[2] = 11.0;
-          voltsAtMaxSpeed[3] = 11.0;
+          voltsAtSpeedThresholds = new double[4];
+          voltsAtSpeedThresholds[0] = 11.0;
+          voltsAtSpeedThresholds[1] = 11.0;
+          voltsAtSpeedThresholds[2] = 11.0;
+          voltsAtSpeedThresholds[3] = 11.0;
         }
-        public static final double[] thresholdRotPerSec;
+        public static final double[] feedForwardRPSThreshold;
         static {
           // define speed at which each voltage value will be used
-          thresholdRotPerSec = new double[4];
+          feedForwardRPSThreshold = new double[4];
           // values must be in ascending order
-          thresholdRotPerSec[0] = 0.0; // Must be zero
-          thresholdRotPerSec[1] = 30.0;
-          thresholdRotPerSec[2] = 50.0;
-          thresholdRotPerSec[3] = 80.0;
+          feedForwardRPSThreshold[0] = 0.0; // Must be zero
+          feedForwardRPSThreshold[1] = 30.0;
+          feedForwardRPSThreshold[2] = 50.0;
+          feedForwardRPSThreshold[3] = 80.0;
         }
       }
     }

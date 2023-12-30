@@ -2,8 +2,6 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.revrobotics.CANSparkMax.ControlType;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.WheelPosition;
@@ -33,9 +31,7 @@ public class SwerveModule {
     io.updateInputs(inputs);
     Logger.getInstance().processInputs("Drive/SwerveModule " + wheelPos.wheelNumber, inputs);
     Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive1RotationsPerSecAbs", 
-        Math.abs(inputs.drive1RotationsPerSec));
-    Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/Drive2RotationsPerSecAbs", 
-        Math.abs(inputs.drive2RotationsPerSec));
+        Math.abs(inputs.driveRotationsPerSec));
   }
 
   public double getInternalRotationDegrees() {
@@ -43,14 +39,14 @@ public class SwerveModule {
   }
 
   public double getDistanceMeters() {
-    return OrangeMath.falconRotationsToMeters(inputs.drive1Rotations,
+    return OrangeMath.falconRotationsToMeters(inputs.driveRotations,
         OrangeMath.getCircumference(OrangeMath.inchesToMeters(DriveConstants.Drive.wheelDiameterInches)),
         DriveConstants.Drive.gearRatio);
   }
 
   public double getVelocityFeetPerSec() {
     // feet per second
-    return inputs.drive1RotationsPerSec / Constants.DriveConstants.Drive.gearRatio 
+    return inputs.driveRotationsPerSec / Constants.DriveConstants.Drive.gearRatio 
         * Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches / 12;
   }
 
@@ -85,23 +81,25 @@ public class SwerveModule {
       // Optimize the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state =
           SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnDegrees));
+      
+      double desiredRPS = state.speedMetersPerSecond / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters 
+          * Math.PI) * DriveConstants.Drive.gearRatio;
           
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcMetersPerSec", 
           desiredState.speedMetersPerSecond);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptMetersPerSec", 
           state.speedMetersPerSecond);
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + " /SetOptRPS", 
+          desiredRPS);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcDegrees", 
           desiredState.angle.getDegrees());
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDrivePIDTargetVel(new VelocityVoltage(state.speedMetersPerSecond
-          / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters * Math.PI)
-          * DriveConstants.Drive.gearRatio).withEnableFOC(true));
+      io.setDriveSpeed(desiredRPS * 60);
               
       if (!Constants.steeringTuningMode) {
-        io.setTurnPIDReference(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360), 
-                                ControlType.kPosition);
+        io.setTurnAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
       }
     }
   }
@@ -132,5 +130,13 @@ public class SwerveModule {
         io.stopMotor();
       }
     }
+  }
+
+  public void updateFeedForward(double[] FFvalue) {
+    io.updateFeedForward(FFvalue);
+  }
+
+  public void updateFFVelocityThreshold(double[] FFvelocityThreshold) {
+    io.setFeedForwardSpeedThreshold(FFvelocityThreshold);
   }
 }
