@@ -241,16 +241,17 @@ public final class Constants {
       public static final double kI = 0.0002;
       public static final double kIZone = 0.0; // TODO
       public static final double kD = 0.0;
+      public static final double kF = 11.0; // TODO
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
-        public static final double[] voltsAtMaxSpeed;
+        public static final double[] voltsAtSpeedThresholds;
         static {
-          voltsAtMaxSpeed = new double[4];
-          voltsAtMaxSpeed[0] = 11.0;
-          voltsAtMaxSpeed[1] = 11.0;
-          voltsAtMaxSpeed[2] = 11.0;
-          voltsAtMaxSpeed[3] = 11.0;
+          voltsAtSpeedThresholds = new double[4];
+          voltsAtSpeedThresholds[0] = 11.0;
+          voltsAtSpeedThresholds[1] = 11.0;
+          voltsAtSpeedThresholds[2] = 11.0;
+          voltsAtSpeedThresholds[3] = 11.0;
         }
         public static final double[] feedForwardRPSThreshold;
         static {

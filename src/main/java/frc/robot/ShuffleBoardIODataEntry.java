@@ -73,7 +73,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
           .withPosition(1, 2).withSize(1, 1).getEntry();
 
       voltsAtMaxSpeedEntry = customizationTab.add("Volts at Max Speed", 
-          DriveConstants.Drive.FeedForward.voltsAtMaxSpeed)
+          DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds)
           .withPosition(0,3).withSize(2,2).getEntry();
 
       feedForwardRPSThresholdEntry = customizationTab.add("FF Threshold RPS", 
@@ -95,7 +95,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
       inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
-      inputs.voltsAtMaxSpeed = voltsAtMaxSpeedEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed);
+      inputs.voltsAtMaxSpeed = voltsAtMaxSpeedEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds);
       inputs.feedForwardRPSThresholdEntry = feedForwardRPSThresholdEntry.getDoubleArray(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold);
     }
     else { 
@@ -109,7 +109,7 @@ public class ShuffleBoardIODataEntry implements ShuffleBoardIO {
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
       inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
-      inputs.voltsAtMaxSpeed = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed;
+      inputs.voltsAtMaxSpeed = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds;
       inputs.feedForwardRPSThresholdEntry = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
     }
   }

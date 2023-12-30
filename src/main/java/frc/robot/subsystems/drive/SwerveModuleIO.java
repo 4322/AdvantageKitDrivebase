@@ -20,7 +20,7 @@ public interface SwerveModuleIO {
 
     public default void setDriveSpeed(double desiredVelocity) {}
 
-    public default void updateFeedForward(double[] newFeedForward) {}
+    public default void updateFeedForward(double[] newFeedForwardVolts) {}
 
     public default void setFeedForwardSpeedThreshold(double[] newFeedForwardRPSThreshold) {}
 

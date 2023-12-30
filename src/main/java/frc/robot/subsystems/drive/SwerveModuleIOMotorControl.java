@@ -23,7 +23,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private SparkMaxAbsoluteEncoder encoder;
     
     private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
-    private double[] prevFeedForward = DriveConstants.Drive.FeedForward.voltsAtMaxSpeed.clone();
+    private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.clone();
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
@@ -60,14 +60,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private void configDrive(CANSparkMax sparkMax, WheelPosition pos) {
         SparkMaxPIDController config = sparkMax.getPIDController();
 
-        // PID config for 4 slotIDs
-        for (int i = 0; i <= 3; i++) {
-          config.setP(DriveConstants.Drive.kP, i);
-          config.setI(DriveConstants.Drive.kI, i);
-          config.setIZone(DriveConstants.Drive.kIZone, i);
-          config.setD(DriveConstants.Drive.kD, i);
-          config.setFF(DriveConstants.Drive.FeedForward.voltsAtMaxSpeed[i], i);
-        }
+        config.setP(DriveConstants.Drive.kP, 0);
+        config.setI(DriveConstants.Drive.kI, 0);
+        config.setIZone(DriveConstants.Drive.kIZone, 0);
+        config.setD(DriveConstants.Drive.kD, 0);
+        config.setFF(DriveConstants.Drive.kF, 0);
 
         sparkMax.setClosedLoopRampRate(DriveConstants.Drive.closedLoopRampSec);
         sparkMax.setOpenLoopRampRate(DriveConstants.Drive.openLoopRampSec);
@@ -133,42 +130,63 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     public void setDriveSpeed(double desiredMotorRPM) {
       // convert RPM to RPS
       double desiredMotorRPS = Math.abs(desiredMotorRPM / 60);
-      int slotNumber;
+      int i;
+      double calculatedFeedForwardValue;
       
-      // If motor RPS less than element 1 of FF speed threshold, slotNum defaults to 0
-      // due to for loop iterating slotNumber at the end.
+      // If motor RPS less than element 1 of FF speed threshold, i defaults to 0
+      // due to for loop iterating i at the end.
       // Greater than or equals to not used in order to protect against erroneous shuffleboard input
       // where element 0 of FF velocity threshold is changed from 0.
-      for (slotNumber = 3; slotNumber > 0; slotNumber--) { 
-        if (desiredMotorRPS >= feedForwardRPSThreshold[slotNumber]) {
+      for (i = feedForwardRPSThreshold.length - 1; i > 0; i--) { 
+        if (desiredMotorRPS >= feedForwardRPSThreshold[i]) {
           break;
         }
       }
 
+      // Linear extrapolation to account for edge case where requested speed 
+      // is greater than max threshold speed.
+      if (i == feedForwardRPSThreshold.length - 1) {
+        int lastElement = i;
+        int secondToLastElement = i - 1;
+        // Slope between last point and second to last point used to predict corresponding 
+        // Feed Forward value for requested RPS values beyond max speed threshold
+        double slope = (feedForwardVolts[lastElement] - feedForwardVolts[secondToLastElement]) / 
+                        (feedForwardRPSThreshold[lastElement] - feedForwardRPSThreshold[secondToLastElement]);
+        
+        calculatedFeedForwardValue = slope * (desiredMotorRPS - feedForwardRPSThreshold[lastElement]) 
+                                      + feedForwardVolts[lastElement];
+      }
+      // Linear interpolation to calculate a more precise Feed Forward value for 
+      // points between established thresholds.
+      else {
+        int upperBound = i + 1;
+        int lowerBoud = i;
+        // Normalized distance from upper bound speed value to desired speed value
+        double d = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
+                    (feedForwardRPSThreshold[lowerBoud] - feedForwardRPSThreshold[upperBound]);
+        
+        calculatedFeedForwardValue = (d * feedForwardVolts[lowerBoud]) + 
+                                      ((1 - d) * feedForwardVolts[upperBound]);
+      }
+
       // send requested speed to SparkMAX
-      REVLibError error = driveMotor.getPIDController().setReference(desiredMotorRPM, ControlType.kVelocity, slotNumber);
+      REVLibError error = driveMotor.getPIDController().setReference(desiredMotorRPM, ControlType.kVelocity, 0, calculatedFeedForwardValue);
       if (error != REVLibError.kOk) {
-        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " on PID slot " + slotNumber, false);
+        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " while sending requested speed", false);
       }
     }
 
-    // updates FeedForward speed thresholds regardless of whether it's changed in shuffleboard
     @Override
     public void setFeedForwardSpeedThreshold(double[] newFeedForwardRPSThreshold) {
-      for (int i = 0; i <= 3; i++) {
+      for (int i = 0; i < feedForwardRPSThreshold.length; i++) {
         feedForwardRPSThreshold[i] = newFeedForwardRPSThreshold[i];
       }
     }
     
-    // only updates the feedForward values when a value is changed in shuffleboard
-    // to avoid continuously reconfiguring controller
     @Override
-    public void updateFeedForward(double[] newFeedForward) {
-      for (int i = 0; i <= 3; i++) {
-        if (prevFeedForward[i] != newFeedForward[i]) {
-          prevFeedForward[i] = newFeedForward[i];
-          driveMotor.getPIDController().setFF(newFeedForward[i], i);
-        }
+    public void updateFeedForward(double[] newFeedForwardVolts) {
+      for (int i = 0; i < feedForwardVolts.length; i++) {
+          feedForwardVolts[i] = newFeedForwardVolts[i];
       }
     }
 
