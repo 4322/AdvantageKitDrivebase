@@ -145,6 +145,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
       // Linear extrapolation to account for edge case where requested speed 
       // is greater than max threshold speed.
+      // Feed Forward calculated by determining linear equation between last two points.
       if (i == feedForwardRPSThreshold.length - 1) {
         int lastElement = i;
         int secondToLastElement = i - 1;
@@ -152,21 +153,22 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         // Feed Forward value for requested RPS values beyond max speed threshold
         double slope = (feedForwardVolts[lastElement] - feedForwardVolts[secondToLastElement]) / 
                         (feedForwardRPSThreshold[lastElement] - feedForwardRPSThreshold[secondToLastElement]);
-        
+
         calculatedFeedForwardValue = slope * (desiredMotorRPS - feedForwardRPSThreshold[lastElement]) 
                                       + feedForwardVolts[lastElement];
       }
       // Linear interpolation to calculate a more precise Feed Forward value for 
       // points between established thresholds.
+      // Calculated through weighted average.
       else {
         int upperBound = i + 1;
-        int lowerBoud = i;
-        // Normalized distance from upper bound speed value to desired speed value
-        double d = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
-                    (feedForwardRPSThreshold[lowerBoud] - feedForwardRPSThreshold[upperBound]);
+        int lowerBound = i;
+        // Calculated weight based on distance between lower bound value and desired speed value
+        double w = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
+                    (feedForwardRPSThreshold[lowerBound] - feedForwardRPSThreshold[upperBound]);
         
-        calculatedFeedForwardValue = (d * feedForwardVolts[lowerBoud]) + 
-                                      ((1 - d) * feedForwardVolts[upperBound]);
+        calculatedFeedForwardValue = (w * feedForwardVolts[lowerBound]) + 
+                                      ((1 - w) * feedForwardVolts[upperBound]);
       }
 
       // send requested speed to SparkMAX
