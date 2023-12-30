@@ -37,7 +37,7 @@ public class RobotContainer {
   private JoystickButton driveButtonSeven;
   private JoystickButton driveButtonTwelve;
 
-  private final Drive drive = new Drive(); 
+  private final Drive drive = Drive.getInstance(); 
 
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
