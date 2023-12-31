@@ -64,8 +64,6 @@ public class RobotContainer {
         break;
     }
 
-    drive.init();
-
     configureButtonBindings();
 
     if (Constants.driveEnabled) {

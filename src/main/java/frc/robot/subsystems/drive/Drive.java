@@ -112,6 +112,7 @@ public class Drive extends SubsystemBase {
         break;
     }
 
+    // instantiates fake hardware when in replay mode
     if (swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] == null) {
       swerveModules[WheelPosition.FRONT_RIGHT.wheelNumber] =
           new SwerveModule(WheelPosition.FRONT_RIGHT, new SwerveModuleIO() {});
@@ -129,9 +130,7 @@ public class Drive extends SubsystemBase {
     if (driveShuffleBoard == null) {
       driveShuffleBoard = new DriveShuffleBoardIO() {};
     }
-  }
 
-  public void init() {
     if (Constants.driveEnabled) {
       rotPID = new PIDController(DriveConstants.Auto.autoRotkP, 0, DriveConstants.Auto.autoRotkD);
 
