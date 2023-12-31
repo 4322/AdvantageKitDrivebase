@@ -134,7 +134,7 @@ public class RobotContainer {
       return null;
     }
 
-    Logger.getInstance().recordOutput("Auto", autoChooserInputs.autoCommand.getName());
+    Logger.getInstance().recordOutput("Auto", autoChooserInputs.autoName);
     
     return new SequentialCommandGroup(
       getAutoInitialize(),
