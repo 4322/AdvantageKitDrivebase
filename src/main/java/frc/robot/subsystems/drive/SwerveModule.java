@@ -96,7 +96,7 @@ public class SwerveModule {
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDriveSpeed(desiredRPS * 60);
+      io.setDriveVoltage(desiredRPS * 60);
               
       if (!Constants.steeringTuningMode) {
         io.setTurnAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
@@ -138,5 +138,9 @@ public class SwerveModule {
 
   public void updateFFVelocityThreshold(double[] FFvelocityThreshold) {
     io.setFeedForwardSpeedThreshold(FFvelocityThreshold);
+  }
+
+  public void updateVoltsToOvercomeFriction(double kSVolts) {
+    io.updateVoltsToOvercomeFriction(kSVolts);
   }
 }

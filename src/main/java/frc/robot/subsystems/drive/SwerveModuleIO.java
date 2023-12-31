@@ -18,11 +18,13 @@ public interface SwerveModuleIO {
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
 
-    public default void setDriveSpeed(double desiredVelocity) {}
+    public default void setDriveVoltage(double desiredVelocity) {}
 
     public default void updateFeedForward(double[] newFeedForwardVolts) {}
 
     public default void setFeedForwardSpeedThreshold(double[] newFeedForwardRPSThreshold) {}
+
+    public default void updateVoltsToOvercomeFriction(double newkSVolts) {}
 
     public default void setTurnAngle(double desiredAngle) {} // angle from 0 to 360 degrees
 

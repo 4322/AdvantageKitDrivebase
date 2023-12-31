@@ -24,6 +24,7 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
   private GenericEntry psuedoAutoRotateCheckbox;
   private GenericEntry voltsAtSpeedThresholdsEntry;
   private GenericEntry feedForwardRPSThresholdEntry;
+  private GenericEntry voltsToOvercomeFrictionEntry;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
 
@@ -82,6 +83,10 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       feedForwardRPSThresholdEntry = customizationTab.add("FF Threshold RPS", 
           DriveConstants.Drive.FeedForward.feedForwardRPSThreshold)
           .withPosition(2,3).withSize(2,2).getEntry();
+      
+      voltsToOvercomeFrictionEntry = customizationTab.add("Volts Required to Overcome Friction", 
+          DriveConstants.Drive.kS)
+          .withPosition(4,3).withSize(2,2).getEntry();
     }
   }
     
@@ -99,7 +104,8 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
       inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
       inputs.voltsAtSpeedThresholds = voltsAtSpeedThresholdsEntry.getDoubleArray(DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds);
-      inputs.feedForwardRPSThresholdEntry = feedForwardRPSThresholdEntry.getDoubleArray(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold);
+      inputs.feedForwardRPSThresholds = feedForwardRPSThresholdEntry.getDoubleArray(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold);
+      inputs.voltsToOvercomeFriction = voltsToOvercomeFrictionEntry.getDouble(DriveConstants.Drive.kS);
     }
     else { 
       // if debug not enabled, don't want values to be 0
@@ -113,7 +119,8 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
       inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
       inputs.voltsAtSpeedThresholds = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds;
-      inputs.feedForwardRPSThresholdEntry = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
+      inputs.feedForwardRPSThresholds = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
+      inputs.voltsToOvercomeFriction = DriveConstants.Drive.kS;
     }
   }
 }

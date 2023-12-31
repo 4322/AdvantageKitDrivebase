@@ -24,6 +24,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     
     private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
     private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.clone();
+    private double kSVolts = DriveConstants.Drive.kS;
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
@@ -127,7 +128,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     // PID method for drive motor
     @Override
-    public void setDriveSpeed(double desiredMotorRPM) {
+    public void setDriveVoltage(double desiredMotorRPM) {
       // convert RPM to RPS
       double desiredMotorRPS = Math.abs(desiredMotorRPM / 60);
       int i;
@@ -174,13 +175,17 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       // make sure wheel RPS shuffleboard inputs are in ascending order
       if (calculatedFeedForwardValue < 0) {
         calculatedFeedForwardValue = 0;
+        kSVolts = 0;
       }
 
-      // need to reverse FF value sign if speed is negative
+      // need to reverse Feed Forward value sign if speed is negative
       calculatedFeedForwardValue = calculatedFeedForwardValue * Math.signum(desiredMotorRPM);
+
+      // convert speed to volts while accounting for volts required to overcome static friction
+      double desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calculatedFeedForwardValue * desiredMotorRPS);
       
-      // send requested speed to SparkMAX
-      REVLibError error = driveMotor.getPIDController().setReference(desiredMotorRPM, ControlType.kVelocity, 0, calculatedFeedForwardValue);
+      // send requested voltage to SparkMAX
+      REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);
       if (error != REVLibError.kOk) {
         DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " while sending requested speed", false);
       }
@@ -198,6 +203,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       for (int i = 0; i < feedForwardVolts.length; i++) {
           feedForwardVolts[i] = newFeedForwardVolts[i];
       }
+    }
+
+    @Override
+    public void updateVoltsToOvercomeFriction(double newkSVolts) {
+      kSVolts = newkSVolts;
     }
 
     @Override
