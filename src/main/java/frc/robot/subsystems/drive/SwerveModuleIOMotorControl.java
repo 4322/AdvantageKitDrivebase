@@ -164,13 +164,21 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         int upperBound = i + 1;
         int lowerBound = i;
         // Calculated weight based on distance between lower bound value and desired speed value
-        double w = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
+        double weight = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
                     (feedForwardRPSThreshold[lowerBound] - feedForwardRPSThreshold[upperBound]);
         
-        calculatedFeedForwardValue = (w * feedForwardVolts[lowerBound]) + 
-                                      ((1 - w) * feedForwardVolts[upperBound]);
+        calculatedFeedForwardValue = (weight * feedForwardVolts[lowerBound]) + 
+                                      ((1 - weight) * feedForwardVolts[upperBound]);
       }
 
+      // make sure wheel RPS shuffleboard inputs are in ascending order
+      if (calculatedFeedForwardValue < 0) {
+        calculatedFeedForwardValue = 0;
+      }
+
+      // need to reverse FF value sign if speed is negative
+      calculatedFeedForwardValue = calculatedFeedForwardValue * Math.signum(desiredMotorRPM);
+      
       // send requested speed to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredMotorRPM, ControlType.kVelocity, 0, calculatedFeedForwardValue);
       if (error != REVLibError.kOk) {

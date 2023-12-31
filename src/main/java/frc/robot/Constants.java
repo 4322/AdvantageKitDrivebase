@@ -219,7 +219,7 @@ public final class Constants {
       public static final double closedLoopRampSec = 0.08;  // used for auto and manual acceleration/deceleration
       public static final double openLoopRampSec = 0.08;  // only used when stopping, including letting go of the drive stick
 
-      public static final double voltageCompSaturation = 11.5;
+      public static final double voltageCompSaturation = 12.0;
 
       public static final double brakeModeDeadband = 0.01;
 
