@@ -77,13 +77,5 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
   
     inputs.startingGridPosition = currentPosition;
     inputs.autoCommand = autoChooser.getSelected();
-    
-    for (Auto auto : autoArrayList) {
-      if (auto.positions.contains(selectedPosition)) {
-        if (inputs.autoCommand.equals(auto.command)) {
-          inputs.autoName = auto.name;
-        }
-      }
-    }
   }
 }

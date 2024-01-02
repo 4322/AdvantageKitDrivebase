@@ -8,7 +8,6 @@ public interface AutoChooserIO {
   public static class AutoChooserIOInputs {
     public int startingGridPosition;
     public Command autoCommand;
-    public String autoName;
   }
 
   public default void updateInputs(AutoChooserIOInputs inputs) {}
