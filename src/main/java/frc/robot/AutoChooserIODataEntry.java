@@ -69,6 +69,7 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
         for (Auto auto : autoArrayList) {
           if (auto.positions.contains(selectedPosition)) {
             autoChooser.addOption(auto.name, auto.command);
+            auto.command.setName(auto.name); // needed to retrieve auto name in logged output
           }
         }
       }
