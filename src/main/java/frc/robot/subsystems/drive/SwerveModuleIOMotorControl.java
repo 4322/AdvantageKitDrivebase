@@ -187,7 +187,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       // send requested voltage to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);
       if (error != REVLibError.kOk) {
-        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " while sending requested speed", false);
+        DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " while sending requested voltage", false);
       }
     }
 
