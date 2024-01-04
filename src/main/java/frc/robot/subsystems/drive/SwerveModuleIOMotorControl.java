@@ -26,6 +26,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.clone();
     private double kSVolts = DriveConstants.Drive.kS;
 
+    private double calculatedFeedForwardValue;
+
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
             case FRONT_RIGHT:
@@ -118,6 +120,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
         inputs.turnCurrentAmps = turningMotor.getOutputCurrent();
         inputs.turnDegrees = encoder.getPosition();
+
+        inputs.calculatedFF = calculatedFeedForwardValue;
     }
 
     // PID methods for turn motor
@@ -132,7 +136,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       // convert RPM to RPS
       double desiredMotorRPS = Math.abs(desiredMotorRPM / 60);
       int i;
-      double calculatedFeedForwardValue;
       
       // If motor RPS less than element 1 of FF speed threshold, i defaults to 0
       // due to for loop iterating i at the end.
