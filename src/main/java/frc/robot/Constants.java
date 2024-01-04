@@ -79,14 +79,14 @@ public final class Constants {
 
   public static final class DriveConstants {
     
-    public static final int frontRightDriveID = 0; //change
-    public static final int frontRightRotationID = 18;
-    public static final int rearRightDriveID = 0; //change
-    public static final int rearRightRotationID = 19;
-    public static final int frontLeftDriveID = 0; //change
-    public static final int frontLeftRotationID = 20;
-    public static final int rearLeftDriveID = 0; //change
-    public static final int rearLeftRotationID = 21;
+    public static final int frontRightDriveID = 16;
+    public static final int frontRightRotationID = 120;
+    public static final int rearRightDriveID = 17;
+    public static final int rearRightRotationID = 21;
+    public static final int frontLeftDriveID = 19;
+    public static final int frontLeftRotationID = 22;
+    public static final int rearLeftDriveID = 18;
+    public static final int rearLeftRotationID = 15;
 
     public static final int encoderResolution = 2048;
     
