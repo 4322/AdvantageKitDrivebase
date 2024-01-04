@@ -80,7 +80,7 @@ public final class Constants {
   public static final class DriveConstants {
     
     public static final int frontRightDriveID = 16;
-    public static final int frontRightRotationID = 120;
+    public static final int frontRightRotationID = 20;
     public static final int rearRightDriveID = 17;
     public static final int rearRightRotationID = 21;
     public static final int frontLeftDriveID = 19;
