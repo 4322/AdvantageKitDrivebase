@@ -49,8 +49,6 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         }
 
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-        encoder.setInverted(false);
-        turningMotor.setInverted(false);
         CanBusUtil.staggerSparkMax(turningMotor);
         CanBusUtil.staggerSparkMax(driveMotor);
         
@@ -89,6 +87,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       private void configRotation(CANSparkMax sparkMax) {
         sparkMax.restoreFactoryDefaults();
 
+        encoder.setInverted(true);
+        turningMotor.setInverted(true);
+
         SparkMaxPIDController config = sparkMax.getPIDController();
         config.setP(DriveConstants.Rotation.kP,0);
         config.setD(DriveConstants.Rotation.kD,0);
@@ -100,10 +101,10 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         sparkMax.enableVoltageCompensation(DriveConstants.Rotation.configVoltageCompSaturation); 
         sparkMax.setSmartCurrentLimit(DriveConstants.Rotation.stallLimit, DriveConstants.Rotation.freeLimit); 
         encoder.setPositionConversionFactor(360);  // convert encoder position duty cycle to degrees
-        sparkMax.getPIDController().setFeedbackDevice(encoder);
-        sparkMax.getPIDController().setPositionPIDWrappingEnabled(true);
-        sparkMax.getPIDController().setPositionPIDWrappingMinInput(0);
-        sparkMax.getPIDController().setPositionPIDWrappingMaxInput(360);
+        config.setFeedbackDevice(encoder);
+        config.setPositionPIDWrappingEnabled(true);
+        config.setPositionPIDWrappingMinInput(0);
+        config.setPositionPIDWrappingMaxInput(360);
     
         // need rapid position feedback for steering control
         CanBusUtil.fastPositionSparkMaxAbs(turningMotor);
