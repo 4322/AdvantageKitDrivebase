@@ -61,6 +61,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     }
 
     private void configDrive(CANSparkMax sparkMax, WheelPosition pos) {
+        sparkMax.restoreFactoryDefaults();
+
         SparkMaxPIDController config = sparkMax.getPIDController();
 
         config.setP(DriveConstants.Drive.kP, 0);
@@ -86,6 +88,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       }
 
       private void configRotation(CANSparkMax sparkMax) {
+        sparkMax.restoreFactoryDefaults();
+
         SparkMaxPIDController config = sparkMax.getPIDController();
         config.setP(DriveConstants.Rotation.kP,0);
         config.setD(DriveConstants.Rotation.kD,0);
