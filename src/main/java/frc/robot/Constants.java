@@ -19,7 +19,7 @@ import frc.utility.OrangeMath;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean debug = true;
+  public static final boolean debug = false;
 
   public static final boolean driveEnabled = true;
   public static final boolean gyroEnabled = true;
@@ -95,10 +95,10 @@ public final class Constants {
     public static final double distWheelMetersY = OrangeMath.inchesToMeters(29.5/2); // 29.5 in
 
     // wheel location constants
-    public static final Translation2d frontLeftWheelLocation = new Translation2d(-distWheelMetersX, distWheelMetersY);
-    public static final Translation2d frontRightWheelLocation = new Translation2d(distWheelMetersX, distWheelMetersY);
-    public static final Translation2d backLeftWheelLocation = new Translation2d(-distWheelMetersX, -distWheelMetersY);
-    public static final Translation2d backRightWheelLocation = new Translation2d(distWheelMetersX, -distWheelMetersY);
+    public static final Translation2d frontLeftWheelLocation = new Translation2d(distWheelMetersX, distWheelMetersY);
+    public static final Translation2d frontRightWheelLocation = new Translation2d(distWheelMetersX, -distWheelMetersY);
+    public static final Translation2d backLeftWheelLocation = new Translation2d(-distWheelMetersX, distWheelMetersY);
+    public static final Translation2d backRightWheelLocation = new Translation2d(-distWheelMetersX, -distWheelMetersY);
 
     public static final double disableBreakSec = 2.0;
 
