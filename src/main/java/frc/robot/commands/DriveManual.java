@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.Drive;
@@ -119,7 +120,7 @@ public class DriveManual extends CommandBase {
 
     //switch between joysticks and xbox which can reconfigure drive stick location
     switch(drive.getControlType()) {
-      case "joysticks":
+      case Constants.ControllerTypeStrings.joysticks:
         driveRawX = -RobotContainer.driveStick.getY();
         driveRawY = -RobotContainer.driveStick.getX();
         rotateRaw = -RobotContainer.rotateStick.getZ();
@@ -127,9 +128,10 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.joystickDriveDeadband;
         rotateLeftDeadband = Manual.joystickRotateLeftDeadband;
         rotateRightDeadband = Manual.joystickRotateRightDeadband;
+        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
         break;
 
-      case "xboxLeftDrive":
+      case Constants.ControllerTypeStrings.xboxLeftDrive:
         driveRawX = -RobotContainer.xbox.getLeftY();
         driveRawY = -RobotContainer.xbox.getLeftX();
         rotateRaw = -RobotContainer.xbox.getRightX();
@@ -137,9 +139,10 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.xboxDriveDeadband;
         rotateLeftDeadband = Manual.xboxRotateDeadband;
         rotateRightDeadband = Manual.xboxRotateDeadband;
+        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
         break;
       
-      case "xboxRightDrive":
+      case Constants.ControllerTypeStrings.xboxRightDrive:
         driveRawX = -RobotContainer.xbox.getRightY();
         driveRawY = -RobotContainer.xbox.getRightX();
         rotateRaw = -RobotContainer.xbox.getLeftX();
@@ -147,9 +150,12 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.xboxDriveDeadband;
         rotateLeftDeadband = Manual.xboxRotateDeadband;
         rotateRightDeadband = Manual.xboxRotateDeadband;
+        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
         break;
 
       default:
+        Logger.getInstance().recordOutput("DriveUnknownControlType", true);
+        Logger.getInstance().recordOutput("DhrishSucks", true);
         return;
     }
 
