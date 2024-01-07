@@ -49,9 +49,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         }
 
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-        encoder.setInverted(true);
-        turningMotor.setInverted(true);
-        driveMotor.setInverted(false); // TODO: NEED TO CHECK WHEN SETTING UP
+        encoder.setInverted(false);
+        turningMotor.setInverted(false);
         CanBusUtil.staggerSparkMax(turningMotor);
         CanBusUtil.staggerSparkMax(driveMotor);
         
