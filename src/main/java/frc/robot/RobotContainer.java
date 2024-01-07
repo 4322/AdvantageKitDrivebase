@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -19,6 +20,7 @@ import frc.robot.PathPlannerManager;
 import frc.robot.commands.DriveStop;
 import frc.robot.commands.ResetFieldCentric;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.prototype.Prototype;
 import frc.utility.Auto;
 
 /**
@@ -48,6 +50,8 @@ public class RobotContainer {
 
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
+
+  private final Prototype prototype = new Prototype();
 
   private int selectedPosition = 0;
   /**
@@ -115,6 +119,8 @@ public class RobotContainer {
       xbox.povUp().onTrue(new ResetFieldCentric(drive, 0, true));
       xbox.rightBumper().onTrue(new DriveManual(drive, DriveManual.AutoPose.usePresetAuto));
       xbox.povDown().onTrue(driveStop);
+      xbox.a().onTrue(Commands.runOnce(() -> prototype.run()));
+      xbox.b().onTrue(Commands.runOnce(() -> prototype.stop()));
     }
   }
 

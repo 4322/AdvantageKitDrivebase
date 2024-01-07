@@ -282,6 +282,15 @@ public final class Constants {
     }
   }
 
+  public static final class Prototype {
+    public static final double brakeModeDeadband = 0.01;
+    public static final double closedLoopRampSec = 0.25;
+    public static final double openLoopRampSec = 0.25;
+
+    public static final double motor1Speed = 0.25;
+    public static final double motor2Speed = 0.25;
+  }
+
   public enum WheelPosition {
     // construction of SwerveDriveKinematics is dependent on this enum
 
