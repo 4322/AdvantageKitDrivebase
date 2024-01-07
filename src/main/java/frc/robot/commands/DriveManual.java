@@ -155,7 +155,6 @@ public class DriveManual extends CommandBase {
 
       default:
         Logger.getInstance().recordOutput("DriveUnknownControlType", true);
-        Logger.getInstance().recordOutput("DhrishSucks", true);
         return;
     }
 
