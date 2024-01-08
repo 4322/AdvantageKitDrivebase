@@ -128,7 +128,7 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.joystickDriveDeadband;
         rotateLeftDeadband = Manual.joystickRotateLeftDeadband;
         rotateRightDeadband = Manual.joystickRotateRightDeadband;
-        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
+        Logger.getInstance().recordOutput("UnknownControllerType", false);
         break;
 
       case Constants.ControllerTypeStrings.xboxLeftDrive:
@@ -139,7 +139,7 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.xboxDriveDeadband;
         rotateLeftDeadband = Manual.xboxRotateDeadband;
         rotateRightDeadband = Manual.xboxRotateDeadband;
-        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
+        Logger.getInstance().recordOutput("UnknownControllerType", false);
         break;
       
       case Constants.ControllerTypeStrings.xboxRightDrive:
@@ -150,11 +150,11 @@ public class DriveManual extends CommandBase {
         driveDeadband = Manual.xboxDriveDeadband;
         rotateLeftDeadband = Manual.xboxRotateDeadband;
         rotateRightDeadband = Manual.xboxRotateDeadband;
-        Logger.getInstance().recordOutput("DriveUnknownControlType", false);
+        Logger.getInstance().recordOutput("UnknownControllerType", false);
         break;
 
       default:
-        Logger.getInstance().recordOutput("DriveUnknownControlType", true);
+        Logger.getInstance().recordOutput("UnknownControllerType", true);
         return;
     }
 
