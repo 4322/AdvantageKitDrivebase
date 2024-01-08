@@ -18,8 +18,8 @@ public class Prototype extends SubsystemBase {
 
 
   public Prototype () {
-    motor1 = new TalonFX(30);
-    motor2 = new TalonFX(31);
+    motor1 = new TalonFX(2);
+    motor2 = new TalonFX(4);
     mOutputConfigs = new MotorOutputConfigs();
 
     
