@@ -10,13 +10,20 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
 import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
@@ -32,8 +39,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private TalonFX driveMotor;
 
     private TalonFX turningMotor;
+
     //private SparkMaxAbsoluteEncoder encoder;
-    private 
     
     private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
     private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.clone();
@@ -60,6 +67,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
                 turningMotor = new TalonFX(DriveConstants.rearLeftRotationID);
                 break;
         }
+        
         encoder = turningMotor.
         encoder = turningMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
         CanBusUtil.staggerSparkMax(turningMotor);
@@ -70,9 +78,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         configRotation(turningMotor);
     }
 
-    private void configDrive(TalonFX sparkMax, WheelPosition pos) {
-        sparkMax.getConfigurator().apply(new TalonFXConfiguration());
-        TalonFXConfigurator config = sparkMax.getConfigurator();
+    private void configDrive(TalonFX talonFX, WheelPosition pos) {
+        talonFX.getConfigurator().apply(new TalonFXConfiguration());
+        TalonFXConfigurator config = talonFX.getConfigurator();
         Slot0Configs slot0Configs = new Slot0Configs();
         ClosedLoopRampsConfigs closedLoopRampsConfigs = new ClosedLoopRampsConfigs();
         OpenLoopRampsConfigs openLoopRampsConfigs = new OpenLoopRampsConfigs();
@@ -81,7 +89,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         slot0Configs.kP = DriveConstants.Drive.kP;
         slot0Configs.kI = DriveConstants.Drive.kI;
         slot0Configs.kD = DriveConstants.Drive.kD;
-        //TODO: config.setFF(DriveConstants.Drive.kF, 0);
+        slot0Configs.kV = DriveConstants.Drive.kF;
         closedLoopRampsConfigs.VoltageClosedLoopRampPeriod = DriveConstants.Drive.closedLoopRampSec;
         openLoopRampsConfigs.VoltageOpenLoopRampPeriod = DriveConstants.Drive.openLoopRampSec;
         currentLimitsConfigs.StatorCurrentLimit = DriveConstants.Drive.statorLimit;
@@ -98,22 +106,22 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
         boolean isLeftSide = (pos == WheelPosition.FRONT_LEFT) || (pos == WheelPosition.BACK_LEFT);
-        sparkMax.setInverted(isLeftSide);
+        talonFX.setInverted(isLeftSide);
 
         // need rapid velocity feedback for control logic
         //TODO: CanBusUtil.fastVelocitySparkMax(driveMotor);
       }
 
-      private void configRotation(TalonFX sparkMax) {
-        sparkMax.getConfigurator().apply(new TalonFXConfiguration());
+      private void configRotation(TalonFX talonFX) {
+        talonFX.getConfigurator().apply(new TalonFXConfiguration());
         Slot0Configs slot0Configs = new Slot0Configs();
         ClosedLoopRampsConfigs closedLoopRampsConfigs = new ClosedLoopRampsConfigs();
         VoltageConfigs voltageConfigs = new VoltageConfigs();
         MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs();
         encoder.setInverted(true);
-        sparkMax.setInverted(true);
+        talonFX.setInverted(true);
 
-        TalonFXConfigurator config = sparkMax.getConfigurator();
+        TalonFXConfigurator config = talonFX.getConfigurator();
         slot0Configs.kP = DriveConstants.Rotation.kP;
         slot0Configs.kD = DriveConstants.Rotation.kD;
         closedLoopRampsConfigs.VoltageClosedLoopRampPeriod = DriveConstants.Rotation.configCLosedLoopRamp;
@@ -121,10 +129,10 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         voltageConfigs.PeakForwardVoltage = DriveConstants.Rotation.maxPower;
         voltageConfigs.PeakReverseVoltage = -DriveConstants.Rotation.maxPower;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;// Allow robot to be moved prior to enabling
-        
         //TODO: sparkMax.enableVoltageCompensation(DriveConstants.Rotation.configVoltageCompSaturation); 
-        sparkMax.setSmartCurrentLimit(DriveConstants.Rotation.stallLimit, DriveConstants.Rotation.freeLimit); 
+        talonFX.setSmartCurrentLimit(DriveConstants.Rotation.stallLimit, DriveConstants.Rotation.freeLimit); 
         encoder.setPositionConversionFactor(360);  // convert encoder position duty cycle to degrees
+        
         config.setFeedbackDevice(encoder);
         config.setPositionPIDWrappingEnabled(true);
         config.setPositionPIDWrappingMinInput(0);
@@ -140,12 +148,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         //drive inputs
         inputs.driveRotations = driveMotor.getPosition().getValue();
         inputs.driveRotationsPerSec = driveMotor.getVelocity().getValue()/60;
-        inputs.driveAppliedVolts = driveMotor.getAppliedOutput() * driveMotor.getBusVoltage();
+        inputs.driveAppliedVolts = driveMotor.getAppliedOutput() * driveMotor.getSupplyVoltage().getValue();
         inputs.driveCurrentAmps = driveMotor.getSupplyCurrent().getValue();
-        
         //turn inputs
         inputs.turnVelocityDegPerSec = Units.rotationsToDegrees(turningMotor.getVelocity().getValue());
-        inputs.turnAppliedVolts = turningMotor.getAppliedOutput() * turningMotor.getBusVoltage();
+        inputs.turnAppliedVolts = turningMotor * turningMotor.getSupplyVoltage().getValue();
         inputs.turnCurrentAmps = turningMotor.getSupplyCurrent().getValue();
         inputs.turnDegrees = turningMotor.getPosition().getValue();
 
@@ -155,8 +162,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     // PID methods for turn motor
     @Override
     public void setTurnAngle(double desiredAngle) {
-      turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
-
+           PositionVoltage positionVoltage = new PositionVoltage(desiredAngle);
+      turningMotor.setControl(positionVoltage);
     }
 
     // PID method for drive motor
@@ -218,10 +225,10 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       
       // send requested voltage to SparkMAX
       
-      REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);
-      if (error != REVLibError.kOk) {
+      driveMotor.setVoltage(desiredVolts);
+      /**if (error != REVLibError.kOk) {
         DriverStation.reportError("Drive motor " + driveMotor.getDeviceId() + " error " + error.name() + " while sending requested voltage", false);
-      }
+      }**/
     }
 
     @Override
@@ -245,24 +252,32 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
 
     @Override
     public void setBrakeMode() {
-      driveMotor.setIdleMode(IdleMode.kBrake);
-      turningMotor.setIdleMode(IdleMode.kBrake);
+      MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs();
+      motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+      driveMotor.getConfigurator().refresh(motorOutputConfigs);
+      turningMotor.getConfigurator().refresh(motorOutputConfigs);
     }
 
     @Override
     public void setCoastMode() {
-        driveMotor.setIdleMode(IdleMode.kCoast);
-        turningMotor.setIdleMode(IdleMode.kCoast);
+      MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs();
+      motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+      driveMotor.getConfigurator().refresh(motorOutputConfigs);
+      turningMotor.getConfigurator().refresh(motorOutputConfigs);
     }
 
     @Override
     public void setClosedRampRate(double period) {
-      driveMotor.setClosedLoopRampRate(period);
+      ClosedLoopRampsConfigs closedLoopRampsConfigs = new ClosedLoopRampsConfigs();
+      closedLoopRampsConfigs.VoltageClosedLoopRampPeriod = period;
+      driveMotor.getConfigurator().refresh(closedLoopRampsConfigs);
     }
 
     @Override
     public void setOpenRampRate(double period) {
-      driveMotor.setOpenLoopRampRate(period);
+      OpenLoopRampsConfigs openLoopRampsConfigs = new OpenLoopRampsConfigs();
+      openLoopRampsConfigs.VoltageOpenLoopRampPeriod = period;
+      driveMotor.getConfigurator().refresh(openLoopRampsConfigs);
     }
 
     @Override

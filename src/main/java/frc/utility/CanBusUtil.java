@@ -1,5 +1,6 @@
 package frc.utility;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import frc.robot.Constants;
@@ -41,7 +42,7 @@ public class CanBusUtil {
 
   // Stagger status frames from SPARK MAX controllers.
   // Status frames needed at a higher rate can be set after initialization.
-  public static void staggerSparkMax(CANSparkMax spark) {
+  public static void staggerSparkMax(TalonFX spark) {
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextSlowStatusPeriodMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextVerySlowStatusPeriodSparkMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, nextVerySlowStatusPeriodSparkMs());
