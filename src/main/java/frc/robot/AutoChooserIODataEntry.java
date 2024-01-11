@@ -16,7 +16,7 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
   private ArrayList<Auto> autoArrayList;
   private OrangeSendableChooser<Command> autoChooser;
   private final PathPlannerManager ppManager;
-  private int selectedPosition;
+  private Integer selectedPosition;
   
   public AutoChooserIODataEntry(Drive drive) {
     // Set up auto routines
