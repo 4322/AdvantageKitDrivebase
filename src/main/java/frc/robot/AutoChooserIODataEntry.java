@@ -12,7 +12,7 @@ import frc.utility.OrangeSendableChooser;
 
 public class AutoChooserIODataEntry implements AutoChooserIO{
   private ShuffleboardTab customizationTab;
-  private SendableChooser<Integer> positionChooser;
+  private OrangeSendableChooser<Integer> positionChooser;
   private ArrayList<Auto> autoArrayList;
   private OrangeSendableChooser<Command> autoChooser;
   private final PathPlannerManager ppManager;
