@@ -42,8 +42,8 @@ public class CanBusUtil {
 
   // Stagger status frames from SPARK MAX controllers.
   // Status frames needed at a higher rate can be set after initialization.
-  public static void staggerSparkMax(TalonFX spark) {
-    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextSlowStatusPeriodMs());
+  public static void staggerSparkMax(CANSparkMax spark) {
+    spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, nextVerySlowStatusPeriodSparkMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, nextVerySlowStatusPeriodSparkMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, nextVerySlowStatusPeriodSparkMs());
     spark.setPeriodicFramePeriod(PeriodicFrame.kStatus3, nextVerySlowStatusPeriodSparkMs());

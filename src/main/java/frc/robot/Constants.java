@@ -28,7 +28,7 @@ public final class Constants {
   
   public static final boolean spinoutCenterEnabled = true;  // center rotate burst of power
   public static final boolean spinoutCornerEnabled = true;
-  public static final boolean psuedoAutoRotateEnabled = false;
+  public static final boolean pseudoAutoRotateEnabled = false;
   public static final String driveInputScaling = InputScalingStrings.quadratic;
   public static final String controllerType = ControllerTypeStrings.xboxLeftDrive;
   
@@ -80,12 +80,16 @@ public final class Constants {
   public static final class DriveConstants {
     public static final int frontRightDriveID = 18;
     public static final int frontRightRotationID = 15;
+    public static final int frontRightCANID = 0;
     public static final int rearRightDriveID = 19;
     public static final int rearRightRotationID = 22;
+    public static final int rearRightCANID = 0;
     public static final int frontLeftDriveID = 17;
     public static final int frontLeftRotationID = 21;
+    public static final int frontLeftCANID = 0;
     public static final int rearLeftDriveID = 16;
     public static final int rearLeftRotationID = 20;
+    public static final int rearLeftCANID = 0;
 
     public static final int encoderResolution = 2048;
     

@@ -140,7 +140,7 @@ public class Drive extends SubsystemBase {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
         }  
-        odometry = new SwerveDriveOdometry(kinematics, getRotation2d(), getModulePostitions());
+        odometry = new SwerveDriveOdometry(kinematics, getRotation2d(), getModulePositions());
         resetFieldCentric(0);
       }
 
@@ -398,13 +398,13 @@ public class Drive extends SubsystemBase {
 
   public void updateOdometry() {
     if (Constants.gyroEnabled) {
-      odometry.update(getRotation2d(), getModulePostitions());
+      odometry.update(getRotation2d(), getModulePositions());
     }
   }
 
   public void resetOdometry(Pose2d pose) {
     if (Constants.gyroEnabled) {
-      odometry.resetPosition(getRotation2d(), getModulePostitions(), pose);
+      odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
   }
 
@@ -447,7 +447,7 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  public SwerveModulePosition[] getModulePostitions() {
+  public SwerveModulePosition[] getModulePositions() {
     if (Constants.driveEnabled) {
       // wheel locations must be in the same order as the WheelPosition enum values
       return new SwerveModulePosition[] {
@@ -471,10 +471,10 @@ public class Drive extends SubsystemBase {
   public boolean isPseudoAutoRotateEnabled() {
     if (Constants.driveEnabled) {
       if (Constants.debug) {
-        return driveShuffleBoardInputs.psuedoAutoRotateEnabled;
+        return driveShuffleBoardInputs.pseudoAutoRotateEnabled;
       }
     }
-    return Constants.psuedoAutoRotateEnabled;
+    return Constants.pseudoAutoRotateEnabled;
   }
 
   public double getMaxManualRotationEntry() {
