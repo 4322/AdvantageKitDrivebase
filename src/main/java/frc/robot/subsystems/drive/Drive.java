@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,7 +50,8 @@ public class Drive extends SubsystemBase {
       DriveConstants.frontRightWheelLocation, DriveConstants.frontLeftWheelLocation,
       DriveConstants.backLeftWheelLocation, DriveConstants.backRightWheelLocation);
 
-  private SwerveDriveOdometry odometry;
+  private final SwerveDrivePoseEstimator poseEstimator;
+
   private ShuffleboardTab tab;
 
   private GenericEntry rotErrorTab;
@@ -140,7 +142,7 @@ public class Drive extends SubsystemBase {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
         }  
-        odometry = new SwerveDriveOdometry(kinematics, getRotation2d(), getModulePostitions());
+        poseEstimator = new SwerveDrivePoseEstimator(kinematics, getRotation2d(), getModulePostitions(), new Pose2d());
         resetFieldCentric(0);
       }
 
@@ -398,13 +400,19 @@ public class Drive extends SubsystemBase {
 
   public void updateOdometry() {
     if (Constants.gyroEnabled) {
-      odometry.update(getRotation2d(), getModulePostitions());
+      poseEstimator.update(getRotation2d(), getModulePostitions());
+    }
+  }
+
+  public void updateVision(Pose2d pose, double timestampSeconds) {
+    if (Constants.gyroEnabled) {
+      poseEstimator.addVisionMeasurement(pose, timestampSeconds);
     }
   }
 
   public void resetOdometry(Pose2d pose) {
     if (Constants.gyroEnabled) {
-      odometry.resetPosition(getRotation2d(), getModulePostitions(), pose);
+      poseEstimator.resetPosition(getRotation2d(), getModulePostitions(), pose);
     }
   }
 
@@ -433,7 +441,7 @@ public class Drive extends SubsystemBase {
   }
 
   public Pose2d getPose2d() {
-    return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition(); 
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
