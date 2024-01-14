@@ -75,6 +75,8 @@ public class AutoChooserIODataEntry implements AutoChooserIO{
           }
         }
       }
+    } else {
+      currentPosition = 0;
     }
   
     inputs.startingGridPosition = currentPosition;
