@@ -6,7 +6,9 @@ package frc.robot;
 
 
 import org.littletonrobotics.junction.Logger;
-
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.CommandUtil;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,9 +44,6 @@ public class RobotContainer {
   private final DriveManual driveManualDefault = new DriveManual(drive, DriveManual.AutoPose.none);
   private final DriveStop driveStop = new DriveStop(drive);
 
-  private AutoChooserIO autoChooserIO;
-  private AutoChooserIOInputsAutoLogged autoChooserInputs = new AutoChooserIOInputsAutoLogged();
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -52,7 +51,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       // Real robot, instantiate hardware IO implementations
       case REAL:
-        autoChooserIO = new AutoChooserIODataEntry(drive);
         break;
 
       // Sim robot, instantiate physics sim IO implementations
@@ -69,8 +67,6 @@ public class RobotContainer {
     if (Constants.driveEnabled) {
       drive.setDefaultCommand(driveManualDefault);
     }
-
-    autoChooserIO = new AutoChooserIO() {};
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -101,10 +97,6 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    // update logs
-    autoChooserIO.updateInputs(autoChooserInputs);
-    Logger.getInstance().processInputs("AutoChooser", autoChooserInputs);
-
     if (disableTimer.hasElapsed(Constants.DriveConstants.disableBreakSec)) {
       if (Constants.driveEnabled) {
         drive.setCoastMode(); // robot has stopped, safe to enter coast mode
@@ -124,9 +116,6 @@ public class RobotContainer {
     driveStop.schedule();  // interrupt all drive commands
     disableTimer.reset();
     disableTimer.start();
-    
-    // autos need to be reloaded after each auto test because the commands can't be reused
-    autoChooserIO.loadAutos(); 
   }
 
   public Command getAutonomousCommand() {
@@ -134,11 +123,12 @@ public class RobotContainer {
       return null;
     }
 
-    Logger.getInstance().recordOutput("Auto", autoChooserInputs.autoCommand.getName());
+    NamedCommands.registerCommand("testCommand",
+        CommandUtil.wrappedEventCommand(new ResetFieldCentric(drive, 0, true)));
     
     return new SequentialCommandGroup(
       getAutoInitialize(),
-      autoChooserInputs.autoCommand
+      AutoBuilder.buildAuto("testAuto")
     );
   }
 
