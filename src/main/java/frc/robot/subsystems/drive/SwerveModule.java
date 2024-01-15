@@ -89,7 +89,7 @@ public class SwerveModule {
           desiredState.speedMetersPerSecond);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptMetersPerSec", 
           state.speedMetersPerSecond);
-      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + " /SetOptRPS", 
+      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptRPS", 
           desiredRPS);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcDegrees", 
           desiredState.angle.getDegrees());
