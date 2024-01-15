@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLog;
+import frc.robot.Constants.DriveConstants;
 
 public interface DriveShuffleBoardIO {
   @AutoLog
@@ -14,8 +15,8 @@ public interface DriveShuffleBoardIO {
     public double fastMovingFtPerSec;
     public double accelerationRampRate;
     public double stoppedRampRate;
-    public double[] voltsAtSpeedThresholds;
-    public double[] feedForwardRPSThresholds;
+    public double[] voltsAtSpeedThresholds = new double[DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.length];
+    public double[] feedForwardRPSThresholds = new double[DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.length];
     public double voltsToOvercomeFriction;
     
   }

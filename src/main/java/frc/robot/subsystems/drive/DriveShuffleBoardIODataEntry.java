@@ -78,20 +78,20 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
           .withPosition(1, 2).withSize(1, 1).getEntry();
       
       voltsToOvercomeFrictionEntry = customizationTab.add("Volts Required to Overcome Friction", 
-          DriveConstants.Drive.kS).withPosition(4,3).withSize(2,2).getEntry();
+          DriveConstants.Drive.kS).withPosition(6,2).withSize(2,2).getEntry();
 
       // Enables manipulation of arrays in Shuffleboard GUI and displays nicely
       voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts at Speed Thresholds", BuiltInLayouts.kList)
-          .withPosition(0,3).withSize(1,4);
+          .withPosition(8,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.length; i++) {
         feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts " + i, DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds[i]).getEntry();
       }
 
       
       feedForwardRPSThresholdLayout = customizationTab.getLayout("FF Threshold RPS", BuiltInLayouts.kList)
-          .withPosition(1,3).withSize(1,4);
+          .withPosition(10,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.length; i++) {
-        speedRPSArray[i] = feedForwardRPSThresholdLayout.add("Speed(RPS) " + i, DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds[i]).getEntry();
+        speedRPSArray[i] = feedForwardRPSThresholdLayout.add("Speed(RPS) " + i, DriveConstants.Drive.FeedForward.feedForwardRPSThreshold[i]).getEntry();
       }
     }
   }

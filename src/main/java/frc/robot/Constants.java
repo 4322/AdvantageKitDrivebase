@@ -19,7 +19,7 @@ import frc.utility.OrangeMath;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean debug = false;
+  public static final boolean debug = true;
 
   public static final boolean driveEnabled = true;
   public static final boolean gyroEnabled = true;
