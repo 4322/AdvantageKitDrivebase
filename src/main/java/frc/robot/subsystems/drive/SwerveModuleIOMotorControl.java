@@ -27,6 +27,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private double kSVolts = DriveConstants.Drive.kS;
 
     private double calculatedFeedForwardValue;
+    private double desiredVolts;
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
         switch(wheelPos) {
@@ -126,6 +127,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         inputs.turnDegrees = encoder.getPosition();
 
         inputs.calculatedFF = calculatedFeedForwardValue;
+        inputs.calculatedVolts = desiredVolts;
     }
 
     // PID methods for turn motor
@@ -189,7 +191,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       calculatedFeedForwardValue = calculatedFeedForwardValue * Math.signum(desiredMotorRPM);
 
       // convert speed to volts while accounting for volts required to overcome static friction
-      double desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calculatedFeedForwardValue * desiredMotorRPS);
+      desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calculatedFeedForwardValue * desiredMotorRPS);
       
       // send requested voltage to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);

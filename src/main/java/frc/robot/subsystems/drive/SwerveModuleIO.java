@@ -16,6 +16,7 @@ public interface SwerveModuleIO {
         public double turnDegrees = 0.0;
 
         public double calculatedFF = 0.0;
+        public double calculatedVolts;
     }
     
     public default void updateInputs(SwerveModuleIOInputs inputs) {}
