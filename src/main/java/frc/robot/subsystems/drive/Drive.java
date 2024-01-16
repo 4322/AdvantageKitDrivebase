@@ -269,7 +269,7 @@ public class Drive extends SubsystemBase {
         }
         for (SwerveModule module: swerveModules) {
           module.updateFFVelocityThreshold(driveShuffleBoardInputs.feedForwardRPSThresholds);
-          module.updateFeedForward(driveShuffleBoardInputs.voltsAtSpeedThresholds);
+          module.updateFeedForward(driveShuffleBoardInputs.voltsOverRPSAtSpeedThresholds);
           module.updateVoltsToOvercomeFriction(driveShuffleBoardInputs.voltsToOvercomeFriction);
         }
       }

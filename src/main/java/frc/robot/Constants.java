@@ -244,13 +244,13 @@ public final class Constants {
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
-        public static final double[] voltsAtSpeedThresholds;
+        public static final double[] voltsOverRPSAtSpeedThresholds;
         static {
-          voltsAtSpeedThresholds = new double[4];
-          voltsAtSpeedThresholds[0] = 11.0;
-          voltsAtSpeedThresholds[1] = 11.0;
-          voltsAtSpeedThresholds[2] = 11.0;
-          voltsAtSpeedThresholds[3] = 11.0;
+          voltsOverRPSAtSpeedThresholds = new double[4];
+          voltsOverRPSAtSpeedThresholds[0] = 11.0;
+          voltsOverRPSAtSpeedThresholds[1] = 11.0;
+          voltsOverRPSAtSpeedThresholds[2] = 11.0;
+          voltsOverRPSAtSpeedThresholds[3] = 11.0;
         }
         public static final double[] feedForwardRPSThreshold;
         static {

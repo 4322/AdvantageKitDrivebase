@@ -23,10 +23,10 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private SparkMaxAbsoluteEncoder encoder;
     
     private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
-    private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.clone();
+    private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.clone();
     private double kSVolts = DriveConstants.Drive.kS;
 
-    private double calculatedFeedForwardValue;
+    private double calcFeedForwardVoltsOverRPS;
     private double desiredVolts;
 
     public SwerveModuleIOMotorControl(WheelPosition wheelPos) {
@@ -126,7 +126,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         inputs.turnCurrentAmps = turningMotor.getOutputCurrent();
         inputs.turnDegrees = encoder.getPosition();
 
-        inputs.calculatedFF = calculatedFeedForwardValue;
+        inputs.calculatedFF = calcFeedForwardVoltsOverRPS;
         inputs.calculatedVolts = desiredVolts;
     }
 
@@ -164,7 +164,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         double slope = (feedForwardVolts[lastElement] - feedForwardVolts[secondToLastElement]) / 
                         (feedForwardRPSThreshold[lastElement] - feedForwardRPSThreshold[secondToLastElement]);
 
-        calculatedFeedForwardValue = slope * (desiredMotorRPS - feedForwardRPSThreshold[lastElement]) 
+        calcFeedForwardVoltsOverRPS = slope * (desiredMotorRPS - feedForwardRPSThreshold[lastElement]) 
                                       + feedForwardVolts[lastElement];
       }
       // Linear interpolation to calculate a more precise Feed Forward value for 
@@ -177,21 +177,21 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         double weight = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
                     (feedForwardRPSThreshold[lowerBound] - feedForwardRPSThreshold[upperBound]);
         
-        calculatedFeedForwardValue = (weight * feedForwardVolts[lowerBound]) + 
+        calcFeedForwardVoltsOverRPS = (weight * feedForwardVolts[lowerBound]) + 
                                       ((1 - weight) * feedForwardVolts[upperBound]);
       }
 
       // make sure wheel RPS shuffleboard inputs are in ascending order
-      if (calculatedFeedForwardValue < 0) {
-        calculatedFeedForwardValue = 0;
+      if (calcFeedForwardVoltsOverRPS < 0) {
+        calcFeedForwardVoltsOverRPS = 0;
         kSVolts = 0;
       }
 
       // need to reverse Feed Forward value sign if speed is negative
-      calculatedFeedForwardValue = calculatedFeedForwardValue * Math.signum(desiredMotorRPM);
+      calcFeedForwardVoltsOverRPS = calcFeedForwardVoltsOverRPS * Math.signum(desiredMotorRPM);
 
       // convert speed to volts while accounting for volts required to overcome static friction
-      desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calculatedFeedForwardValue * desiredMotorRPS);
+      desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calcFeedForwardVoltsOverRPS * desiredMotorRPS);
       
       // send requested voltage to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);

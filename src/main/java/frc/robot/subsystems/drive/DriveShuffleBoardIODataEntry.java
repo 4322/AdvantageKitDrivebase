@@ -26,7 +26,7 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
   private GenericEntry voltsToOvercomeFrictionEntry;
   private SendableChooser<String> driveInputScaling;
   private SendableChooser<String> driveControlType;
-  private GenericEntry[] feedForwardArray = new GenericEntry[DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.length];
+  private GenericEntry[] feedForwardArray = new GenericEntry[DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.length];
   private GenericEntry[] speedRPSArray = new GenericEntry[DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.length];
 
   public DriveShuffleBoardIODataEntry() {
@@ -83,8 +83,8 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       // Enables manipulation of arrays in Shuffleboard GUI and displays nicely
       voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts at Speed Thresholds", BuiltInLayouts.kList)
           .withPosition(8,1).withSize(2,3);
-      for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.length; i++) {
-        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts " + i, DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds[i]).getEntry();
+      for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.length; i++) {
+        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts " + i, DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds[i]).getEntry();
       }
 
       
@@ -109,8 +109,8 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       inputs.fastMovingFtPerSec = fastMovingFtPerSecEntry.getDouble(Constants.DriveConstants.Auto.fastMovingFtPerSec);
       inputs.accelerationRampRate = closedRampRate.getDouble(DriveConstants.Drive.closedLoopRampSec);
       inputs.stoppedRampRate = openRampRate.getDouble(DriveConstants.Drive.openLoopRampSec);
-      for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds.length; i++) {
-        inputs.voltsAtSpeedThresholds[i] = feedForwardArray[i].getDouble(DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds[i]);
+      for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.length; i++) {
+        inputs.voltsOverRPSAtSpeedThresholds[i] = feedForwardArray[i].getDouble(DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds[i]);
       }
       for (int i = 0; i < DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.length; i++) {
         inputs.feedForwardRPSThresholds[i] = speedRPSArray[i].getDouble(DriveConstants.Drive.FeedForward.feedForwardRPSThreshold[i]);
@@ -128,7 +128,7 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
       inputs.fastMovingFtPerSec = Constants.DriveConstants.Auto.fastMovingFtPerSec;
       inputs.accelerationRampRate = DriveConstants.Drive.closedLoopRampSec;
       inputs.stoppedRampRate = DriveConstants.Drive.openLoopRampSec;
-      inputs.voltsAtSpeedThresholds = DriveConstants.Drive.FeedForward.voltsAtSpeedThresholds;
+      inputs.voltsOverRPSAtSpeedThresholds = DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds;
       inputs.feedForwardRPSThresholds = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold;
       inputs.voltsToOvercomeFriction = DriveConstants.Drive.kS;
     }
