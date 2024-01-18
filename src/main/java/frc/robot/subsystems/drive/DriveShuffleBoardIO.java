@@ -15,8 +15,8 @@ public interface DriveShuffleBoardIO {
     public double fastMovingFtPerSec;
     public double accelerationRampRate;
     public double stoppedRampRate;
-    public double[] voltsOverRPSAtSpeedThresholds = new double[DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.length];
-    public double[] feedForwardRPSThresholds = new double[DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.length];
+    public double[] voltsOverMetersPerSecAtSpeedThresholds = new double[DriveConstants.Drive.FeedForward.voltsOverMetersPerSecAtSpeedThresholds.length];
+    public double[] feedForwardMetersPerSecThresholds = new double[DriveConstants.Drive.FeedForward.feedForwardMetersPerSecThreshold.length];
     public double voltsToOvercomeFriction;
     
   }

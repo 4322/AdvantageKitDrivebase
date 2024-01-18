@@ -68,6 +68,7 @@ public final class Constants {
   public static final int falconEncoderUnits = 2048;
   public static final double inchesToMeters = 0.0254;
   public static final double feetToMeters = inchesToMeters * 12;
+  public static final double metersToFeet = 3.28084;
   public static final int fastStatusPeriodBaseMs = 13;
   public static final int shuffleboardStatusPeriodBaseMs = 75;
   public static final int slowStatusPeriodBaseMs = 180;
@@ -244,23 +245,23 @@ public final class Constants {
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
-        public static final double[] voltsOverRPSAtSpeedThresholds;
+        public static final double[] voltsOverMetersPerSecAtSpeedThresholds;
         static {
-          voltsOverRPSAtSpeedThresholds = new double[4];
-          voltsOverRPSAtSpeedThresholds[0] = 11.0;
-          voltsOverRPSAtSpeedThresholds[1] = 11.0;
-          voltsOverRPSAtSpeedThresholds[2] = 11.0;
-          voltsOverRPSAtSpeedThresholds[3] = 11.0;
+          voltsOverMetersPerSecAtSpeedThresholds = new double[4];
+          voltsOverMetersPerSecAtSpeedThresholds[0] = 11.0;
+          voltsOverMetersPerSecAtSpeedThresholds[1] = 11.0;
+          voltsOverMetersPerSecAtSpeedThresholds[2] = 11.0;
+          voltsOverMetersPerSecAtSpeedThresholds[3] = 11.0;
         }
-        public static final double[] feedForwardRPSThreshold;
+        public static final double[] feedForwardMetersPerSecThreshold;
         static {
           // define speed at which each voltage value will be used
-          feedForwardRPSThreshold = new double[4];
+          feedForwardMetersPerSecThreshold = new double[4];
           // values must be in ascending order
-          feedForwardRPSThreshold[0] = 0.0; // Must be zero
-          feedForwardRPSThreshold[1] = 30.0;
-          feedForwardRPSThreshold[2] = 50.0;
-          feedForwardRPSThreshold[3] = 80.0;
+          feedForwardMetersPerSecThreshold[0] = 0.0; // Must be zero
+          feedForwardMetersPerSecThreshold[1] = 30.0;
+          feedForwardMetersPerSecThreshold[2] = 50.0;
+          feedForwardMetersPerSecThreshold[3] = 80.0;
         }
       }
     }
