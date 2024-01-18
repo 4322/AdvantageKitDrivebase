@@ -21,6 +21,7 @@ public class SwerveModule {
   private double previousRate = 0;
   private double previousTime = 0;
   private double filteredAccel = 0;
+  private double desiredRPS = 0;
 
   public SwerveModule(WheelPosition wheelPos, SwerveModuleIO io) {
     this.io = io;
@@ -82,7 +83,7 @@ public class SwerveModule {
       SwerveModuleState state =
           SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnDegrees));
       
-      double desiredRPS = state.speedMetersPerSecond / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters 
+      desiredRPS = state.speedMetersPerSecond / (DriveConstants.Drive.wheelDiameterInches * Constants.inchesToMeters 
           * Math.PI) * DriveConstants.Drive.gearRatio;
           
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcMetersPerSec", 
@@ -129,6 +130,7 @@ public class SwerveModule {
       if (!Constants.steeringTuningMode) {
         io.stopMotor();
       }
+      desiredRPS = 0; // makes value cleaner for logging purposes
     }
   }
 
