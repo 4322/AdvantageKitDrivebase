@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.utility.OrangeMath;
 
@@ -239,18 +238,18 @@ public final class Constants {
       public static final double kI = 0.0;
       public static final double kIZone = 0.0;
       public static final double kD = 0.0;
-      public static final double kF = 11.0; // TODO
-      public static final double kS = 0; // TODO
+      public static final double kF = 0;
+      public static final double kS = 0.281485;
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
         public static final double[] voltsOverRPSAtSpeedThresholds;
         static {
           voltsOverRPSAtSpeedThresholds = new double[4];
-          voltsOverRPSAtSpeedThresholds[0] = 11.0;
-          voltsOverRPSAtSpeedThresholds[1] = 11.0;
-          voltsOverRPSAtSpeedThresholds[2] = 11.0;
-          voltsOverRPSAtSpeedThresholds[3] = 11.0;
+          voltsOverRPSAtSpeedThresholds[0] = 12.5 / 5.9 / 39.3 * 2.3016;
+          voltsOverRPSAtSpeedThresholds[1] = 12.5 / 5.9 / 39.3 * 2.3016;
+          voltsOverRPSAtSpeedThresholds[2] = 12.5 / 5.9 / 39.3 * 2.3016;
+          voltsOverRPSAtSpeedThresholds[3] = 12.5 / 5.9 / 39.3 * 2.3016;
         }
         public static final double[] feedForwardRPSThreshold;
         static {

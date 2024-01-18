@@ -81,10 +81,10 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
           DriveConstants.Drive.kS).withPosition(6,2).withSize(2,2).getEntry();
 
       // Enables manipulation of arrays in Shuffleboard GUI and displays nicely
-      voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts at Speed Thresholds", BuiltInLayouts.kList)
+      voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts over RPS at Speed Thresholds", BuiltInLayouts.kList)
           .withPosition(8,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.length; i++) {
-        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts " + i, DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds[i]).getEntry();
+        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts over RPS" + i, DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds[i]).getEntry();
       }
 
       

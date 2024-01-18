@@ -23,7 +23,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     private SparkMaxAbsoluteEncoder encoder;
     
     private double[] feedForwardRPSThreshold = DriveConstants.Drive.FeedForward.feedForwardRPSThreshold.clone();
-    private double[] feedForwardVolts = DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.clone();
+    private double[] feedForwardVoltsOverRPS = DriveConstants.Drive.FeedForward.voltsOverRPSAtSpeedThresholds.clone();
     private double kSVolts = DriveConstants.Drive.kS;
 
     private double calcFeedForwardVoltsOverRPS;
@@ -130,17 +130,17 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         inputs.calculatedVolts = desiredVolts;
     }
 
-    // PID methods for turn motor
+    // set turn angle of wheel using hardware PID
     @Override
     public void setTurnAngle(double desiredAngle) {
       turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
     }
 
-    // PID method for drive motor
+    // set drive motor voltage based on desired RPS
     @Override
     public void setDriveVoltage(double desiredMotorRPM) {
       // convert RPM to RPS
-      double desiredMotorRPS = Math.abs(desiredMotorRPM / 60);
+      double desiredMotorRPSAbs = Math.abs(desiredMotorRPM / 60);
       int i;
       
       // If motor RPS less than element 1 of FF speed threshold, i defaults to 0
@@ -148,7 +148,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       // Greater than or equals to not used in order to protect against erroneous shuffleboard input
       // where element 0 of FF velocity threshold is changed from 0.
       for (i = feedForwardRPSThreshold.length - 1; i > 0; i--) { 
-        if (desiredMotorRPS >= feedForwardRPSThreshold[i]) {
+        if (desiredMotorRPSAbs >= feedForwardRPSThreshold[i]) {
           break;
         }
       }
@@ -161,11 +161,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         int secondToLastElement = i - 1;
         // Slope between last point and second to last point used to predict corresponding 
         // Feed Forward value for requested RPS values beyond max speed threshold
-        double slope = (feedForwardVolts[lastElement] - feedForwardVolts[secondToLastElement]) / 
-                        (feedForwardRPSThreshold[lastElement] - feedForwardRPSThreshold[secondToLastElement]);
+        double slope = (feedForwardVoltsOverRPS[lastElement] - feedForwardVoltsOverRPS[secondToLastElement]) / 
+                        (feedForwardRPSThreshold[lastElement] - feedForwardRPSThreshold[secondToLastElement]); // TODO: fix potential divide by 0
 
-        calcFeedForwardVoltsOverRPS = slope * (desiredMotorRPS - feedForwardRPSThreshold[lastElement]) 
-                                      + feedForwardVolts[lastElement];
+        calcFeedForwardVoltsOverRPS = slope * (desiredMotorRPSAbs - feedForwardRPSThreshold[lastElement]) 
+                                      + feedForwardVoltsOverRPS[lastElement];
       }
       // Linear interpolation to calculate a more precise Feed Forward value for 
       // points between established thresholds.
@@ -174,11 +174,11 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         int upperBound = i + 1;
         int lowerBound = i;
         // Calculated weight based on distance between lower bound value and desired speed value
-        double weight = (desiredMotorRPS - feedForwardRPSThreshold[upperBound]) /
-                    (feedForwardRPSThreshold[lowerBound] - feedForwardRPSThreshold[upperBound]);
+        double weight = (desiredMotorRPSAbs - feedForwardRPSThreshold[upperBound]) /
+                    (feedForwardRPSThreshold[lowerBound] - feedForwardRPSThreshold[upperBound]); // TODO: fix potential divide by 0
         
-        calcFeedForwardVoltsOverRPS = (weight * feedForwardVolts[lowerBound]) + 
-                                      ((1 - weight) * feedForwardVolts[upperBound]);
+        calcFeedForwardVoltsOverRPS = (weight * feedForwardVoltsOverRPS[lowerBound]) + 
+                                      ((1 - weight) * feedForwardVoltsOverRPS[upperBound]);
       }
 
       // make sure wheel RPS shuffleboard inputs are in ascending order
@@ -187,11 +187,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         kSVolts = 0;
       }
 
-      // need to reverse Feed Forward value sign if speed is negative
-      calcFeedForwardVoltsOverRPS = calcFeedForwardVoltsOverRPS * Math.signum(desiredMotorRPM);
-
       // convert speed to volts while accounting for volts required to overcome static friction
-      desiredVolts = (kSVolts * Math.signum(desiredMotorRPM)) + (calcFeedForwardVoltsOverRPS * desiredMotorRPS);
+      desiredVolts = Math.signum(desiredMotorRPM) * (kSVolts + (calcFeedForwardVoltsOverRPS * desiredMotorRPSAbs));
       
       // send requested voltage to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);
@@ -209,8 +206,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     
     @Override
     public void updateFeedForward(double[] newFeedForwardVolts) {
-      for (int i = 0; i < feedForwardVolts.length; i++) {
-          feedForwardVolts[i] = newFeedForwardVolts[i];
+      for (int i = 0; i < feedForwardVoltsOverRPS.length; i++) {
+          feedForwardVoltsOverRPS[i] = newFeedForwardVolts[i];
       }
     }
 
@@ -245,6 +242,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     public void stopMotor() {
         driveMotor.stopMotor();
         turningMotor.stopMotor();
+      // for logging purposes
+        desiredVolts = 0; 
+        calcFeedForwardVoltsOverRPS = 0;
     }
-    
 }
