@@ -87,7 +87,6 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
         feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts over m/s" + i, DriveConstants.Drive.FeedForward.voltsOverMetersPerSecAtSpeedThresholds[i]).getEntry();
       }
 
-      
       feedForwardMetersPerSecThresholdLayout = customizationTab.getLayout("FF Threshold m/s", BuiltInLayouts.kList)
           .withPosition(10,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.feedForwardMetersPerSecThreshold.length; i++) {
