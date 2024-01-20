@@ -247,10 +247,10 @@ public final class Constants {
         public static final double[] voltsOverMetersPerSecAtSpeedThresholds;
         static {
           voltsOverMetersPerSecAtSpeedThresholds = new double[4];
-          voltsOverMetersPerSecAtSpeedThresholds[0] = 2.3016;
-          voltsOverMetersPerSecAtSpeedThresholds[1] = 2.3016;
-          voltsOverMetersPerSecAtSpeedThresholds[2] = 2.3016;
-          voltsOverMetersPerSecAtSpeedThresholds[3] = 2.3016;
+          voltsOverMetersPerSecAtSpeedThresholds[0] = 3.2;
+          voltsOverMetersPerSecAtSpeedThresholds[1] = 3.2;
+          voltsOverMetersPerSecAtSpeedThresholds[2] = 3.1;
+          voltsOverMetersPerSecAtSpeedThresholds[3] = 3.1;
         }
         public static final double[] feedForwardMetersPerSecThreshold;
         static {
@@ -258,8 +258,8 @@ public final class Constants {
           feedForwardMetersPerSecThreshold = new double[4];
           // values must be in ascending order
           feedForwardMetersPerSecThreshold[0] = 0.0; // Must be zero
-          feedForwardMetersPerSecThreshold[1] = 1.28;
-          feedForwardMetersPerSecThreshold[2] = 2.05;
+          feedForwardMetersPerSecThreshold[1] = 2.0;
+          feedForwardMetersPerSecThreshold[2] = 2.5;
           feedForwardMetersPerSecThreshold[3] = 3.33;
         }
       }

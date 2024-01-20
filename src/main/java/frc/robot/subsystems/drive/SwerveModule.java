@@ -124,6 +124,8 @@ public class SwerveModule {
     if (Constants.driveEnabled) {
       if (!Constants.steeringTuningMode) {
         optWheelMetersPerSec = 0;
+        Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptWheelMetersPerSec", 
+            optWheelMetersPerSec);
         io.stopMotor();
       }
     }
