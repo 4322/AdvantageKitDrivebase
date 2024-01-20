@@ -5,8 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface SwerveModuleIO {
     @AutoLog
     public class SwerveModuleIOInputs {
-        public double driveRotations = 0.0;
-        public double driveRotationsPerSec = 0.0;
+        public double driveMeters = 0.0;
+        public double driveMetersPerSec = 0.0;
         public double driveAppliedVolts = 0.0;
         public double driveCurrentAmps = 0.0;
 
@@ -25,7 +25,7 @@ public interface SwerveModuleIO {
 
     public default void updateFeedForward(double[] newFeedForwardVolts) {}
 
-    public default void setFeedForwardSpeedThreshold(double[] newFeedForwardRPSThreshold) {}
+    public default void setFeedForwardSpeedThreshold(double[] newFeedForwardMetersPerSecThreshold) {}
 
     public default void updateVoltsToOvercomeFriction(double newkSVolts) {}
 
