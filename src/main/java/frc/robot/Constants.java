@@ -240,7 +240,7 @@ public final class Constants {
       public static final double kIZone = 0.0;
       public static final double kD = 0.0;
       public static final double kF = 0;
-      public static final double kS = 0.281485;
+      public static final double kS = 0.165;
 
       // Feed Forward parameters for Drive PID
       public static final class FeedForward {
@@ -258,9 +258,9 @@ public final class Constants {
           feedForwardMetersPerSecThreshold = new double[4];
           // values must be in ascending order
           feedForwardMetersPerSecThreshold[0] = 0.0; // Must be zero
-          feedForwardMetersPerSecThreshold[1] = 30.0;
-          feedForwardMetersPerSecThreshold[2] = 50.0;
-          feedForwardMetersPerSecThreshold[3] = 80.0;
+          feedForwardMetersPerSecThreshold[1] = 1.28;
+          feedForwardMetersPerSecThreshold[2] = 2.05;
+          feedForwardMetersPerSecThreshold[3] = 3.33;
         }
       }
     }

@@ -21,7 +21,6 @@ public class SwerveModule {
   private double previousRate = 0;
   private double previousTime = 0;
   private double filteredAccel = 0;
-  private double desiredMotorMetersPerSec = 0;
 
   public SwerveModule(WheelPosition wheelPos, SwerveModuleIO io) {
     this.io = io;
@@ -80,21 +79,17 @@ public class SwerveModule {
       // Optimize the reference state to avoid spinning further than 90 degrees
       SwerveModuleState state =
           SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(inputs.turnDegrees));
-      
-      desiredMotorMetersPerSec = state.speedMetersPerSecond * DriveConstants.Drive.gearRatio;
           
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcWheelMetersPerSec", 
           desiredState.speedMetersPerSecond);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptWheelMetersPerSec", 
           state.speedMetersPerSecond);
-      Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptMotorMetersPerSec", 
-          desiredMotorMetersPerSec);
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetCalcDegrees", 
           desiredState.angle.getDegrees());
       Logger.getInstance().recordOutput("Drive/SwerveModule " + wheelPos.wheelNumber + "/SetOptDegrees", 
           state.angle.getDegrees());
 
-      io.setDriveVoltage(desiredMotorMetersPerSec);
+      io.setDriveVoltage(state.speedMetersPerSecond);
               
       if (!Constants.steeringTuningMode) {
         io.setTurnAngle(MathUtil.inputModulus(state.angle.getDegrees(), 0, 360));
@@ -127,7 +122,6 @@ public class SwerveModule {
       if (!Constants.steeringTuningMode) {
         io.stopMotor();
       }
-      desiredMotorMetersPerSec = 0; // makes value cleaner for logging purposes
     }
   }
 

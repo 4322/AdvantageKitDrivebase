@@ -76,9 +76,9 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         sparkMax.enableVoltageCompensation(DriveConstants.Drive.voltageCompSaturation);
         sparkMax.setIdleMode(IdleMode.kCoast); // Allow robot to be moved prior to enabling
         sparkMax.getEncoder().setPositionConversionFactor(Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches 
-            * Constants.inchesToMeters); // rotations to meters
+            * Constants.inchesToMeters / Constants.DriveConstants.Drive.gearRatio); // motor rotations to wheel meters
         sparkMax.getEncoder().setVelocityConversionFactor(Math.PI * Constants.DriveConstants.Drive.wheelDiameterInches 
-            * Constants.inchesToMeters / 60); // RPM to m/s
+            * Constants.inchesToMeters / 60 / Constants.DriveConstants.Drive.gearRatio); // motor RPM to wheel m/s
         
         // Invert the left side modules so we can zero all modules with the bevel gears facing outward.
         // Without this code, all bevel gears would need to face right when the modules are zeroed.
@@ -140,23 +140,23 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       turningMotor.getPIDController().setReference(desiredAngle, ControlType.kPosition);
     }
 
-    // set drive motor voltage based on desired RPS
+    // set drive motor voltage based on desired wheel m/s
     @Override
-    public void setDriveVoltage(double desiredMotorMetersPerSec) {
-      double desiredMetersPerSecAbs = Math.abs(desiredMotorMetersPerSec);
+    public void setDriveVoltage(double desiredWheelMetersPerSec) {
+      double desiredWheelMetersPerSecAbs = Math.abs(desiredWheelMetersPerSec);
       int i;
       
-      // If motor m/s less than element 1 of FF speed threshold, i defaults to 0
+      // If wheel m/s less than element 1 of FF speed threshold, i defaults to 0
       // due to for loop iterating i at the end.
       // Greater than or equals to not used in order to protect against erroneous shuffleboard input
       // where element 0 of FF velocity threshold is changed from 0.
       for (i = feedForwardMetersPerSecThreshold.length - 1; i > 0; i--) { 
-        if (desiredMetersPerSecAbs >= feedForwardMetersPerSecThreshold[i]) {
+        if (desiredWheelMetersPerSecAbs >= feedForwardMetersPerSecThreshold[i]) {
           break;
         }
       }
 
-      // Linear extrapolation to account for edge case where requested speed 
+      // Linear extrapolation to account for edge case where requested wheel speed 
       // is greater than max threshold speed.
       // Feed Forward calculated by determining linear equation between last two points.
       if (i == feedForwardMetersPerSecThreshold.length - 1) {
@@ -167,7 +167,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
         double slope = (feedForwardVoltsOverMetersPerSec[lastElement] - feedForwardVoltsOverMetersPerSec[secondToLastElement]) / 
                         (feedForwardMetersPerSecThreshold[lastElement] - feedForwardMetersPerSecThreshold[secondToLastElement]); // TODO: fix potential divide by 0
 
-        calcFeedForwardVoltsOverMetersPerSec = slope * (desiredMetersPerSecAbs - feedForwardMetersPerSecThreshold[lastElement]) 
+        calcFeedForwardVoltsOverMetersPerSec = slope * (desiredWheelMetersPerSecAbs - feedForwardMetersPerSecThreshold[lastElement]) 
                                       + feedForwardVoltsOverMetersPerSec[lastElement];
       }
       // Linear interpolation to calculate a more precise Feed Forward value for 
@@ -176,8 +176,8 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       else {
         int upperBound = i + 1;
         int lowerBound = i;
-        // Calculated weight based on distance between lower bound value and desired speed value
-        double weight = (desiredMetersPerSecAbs - feedForwardMetersPerSecThreshold[upperBound]) /
+        // Calculated weight based on distance between lower bound value and desired wheel speed value
+        double weight = (desiredWheelMetersPerSecAbs - feedForwardMetersPerSecThreshold[upperBound]) /
                     (feedForwardMetersPerSecThreshold[lowerBound] - feedForwardMetersPerSecThreshold[upperBound]);  // TODO: fix potential divide by 0
         
         calcFeedForwardVoltsOverMetersPerSec = (weight * feedForwardVoltsOverMetersPerSec[lowerBound]) + 
@@ -191,7 +191,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
       }
 
       // convert speed to volts while accounting for volts required to overcome static friction
-      desiredVolts = Math.signum(desiredMotorMetersPerSec) * (kSVolts + (calcFeedForwardVoltsOverMetersPerSec * desiredMetersPerSecAbs));
+      desiredVolts = Math.signum(desiredWheelMetersPerSec) * (kSVolts + (calcFeedForwardVoltsOverMetersPerSec * desiredWheelMetersPerSecAbs));
       
       // send requested voltage to SparkMAX
       REVLibError error = driveMotor.getPIDController().setReference(desiredVolts, ControlType.kVoltage, 0);

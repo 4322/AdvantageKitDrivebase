@@ -81,16 +81,16 @@ public class DriveShuffleBoardIODataEntry implements DriveShuffleBoardIO {
           DriveConstants.Drive.kS).withPosition(6,2).withSize(2,2).getEntry();
 
       // Enables manipulation of arrays in Shuffleboard GUI and displays nicely
-      voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts over m/s at Speed Thresholds", BuiltInLayouts.kList)
+      voltsAtSpeedThresholdsLayout = customizationTab.getLayout("Volts over m per s at Speed Thresholds", BuiltInLayouts.kList)
           .withPosition(8,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.voltsOverMetersPerSecAtSpeedThresholds.length; i++) {
-        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts over m/s" + i, DriveConstants.Drive.FeedForward.voltsOverMetersPerSecAtSpeedThresholds[i]).getEntry();
+        feedForwardArray[i] = voltsAtSpeedThresholdsLayout.add("Volts over m per s " + i, DriveConstants.Drive.FeedForward.voltsOverMetersPerSecAtSpeedThresholds[i]).getEntry();
       }
 
-      feedForwardMetersPerSecThresholdLayout = customizationTab.getLayout("FF Threshold m/s", BuiltInLayouts.kList)
+      feedForwardMetersPerSecThresholdLayout = customizationTab.getLayout("FF Threshold m per s", BuiltInLayouts.kList)
           .withPosition(10,1).withSize(2,3);
       for (int i = 0; i < DriveConstants.Drive.FeedForward.feedForwardMetersPerSecThreshold.length; i++) {
-        speedMetersPerSecArray[i] = feedForwardMetersPerSecThresholdLayout.add("Speed(m/s) " + i, DriveConstants.Drive.FeedForward.feedForwardMetersPerSecThreshold[i]).getEntry();
+        speedMetersPerSecArray[i] = feedForwardMetersPerSecThresholdLayout.add("Speed m per s " + i, DriveConstants.Drive.FeedForward.feedForwardMetersPerSecThreshold[i]).getEntry();
       }
     }
   }
