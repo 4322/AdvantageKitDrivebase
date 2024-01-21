@@ -174,7 +174,7 @@ public class SwerveModuleIOMotorControl implements SwerveModuleIO {
     // PID methods for turn motor
     @Override
     public void setTurnAngle(double desiredAngle) {
-           PositionVoltage positionVoltage = new PositionVoltage(desiredAngle);
+           PositionVoltage positionVoltage = new PositionVoltage(Units.degreesToRotations(desiredAngle));
       turningMotor.setControl(positionVoltage);
     }
 
