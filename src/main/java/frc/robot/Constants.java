@@ -22,7 +22,7 @@ public final class Constants {
   public static final boolean debug = false;
 
   public static final boolean driveEnabled = false;
-  public static final boolean gyroEnabled = true;
+  public static final boolean gyroEnabled = false;
   public static final boolean joysticksEnabled = true;
   public static final boolean xboxEnabled = true;
   
